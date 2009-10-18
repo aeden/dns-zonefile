@@ -1,0 +1,45 @@
+$ORIGIN example.com. ; Start zone example.com
+$TTL 1h              ; Default TTL
+
+; TODO: Find out if the above are optional.
+; See RFC 1035 (section 5) and RFC 1034 (Section 3.6.1)
+
+example.com.  IN SOA ns.example.com. hostmaster.example.com. (
+              2009080101    ; zone serial
+              1d            ; slave refresh
+              1d            ; slave retry
+              4w            ; slave expiration
+              1h            ; minimum TTL (is this of SOA or zone?)
+              )
+
+; TODO: Find out how record-specific TTLs are listed.
+; 
+; Anything after a semi-colon is a comment
+;
+; @ means use the same name as the origin
+;
+; If the name doesn't end with a period then it's prepended to the 
+; origin.
+
+@             NS    ns1              ; specify a nameserver
+example.com.  NS    ns2.example.com. ; specify a nameserver
+
+ns1           A     123.123.123.123
+ns2           A     123.123.123.124
+
+@             A     123.123.123.122
+www           CNAME example.com
+
+mx1           A     123.123.123.123 ; Records used as MX must not be 
+                                    ; CNAME records. See RFC 2181.
+
+@             AAAA  ; TODO: Find out how IPv6 addresses are specified
+
+@             MX 10 mx1
+@             MX 20 mx2.example.com.
+@             MX 20 mx-backup.elsewhere.com.
+
+@             TXT "Random text"
+@             TXT "spf=v1 ..." ; TODO: Get an example of an SPF record
+
+@             SRV ; TODO: Get an example of a service record eg XMPP
