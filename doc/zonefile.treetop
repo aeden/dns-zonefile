@@ -1,0 +1,101 @@
+grammar Zonefile
+  rule zone
+    (blank_line / comment)* soa (resource_record / comment / blank_line)*
+  end
+
+  rule soa
+    origin space zone_type space "SOA" space ns space rp space "(" space* serial space refresh space retry space expiry space ttl space* ")"
+  end
+
+  rule resource_record
+    space? (a_record / cname_record / mx_record / ns_record) space? comment?
+  end
+
+  rule a_record
+    host space "A" space ip_address
+  end
+
+  rule ip_address
+    [\d]+ "." [\d]+ "." [\d]+ "." [\d]+
+  end
+
+  rule cname_record
+    host space "CNAME" space host
+  end
+
+  rule mx_record
+    host space "MX" space mx_weight space host
+  end
+
+  rule mx_weight
+    integer
+  end
+
+  rule ns_record
+    host space "NS" space host
+  end
+
+  rule origin
+    host comment*
+  end
+
+  rule blank_line
+    space
+  end
+
+  rule space
+    [\s]+
+  end
+
+  rule zone_type
+    "IN"
+  end
+
+  rule comment
+    space* ";" [^\n]+
+  end
+
+  rule ns
+    host comment*
+  end
+
+  rule rp
+    ([a-zA-Z0-9\-]+ ".")+
+  end
+
+  rule serial
+    [0-9]+ comment*
+  end
+
+  rule time_interval
+    integer time_multiplier
+  end
+
+  rule refresh
+    time_interval comment*
+  end
+
+  rule integer
+    [0-9]+
+  end
+
+  rule time_multiplier
+    ("h" / "d" / "w" / "m" / "y" / "")
+  end
+
+  rule retry
+    time_interval comment*
+  end
+
+  rule expiry
+    time_interval comment*
+  end
+
+  rule ttl
+    time_interval comment*
+  end
+
+  rule host
+    (([a-zA-Z0-9\-\.])+ / "@")
+  end
+end
