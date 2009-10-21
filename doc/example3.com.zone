@@ -1,0 +1,24 @@
+$ORIGIN example1.com.
+$TTL 86400
+@	IN	SOA	ns1.name-server.com. support.example1.com (
+					2009102121
+					7200
+					7200
+					1209600
+					86400 
+				)
+@		NS	ns1.name-server.com.
+@		NS	ns2.name-server.com.
+@		NS	ns3.name-server.com.
+@		NS	ns4.name-server.com.
+@			MX	10	mx-ext-0.mx-service.com.
+@			MX	20	mx-ext-1-0.mx-service.com.
+@			MX	20	mx-ext-1-1.mx-service.com.
+@			MX	30	mx-ext-2-0.mx-service.com.
+@			MX	30	mx-ext-2-1.mx-service.co.uk.
+@			MX	30	mx-ext-2-2.mx-service.org.
+@			MX	30	mx-ext-2-3.mx-service.net.uk.
+@			A	197.207.108.251
+*			A	197.207.108.251
+googleblahblah3135			CNAME	google.com.
+mail			CNAME	ghs.google.com.

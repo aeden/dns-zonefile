@@ -1,0 +1,16 @@
+$ORIGIN example2.com.
+$TTL 86400
+@	IN	SOA	ns1.nameservers.com. dns.example2.com. (
+					2009102121
+					7200
+					7200
+					1209600
+					86400 
+				)
+@		NS	ns1.nameservers.com.
+@		NS	ns2.nameservers.com.
+@		NS	ns3.nameservers.com.
+@		NS	ns4.nameservers.com.
+@			A	197.127.138.160
+www			A	197.127.138.160
+right			A	178.109.109.208
