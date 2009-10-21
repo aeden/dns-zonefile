@@ -1,6 +1,6 @@
 grammar Zonefile
   rule zone
-    (blank_line / comment)* soa (resource_record / comment / blank_line)* {
+    (space / comment)* soa (resource_record / comment / space)* {
       def origin
         soa.origin.host.to_s
       end
@@ -24,9 +24,23 @@ grammar Zonefile
   end
 
   rule resource_record
-    space? (a_record / cname_record / mx_record / ns_record) space? comment? {
+    space? record:(a_record / cname_record / mx_record / ns_record) space? comment? {
       def to_s
         text_value
+      end
+
+      def record_type
+        record.elements[2].text_value
+      end
+
+      def method_missing(method_name, *args)
+        if record.respond_to?(method_name)
+          record.send(method_name, *args)
+        end
+      end
+
+      def respond_to?(method_name)
+        super || record.respond_to?(method_name)
       end
     }
   end
@@ -48,7 +62,7 @@ grammar Zonefile
   end
 
   rule cname_record
-    host space "CNAME" space host {
+    alias:host space "CNAME" space host {
       def to_s
         text_value
       end
@@ -56,15 +70,7 @@ grammar Zonefile
   end
 
   rule mx_record
-    host space "MX" space mx_weight space host {
-      def to_s
-        text_value
-      end
-    }
-  end
-
-  rule mx_weight
-    integer {
+    host space "MX" space priority:integer space exchanger:host {
       def to_s
         text_value
       end
@@ -72,7 +78,7 @@ grammar Zonefile
   end
 
   rule ns_record
-    host space "NS" space host {
+    host space "NS" space nameserver:host {
       def to_s
         text_value
       end
@@ -81,14 +87,6 @@ grammar Zonefile
 
   rule origin
     host comment* {
-      def to_s
-        text_value
-      end
-    }
-  end
-
-  rule blank_line
-    space {
       def to_s
         text_value
       end
