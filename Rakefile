@@ -9,7 +9,7 @@ Spec::Rake::SpecTask.new('spec') do |t|
   t.libs << 'lib'
   t.libs << 'spec'
 end
-task :default => :spec
+task :default => [ :generate_grammar, :spec ]
 
 desc "Regenerate the grammar definition"
 task :generate_grammar do
