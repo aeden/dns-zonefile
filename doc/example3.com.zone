@@ -1,6 +1,6 @@
 $ORIGIN example1.com.
 $TTL 86400
-@	IN	SOA	ns1.name-server.com. support.example1.com (
+@	IN	SOA	ns1.name-server.com. support.example1.com. (
 					2009102121
 					7200
 					7200
