@@ -5,7 +5,7 @@ $TTL 86400
 					7200
 					7200
 					1209600
-					86400 
+					86400
 				)
 @		NS	ns1.name-server.com.
 @		NS	ns2.name-server.com.

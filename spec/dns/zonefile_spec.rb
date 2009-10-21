@@ -97,7 +97,7 @@ ZONE
         a.host.to_s == "ns" && a.ip_address.to_s == "10.0.0.2"
       }.should_not be_nil
     end
-      
+
     it "should build the correct CNAME records" do
       zone = DNS::Zonefile.parse(@zonefile)
       cname_records = zone.rr.select { |rr| rr.record_type == "CNAME" }
