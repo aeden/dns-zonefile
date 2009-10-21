@@ -8,6 +8,10 @@ grammar Zonefile
       def to_s
         text_value
       end
+
+      def rr
+        elements[-1].elements.select { |e| e.to_s !~ /\A\s*(;.*)?\z|\A\z/; }
+      end
     }
   end
 

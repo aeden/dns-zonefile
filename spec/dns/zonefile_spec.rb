@@ -61,5 +61,10 @@ ZONE
       soa.expiry.to_i.should eql(2419200)
       soa.ttl.to_i.should eql(3600)
     end
+
+    it "should build the correct number of resource records" do
+      zone = DNS::Zonefile.parse(@zonefile)
+      zone.rr.size.should be(10)
+    end
   end
 end
