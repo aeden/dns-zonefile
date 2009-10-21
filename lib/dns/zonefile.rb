@@ -1,3 +1,5 @@
+require 'dns/zonefile_parser'
+
 module DNS
   class Zonefile
     VERSION = "0.0.1"
@@ -6,7 +8,8 @@ module DNS
 
     class << self
       def parse(zone_string)
-        new
+        parser = DNS::ZonefileParser.new
+        parser.parse(zone_string)
       end
     end
   end

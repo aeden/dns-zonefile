@@ -50,17 +50,17 @@ ZONE
       zone.origin.should eql('example.com.')
     end
 
-    it "should set the SOA correctly" do
-      zone = DNS::Zonefile.parse(@zonefile)
-      soa = zone.soa
-      soa.should be_kind_of(DNS::ResourceRecord::SOA)
-      soa.ns.should eql('ns.example.com.')
-      soa.rp.should eql('hostmaster.example.com.')
-      soa.serial.should eql(2009080101)
-      soa.refresh.should eql(86400)
-      soa.retry.should eql(86400)
-      soa.expires.should eql(2419200)
-      soa.ttl.should eql(3600)
-    end
+    # it "should set the SOA correctly" do
+    #   zone = DNS::Zonefile.parse(@zonefile)
+    #   soa = zone.soa
+    #   soa.should be_kind_of(DNS::ResourceRecord::SOA)
+    #   soa.ns.should eql('ns.example.com.')
+    #   soa.rp.should eql('hostmaster.example.com.')
+    #   soa.serial.should eql(2009080101)
+    #   soa.refresh.should eql(86400)
+    #   soa.retry.should eql(86400)
+    #   soa.expires.should eql(2419200)
+    #   soa.ttl.should eql(3600)
+    # end
   end
 end

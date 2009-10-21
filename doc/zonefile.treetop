@@ -1,10 +1,18 @@
 grammar Zonefile
   rule zone
-    (blank_line / comment)* soa (resource_record / comment / blank_line)*
+    (blank_line / comment)* soa (resource_record / comment / blank_line)* {
+      def origin
+        soa.origin
+      end
+    }
   end
 
   rule soa
-    origin space zone_type space "SOA" space ns space rp space "(" space* serial space refresh space retry space expiry space ttl space* ")"
+    origin space zone_type space "SOA" space ns space rp space "(" space* serial space refresh space retry space expiry space ttl space* ")" {
+      def origin
+        elements[0].text_value
+      end
+    }
   end
 
   rule resource_record
