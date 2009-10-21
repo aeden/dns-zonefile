@@ -43,7 +43,6 @@ wwwtest       CNAME www                   ; "wwwtest.example.com" is another ali
 
 ; Email... that'll be fun then
 example.com.  MX    10 mail.example.com.  ; mail.example.com is the mailserver for example.com
-example.com.  MX    10 mail.example.com.  ; mail.example.com is the mailserver for example.com
 @             MX    20 mail2.example.com. ; Similar to above line, but using "@" to say "use $ORIGIN"
 @             MX    50 mail3              ; Similar to above line, but using a host within this domain
 ZONE
@@ -68,7 +67,67 @@ ZONE
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      zone.rr.size.should be(10)
+      zone.rr.size.should be(9)
+    end
+
+    it "should build the correct NS records" do
+      zone = DNS::Zonefile.parse(@zonefile)
+      ns_records = zone.rr.select { |rr| rr.record_type == "NS" }
+      ns_records.size.should be(2)
+
+      ns_records.detect { |ns|
+        ns.host.to_s == "example.com." && ns.nameserver.to_s == "ns"
+      }.should_not be_nil
+
+      ns_records.detect { |ns|
+        ns.host.to_s == "example.com." && ns.nameserver.to_s == "ns.somewhere.com."
+      }.should_not be_nil
+    end
+
+    it "should build the correct A records" do
+      zone = DNS::Zonefile.parse(@zonefile)
+      a_records = zone.rr.select { |rr| rr.record_type == "A" }
+      a_records.size.should be(2)
+
+      a_records.detect { |a|
+        a.host.to_s == "example.com." && a.ip_address.to_s == "10.0.0.1"
+      }.should_not be_nil
+
+      a_records.detect { |a|
+        a.host.to_s == "ns" && a.ip_address.to_s == "10.0.0.2"
+      }.should_not be_nil
+    end
+      
+    it "should build the correct CNAME records" do
+      zone = DNS::Zonefile.parse(@zonefile)
+      cname_records = zone.rr.select { |rr| rr.record_type == "CNAME" }
+      cname_records.size.should be(2)
+
+      cname_records.detect { |cname|
+        cname.alias.to_s == "www" && cname.host.to_s == "ns"
+      }.should_not be_nil
+
+      cname_records.detect { |cname|
+        cname.alias.to_s == "wwwtest" && cname.host.to_s == "www"
+      }.should_not be_nil
+    end
+
+    it "should build the correct MX records" do
+      zone = DNS::Zonefile.parse(@zonefile)
+      mx_records = zone.rr.select { |rr| rr.record_type == "MX" }
+      mx_records.size.should be(3)
+
+      mx_records.detect { |mx|
+        mx.host.to_s == "example.com." && mx.priority.to_i == 10 && mx.exchanger = 'mail.example.com.'
+      }.should_not be_nil
+
+      mx_records.detect { |mx|
+        mx.host.to_s == "@" && mx.priority.to_i == 20 && mx.exchanger = 'mail2.example.com.'
+      }.should_not be_nil
+
+      mx_records.detect { |mx|
+        mx.host.to_s == "@" && mx.priority.to_i == 50 && mx.exchanger = 'mail3'
+      }.should_not be_nil
     end
   end
 end
