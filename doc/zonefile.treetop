@@ -2,108 +2,216 @@ grammar Zonefile
   rule zone
     (blank_line / comment)* soa (resource_record / comment / blank_line)* {
       def origin
-        soa.origin
+        soa.origin.host.to_s
+      end
+
+      def to_s
+        text_value
       end
     }
   end
 
   rule soa
     origin space zone_type space "SOA" space ns space rp space "(" space* serial space refresh space retry space expiry space ttl space* ")" {
-      def origin
-        elements[0].text_value
+      def to_s
+        text_value
       end
     }
   end
 
   rule resource_record
-    space? (a_record / cname_record / mx_record / ns_record) space? comment?
+    space? (a_record / cname_record / mx_record / ns_record) space? comment? {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule a_record
-    host space "A" space ip_address
+    host space "A" space ip_address {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule ip_address
-    [\d]+ "." [\d]+ "." [\d]+ "." [\d]+
+    [\d]+ "." [\d]+ "." [\d]+ "." [\d]+ {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule cname_record
-    host space "CNAME" space host
+    host space "CNAME" space host {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule mx_record
-    host space "MX" space mx_weight space host
+    host space "MX" space mx_weight space host {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule mx_weight
-    integer
+    integer {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule ns_record
-    host space "NS" space host
+    host space "NS" space host {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule origin
-    host comment*
+    host comment* {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule blank_line
-    space
+    space {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule space
-    [\s]+
+    [\s]+ {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule zone_type
-    "IN"
+    "IN" {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule comment
-    space* ";" [^\n]+
+    space* ";" [^\n]+ {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule ns
-    host comment*
+    host comment* {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule rp
-    ([a-zA-Z0-9\-]+ ".")+
+    ([a-zA-Z0-9\-]+ ".")+ {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule serial
-    [0-9]+ comment*
+    integer comment* {
+      def to_i
+        integer.to_i
+      end
+    }
   end
 
   rule time_interval
-    integer time_multiplier
+    integer time_multiplier {
+      def to_s
+        text_value
+      end
+
+      def to_i
+        multipliers = {
+          ""  => 1,
+          "h" => 60 * 60,
+          "d" => 60 * 60 * 24,
+          "w" => 60 * 60 * 24 * 7,
+          "m" => 60 * 60 * 24 * 7 * 4,
+          "y" => 60 * 60 * 24 * 7 * 4 * 52
+        }
+        multipliers[time_multiplier.to_s] * integer.to_i
+      end
+    }
   end
 
   rule refresh
-    time_interval comment*
+    time_interval comment* {
+      def to_i
+        time_interval.to_i
+      end
+    }
   end
 
   rule integer
-    [0-9]+
+    [0-9]+ {
+      def to_i
+        text_value.to_i
+      end
+    }
   end
 
   rule time_multiplier
-    ("h" / "d" / "w" / "m" / "y" / "")
+    ("h" / "d" / "w" / "m" / "y" / "") {
+      def to_s
+        text_value
+      end
+    }
   end
 
   rule retry
-    time_interval comment*
+    time_interval comment* {
+      def to_i
+        time_interval.to_i
+      end
+    }
   end
 
   rule expiry
-    time_interval comment*
+    time_interval comment* {
+      def to_i
+        time_interval.to_i
+      end
+    }
   end
 
   rule ttl
-    time_interval comment*
+    time_interval comment* {
+      def to_i
+        time_interval.to_i
+      end
+    }
   end
 
   rule host
-    (([a-zA-Z0-9\-\.])+ / "@")
+    (([a-zA-Z0-9\-\.])+ / "@") {
+      def to_s
+        text_value
+      end
+    }
   end
 end

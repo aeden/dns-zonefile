@@ -24,7 +24,7 @@ describe "DNS::Zonefile" do
     before(:each) do
       @zonefile =<<-ZONE
 ; Hi! I'm an example zonefile.
-example.com.  IN  SOA  ns.example.com. username.example.com. ( 
+example.com.  IN  SOA  ns.example.com. hostmaster.example.com. ( 
               2007120710 ; serial number of this zone file
               1d         ; slave refresh (1 day)
               1d         ; slave retry time in case of a problem (1 day)
@@ -50,17 +50,16 @@ ZONE
       zone.origin.should eql('example.com.')
     end
 
-    # it "should set the SOA correctly" do
-    #   zone = DNS::Zonefile.parse(@zonefile)
-    #   soa = zone.soa
-    #   soa.should be_kind_of(DNS::ResourceRecord::SOA)
-    #   soa.ns.should eql('ns.example.com.')
-    #   soa.rp.should eql('hostmaster.example.com.')
-    #   soa.serial.should eql(2009080101)
-    #   soa.refresh.should eql(86400)
-    #   soa.retry.should eql(86400)
-    #   soa.expires.should eql(2419200)
-    #   soa.ttl.should eql(3600)
-    # end
+    it "should set the SOA correctly" do
+      zone = DNS::Zonefile.parse(@zonefile)
+      soa = zone.soa
+      soa.ns.to_s.should eql('ns.example.com.')
+      soa.rp.to_s.should eql('hostmaster.example.com.')
+      soa.serial.to_i.should eql(2007120710)
+      soa.refresh.to_i.should eql(86400)
+      soa.retry.to_i.should eql(86400)
+      soa.expiry.to_i.should eql(2419200)
+      soa.ttl.to_i.should eql(3600)
+    end
   end
 end
