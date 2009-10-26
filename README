@@ -1,0 +1,51 @@
+DNS::Zonefile
+=============
+
+The format of a DNS Zonefile is defined in RFC 1035 section 5 and RFC
+1034 section 3.6.1. To anyone who's using BIND they'll look very 
+familiar.
+
+This is an attempt to use Ruby parse them into an object graph which can 
+be investigated programatically, manipulated, validated or printed into 
+some canonical form.
+
+
+Getting setup
+-------------
+
+Well, you'll need the treetop and polyglot gems installed. They do all 
+the hard work. Thanks!
+
+  sudo gem install treetop polyglot
+
+Now you'll need to generate the Treetop parser from the Zonefile grammar 
+that I've hacked together.
+
+  rake generate_grammar
+
+Okay, you're ready to move onto the examples now.
+
+
+Examples
+--------
+
+  zonefile = "/path/to/file.zone"
+  zone_string = File.read(zonefile)
+  zone = DNS::Zonefile.parse(zone_string)
+
+  puts zone.soa.origin
+  puts zone.soa.ns
+  puts zone.resource_records[0]
+
+
+Authors
+-------
+
+Craig R Webster <http://barkingiguana.com/>
+
+
+Contributing
+------------
+
+See the TODO. Send me patches or pull request either by email or on 
+GitHub.
