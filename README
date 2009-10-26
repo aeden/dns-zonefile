@@ -48,4 +48,5 @@ Contributing
 ------------
 
 See the TODO. Send me patches or pull request either by email or on 
-GitHub.
+GitHub. Please make sure the tests pass and that your contribution
+is adequately tested.
