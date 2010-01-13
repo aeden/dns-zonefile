@@ -76,7 +76,7 @@ ZONE
       ns_records.size.should be(2)
 
       ns_records.detect { |ns|
-        ns.host.to_s == "example.com." && ns.nameserver.to_s == "ns"
+        ns.host.to_s == "example.com." && ns.nameserver.to_s == "ns.example.com."
       }.should_not be_nil
 
       ns_records.detect { |ns|
@@ -94,7 +94,7 @@ ZONE
       }.should_not be_nil
 
       a_records.detect { |a|
-        a.host.to_s == "ns" && a.ip_address.to_s == "10.0.0.2"
+        a.host.to_s == "ns.example.com." && a.ip_address.to_s == "10.0.0.2"
       }.should_not be_nil
     end
 
@@ -104,11 +104,11 @@ ZONE
       cname_records.size.should be(2)
 
       cname_records.detect { |cname|
-        cname.alias.to_s == "www" && cname.host.to_s == "ns"
+        cname.alias.to_s == "www.example.com." && cname.host.to_s == "ns.example.com."
       }.should_not be_nil
 
       cname_records.detect { |cname|
-        cname.alias.to_s == "wwwtest" && cname.host.to_s == "www"
+        cname.alias.to_s == "wwwtest.example.com." && cname.host.to_s == "www.example.com."
       }.should_not be_nil
     end
 
@@ -118,15 +118,15 @@ ZONE
       mx_records.size.should be(3)
 
       mx_records.detect { |mx|
-        mx.host.to_s == "example.com." && mx.priority.to_i == 10 && mx.exchanger = 'mail.example.com.'
+        mx.host.to_s == "example.com." && mx.priority.to_i == 10 && mx.exchanger.to_s == 'mail.example.com.'
       }.should_not be_nil
 
       mx_records.detect { |mx|
-        mx.host.to_s == "@" && mx.priority.to_i == 20 && mx.exchanger = 'mail2.example.com.'
+        mx.host.to_s == "example.com." && mx.priority.to_i == 20 && mx.exchanger.to_s == 'mail2.example.com.'
       }.should_not be_nil
 
       mx_records.detect { |mx|
-        mx.host.to_s == "@" && mx.priority.to_i == 50 && mx.exchanger = 'mail3'
+        mx.host.to_s == "example.com." && mx.priority.to_i == 50 && mx.exchanger.to_s == 'mail3.example.com.'
       }.should_not be_nil
     end
   end

@@ -210,9 +210,20 @@ grammar Zonefile
   end
 
   rule host
-    (([a-zA-Z0-9\-\.])+ / "@") {
+    (([a-zA-Z0-9\-\.])+ / "@"?) {
+      def zone
+        parent.parent.parent.parent
+      end
+
       def to_s
-        text_value
+        case
+        when text_value =~ /\.$/
+          text_value
+        when text_value == "@" || text_value == ""
+          zone.origin.to_s
+        else
+          text_value + '.' + zone.origin.to_s
+        end
       end
     }
   end
