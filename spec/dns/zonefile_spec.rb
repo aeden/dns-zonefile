@@ -24,7 +24,9 @@ describe "DNS::Zonefile" do
     before(:each) do
       @zonefile =<<-ZONE
 ; Hi! I'm an example zonefile.
-example.com.  IN  SOA  ns.example.com. hostmaster.example.com. ( 
+$ORIGIN example.com.
+$TTL 86400; expire in 1 day.
+example.com.  IN  SOA  ns.example.com. hostmaster.example.com. (
               2007120710 ; serial number of this zone file
               1d         ; slave refresh (1 day)
               1d         ; slave retry time in case of a problem (1 day)
@@ -51,6 +53,12 @@ ZONE
     it "should set the origin correctly" do
       zone = DNS::Zonefile.parse(@zonefile)
       zone.origin.should eql('example.com.')
+    end
+
+    it "should set the zone variables correctly" do
+      zone = DNS::Zonefile.parse(@zonefile)
+      zone.variables['TTL'].should eql('86400')
+      zone.variables['ORIGIN'].should eql('example.com.')
     end
 
     it "should set the SOA correctly" do

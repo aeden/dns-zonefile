@@ -1,6 +1,17 @@
 grammar Zonefile
   rule zone
-    (space / comment)* soa (resource_record / comment / space)* {
+    (variable / space / comment)* soa (resource_record / comment / space)* {
+      def variables
+        @variables ||= begin
+          raw = elements[0].elements.select { |e| e.to_s =~ /^\$/ }
+          variables = {}
+          raw.each do |e|
+            variables[e.name.text_value.to_s] = e.value.text_value.to_s
+          end
+          variables
+        end
+      end
+
       def origin
         soa.origin.host.to_s
       end
@@ -11,6 +22,14 @@ grammar Zonefile
 
       def rr
         elements[-1].elements.select { |e| e.to_s !~ /\A\s*(;.*)?\z|\A\z/; }
+      end
+    }
+  end
+
+  rule variable
+    "$" name:([a-zA-Z0-9]+) space value:([a-zA-Z0-9\.\-]+) space? comment? {
+      def to_s
+        "$#{name.text_value.to_s} #{value.text_value.to_s}"
       end
     }
   end
