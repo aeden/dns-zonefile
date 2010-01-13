@@ -231,7 +231,11 @@ grammar Zonefile
   rule host
     (([a-zA-Z0-9\-\.])+ / "@"?) {
       def zone
-        parent.parent.parent.parent
+        p = parent
+        while p.respond_to?(:parent) && p.parent
+          p = p.parent
+        end
+        p
       end
 
       def to_s
@@ -239,7 +243,11 @@ grammar Zonefile
         when text_value =~ /\.$/
           text_value
         when text_value == "@" || text_value == ""
-          zone.origin.to_s
+          if parent == zone.soa.origin
+            zone.variables['ORIGIN']
+          else
+            zone.origin.to_s
+          end
         else
           text_value + '.' + zone.origin.to_s
         end

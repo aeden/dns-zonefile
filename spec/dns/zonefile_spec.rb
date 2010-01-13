@@ -26,7 +26,7 @@ describe "DNS::Zonefile" do
 ; Hi! I'm an example zonefile.
 $ORIGIN example.com.
 $TTL 86400; expire in 1 day.
-example.com.  IN  SOA  ns.example.com. hostmaster.example.com. (
+@             IN  SOA  ns.example.com. hostmaster.example.com. (
               2007120710 ; serial number of this zone file
               1d         ; slave refresh (1 day)
               1d         ; slave retry time in case of a problem (1 day)
