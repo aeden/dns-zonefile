@@ -5,3 +5,4 @@
 * Output the zone object-graph as a zone string.
 * Should this support sub-types of TXT records - should we recognise 
   SPF records as special TXT records or are these just TXT records?
+* Allow comparison of resource records and zones for checking equality.
