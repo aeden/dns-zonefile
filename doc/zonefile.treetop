@@ -1,6 +1,6 @@
 grammar Zonefile
   rule zone
-    (variable / space / comment)* soa (resource_record / comment / space)* {
+    (variable / space_or_break / comment)* soa (resource_record / variable / comment / space / linebreak)* {
       def variables
         @variables ||= begin
           raw = elements[0].elements.select { |e| e.to_s =~ /^\$/ }
@@ -21,7 +21,13 @@ grammar Zonefile
       end
 
       def rr
-        elements[-1].elements.select { |e| e.to_s !~ /\A\s*(;.*)?\z|\A\z/; }
+        elements[-1].elements.select { |e| e.to_s !~ /\A\s*([;$].*)?\z|\A\z/; }
+      end
+      
+      def entries
+        elements[0].elements.select { |e| e.to_s !~ /\A\s*(;.*)?\z|\A\z/; } +
+          [soa] +
+          elements[-1].elements.select { |e| e.to_s !~ /\A\s*(;.*)?\z|\A\z/; }
       end
     }
   end
@@ -31,25 +37,41 @@ grammar Zonefile
       def to_s
         "$#{name.text_value.to_s} #{value.text_value.to_s}"
       end
+
+      def parse_type ; :variable ; end
     }
   end
 
   rule soa
-    origin space zone_type space "SOA" space ns space rp space "(" space* serial space refresh space retry space expiry space ttl space* ")" {
+    origin space ttl klass "SOA" space ns space rp space "(" space_or_break* serial space_or_break refresh space_or_break reretry space_or_break expiry space_or_break nxttl space_or_break* ")" {
       def to_s
-        text_value
+        "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{serial} #{refresh} #{reretry} #{expiry} #{nxttl})"
       end
+      
+      def parse_type ; :soa ; end
     }
   end
 
   rule resource_record
-    space? record:(a_record / cname_record / mx_record / ns_record) space? comment? {
+    record:(a_record / aaaa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / txt_record) space* comment? linebreak {
+      def zone
+        p = parent
+        while p.respond_to?(:parent) && p.parent
+          p = p.parent
+        end
+        p
+      end
+      
       def to_s
         text_value
       end
 
       def record_type
-        record.elements[2].text_value
+        record.elements[4].text_value
+      end
+      
+      def ttl
+        record.ttl || zone.variables['TTL'].to_i
       end
 
       def method_missing(method_name, *args)
@@ -61,13 +83,15 @@ grammar Zonefile
       def respond_to?(method_name)
         super || record.respond_to?(method_name)
       end
+
+      def parse_type ; :record ; end
     }
   end
 
   rule a_record
-    host space "A" space ip_address {
+    host space ttl klass "A" space ip_address {
       def to_s
-        text_value
+        "#{host} #{ttl} #{klass} A #{ip_address}"
       end
     }
   end
@@ -79,27 +103,83 @@ grammar Zonefile
       end
     }
   end
+  
+  rule aaaa_record
+    host space ttl klass "AAAA" space ip_address:ip6_address {
+      def to_s
+        "#{host} #{ttl} #{klass} AAAA #{ip_address}"
+      end
+    }
+  end
+  
+  rule ip6_address
+    [\da-fA-F:.] 2..39 {
+      def to_s
+        text_value.downcase
+      end
+    }
+  end
 
   rule cname_record
-    alias:host space "CNAME" space host {
+    host space ttl klass "CNAME" space target:host {
       def to_s
-        text_value
+        "#{host} #{ttl} #{klass} CNAME #{target}"
       end
     }
   end
 
   rule mx_record
-    host space "MX" space priority:integer space exchanger:host {
+    host space ttl klass "MX" space priority:integer space exchanger:host {
       def to_s
-        text_value
+        "#{host} #{ttl} #{klass} MX #{priority} #{exchanger}"
+      end
+    }
+  end
+  
+  rule naptr_record
+    host space ttl klass "NAPTR" space data {
+      def to_s
+        "#{host} #{ttl} #{klass} NAPTR #{data}"
       end
     }
   end
 
   rule ns_record
-    host space "NS" space nameserver:host {
+    host space ttl klass "NS" space nameserver:host {
       def to_s
-        text_value
+        "#{host} #{ttl} #{klass} NS #{nameserver}"
+      end
+    }
+  end
+
+  rule ptr_record
+    host space ttl klass "PTR" space target:host {
+      def to_s
+        "#{host} #{ttl} #{klass} PTR #{target}"
+      end
+    }
+  end
+
+  rule srv_record
+    host space ttl klass "SRV" space priority:integer space weight:integer space port:integer space target:host {
+      def to_s
+        "#{host} #{ttl} #{klass} SRV #{priority} #{weight} #{port} #{target}"
+      end
+    }
+  end
+  
+  rule spf_record
+    host space ttl klass "SPF" space data:txt_data {
+      def to_s
+        "#{host} #{ttl} #{klass} SPF #{data}"
+      end
+    }
+  end
+  
+  rule txt_record
+    host space ttl klass "TXT" space data:txt_data {
+      def to_s
+        "#{host} #{ttl} #{klass} TXT #{data}"
       end
     }
   end
@@ -107,12 +187,28 @@ grammar Zonefile
   rule origin
     host comment* {
       def to_s
-        text_value
+        "#{host}"
       end
     }
   end
 
   rule space
+    [ \t]+ {
+      def to_s
+        text_value
+      end
+    }
+  end
+  
+  rule linebreak
+    [\n\r]+ {
+      def to_s
+        ''
+      end
+    }
+  end
+  
+  rule space_or_break
     [\s]+ {
       def to_s
         text_value
@@ -120,18 +216,18 @@ grammar Zonefile
     }
   end
 
-  rule zone_type
-    "IN" {
+  rule klass
+    (("IN" space) / '') {
       def to_s
-        text_value
+        text_value.strip
       end
     }
   end
-
+  
   rule comment
-    space* ";" [^\n]+ {
+    space* ";" [^\n\r]* {
       def to_s
-        text_value
+        text_value.strip
       end
     }
   end
@@ -139,11 +235,12 @@ grammar Zonefile
   rule ns
     host comment* {
       def to_s
-        text_value
+        "#{host}"
       end
     }
   end
 
+  # fixme: same as host, except also allow \. -- eg: firstname\.lastname.domain.com
   rule rp
     ([a-zA-Z0-9\-]+ ".")+ {
       def to_s
@@ -157,6 +254,9 @@ grammar Zonefile
       def to_i
         integer.to_i
       end
+      def to_s
+        "#{to_i}"
+      end
     }
   end
 
@@ -167,15 +267,7 @@ grammar Zonefile
       end
 
       def to_i
-        multipliers = {
-          ""  => 1,
-          "h" => 60 * 60,
-          "d" => 60 * 60 * 24,
-          "w" => 60 * 60 * 24 * 7,
-          "m" => 60 * 60 * 24 * 7 * 4,
-          "y" => 60 * 60 * 24 * 7 * 4 * 52
-        }
-        multipliers[time_multiplier.to_s] * integer.to_i
+        time_multiplier.to_i * integer.to_i
       end
     }
   end
@@ -185,6 +277,9 @@ grammar Zonefile
       def to_i
         time_interval.to_i
       end
+      def to_s
+        time_interval.to_s
+      end
     }
   end
 
@@ -193,21 +288,37 @@ grammar Zonefile
       def to_i
         text_value.to_i
       end
-    }
-  end
-
-  rule time_multiplier
-    ("h" / "d" / "w" / "m" / "y" / "") {
       def to_s
-        text_value
+        "#{to_i}"
       end
     }
   end
 
-  rule retry
+  rule time_multiplier
+    ( 's' / 'S' / 'm' / 'M' / 'h' / 'H' / 'd' / 'D' / 'w' / 'W' / '' ) {
+      def to_s
+        text_value
+      end
+      def to_i
+        case text_value.downcase
+          when 'm' : 60
+          when 'h' : 60 * 60
+          when 'd' : 60 * 60 * 24
+          when 'w' : 60 * 60 * 24 * 7
+          else
+            1
+        end
+      end
+    }
+  end
+
+  rule reretry
     time_interval comment* {
       def to_i
         time_interval.to_i
+      end
+      def to_s
+        time_interval.to_s
       end
     }
   end
@@ -217,40 +328,61 @@ grammar Zonefile
       def to_i
         time_interval.to_i
       end
+      def to_s
+        time_interval.to_s
+      end
     }
   end
 
-  rule ttl
+  rule nxttl
     time_interval comment* {
       def to_i
         time_interval.to_i
+      end
+      def to_s
+        time_interval.to_s
+      end
+    }
+  end
+  
+  rule ttl
+    ((time_interval space) / '') {
+      def to_i
+        respond_to?(:time_interval) ? time_interval.to_i : nil
+      end
+      def to_s
+        respond_to?(:time_interval) ? time_interval.to_s : ''
       end
     }
   end
 
   rule host
-    (([a-zA-Z0-9\-\.])+ / "@"?) {
-      def zone
-        p = parent
-        while p.respond_to?(:parent) && p.parent
-          p = p.parent
-        end
-        p
-      end
-
+    ( ([*a-zA-Z0-9\-\._]+) / "@" / ' ' / "\t" ) {
       def to_s
-        case
-        when text_value =~ /\.$/
+        case text_value
+        when /\.$/
           text_value
-        when text_value == "@" || text_value == ""
-          if parent == zone.soa.origin
-            zone.variables['ORIGIN']
-          else
-            zone.origin.to_s
-          end
+        when "@", /\s/
+          text_value
         else
-          text_value + '.' + zone.origin.to_s
+          text_value + '.@'
         end
+      end
+    }
+  end
+
+  rule data
+    [^;\n\r]+ {
+      def to_s
+        text_value.strip
+      end
+    }
+  end
+  
+  rule txt_data
+    '"' ('\\"' / !'"' [^\n\r])* '"' (space '"' ('\\"' / !'"' [^\n\r])* '"')* {
+      def to_s
+        text_value
       end
     }
   end
