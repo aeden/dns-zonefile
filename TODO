@@ -1,8 +1,4 @@
-* Allow empty host strings which expand to the zone origin eg:
-    [spaces] MX 100 mail4
-    -> example.com. MX 100 mail4.example.com.
 * Support more record types: http://www.dns.net/dnsrd/rr.html
 * Output the zone object-graph as a zone string.
-* Should this support sub-types of TXT records - should we recognise 
-  SPF records as special TXT records or are these just TXT records?
 * Allow comparison of resource records and zones for checking equality.
+* Allow unqualified ns and rp in SOA
