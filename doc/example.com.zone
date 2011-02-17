@@ -1,0 +1,60 @@
+; Hi! I'm an example zonefile.
+$ORIGIN example.com.
+$TTL 86400; expire in 1 day.
+@             IN  SOA  ns.example.com. hostmaster.example.com. (
+              2007120710 ; serial number of this zone file
+              1d         ; slave refresh (1 day)
+              1d         ; slave retry time in case of a problem (1 day)
+              4W         ; slave expiration time (4 weeks)
+              3600       ; minimum caching time in case of failed lookups (1 hour)
+              )
+; That's the SOA part done.
+
+; Next comment line has nothing after the semi-colon.
+;
+
+; Let's start the resource records.
+example.com.  NS    ns                    ; ns.example.com is the nameserver for example.com
+example.com.  NS    ns.somewhere.com.     ; ns.somewhere.com is a backup nameserver for example.com
+example.com.  A     10.0.0.1              ; ip address for "example.com"
+@             A     10.0.0.11             ; secondary ip for "example.com"
+              A     10.0.0.12             ; tertiary ip for "example.com"
+ns            A     10.0.0.2              ; ip address for "ns.example.com"
+              A     10.0.0.21             ; secondary ip for "ns.example.com"
+*             A     10.0.0.100            ; wildcard
+*.sub         A     10.0.0.101            ; subdomain wildcard
+with-class   IN  A   10.0.0.3             ; record that includes the class type of IN
+with-ttl  60     A   10.0.0.5             ; with a specified TTL
+ttl-class 60 IN  A   10.0.0.6             ; with TTL and class type
+www           CNAME ns                    ; "www.example.com" is an alias for "ns.example.com"
+wwwtest       CNAME www                   ; "wwwtest.example.com" is another alias for "www.example.com"
+www2          CNAME ns.example.com.       ; yet another alias, with FQDN target
+
+; Email... that'll be fun then
+example.com.  MX    10 mail.example.com.  ; mail.example.com is the mailserver for example.com
+@             MX    20 mail2.example.com. ; Similar to above line, but using "@" to say "use $ORIGIN"
+@             MX    50 mail3              ; Similar to above line, but using a host within this domain
+
+@             AAAA  2001:db8:a::1         ; IPv6, lowercase
+ns            AAAA  2001:DB8:B::1         ; IPv6, uppercase
+mail          AAAA  2001:db8:c::10.0.0.4  ; IPv6, with trailing IPv4-type address
+
+sip           NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; NAPTR record
+sip2          NAPTR 100 10 "" "" "/urn:cid:.+@([^\.]+\.)(.*)$/\2/i" .     ; another one
+
+_xmpp-server._tcp   SRV   5 0 5269 xmpp-server.l.google.com.  ; SRV record
+
+; TXT record, with embedded semicolons
+_domainkey    TXT   "v=DKIM1\;g=*\;k=rsa\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"
+
+@             TXT   "some other \"message\" goes here" ; embedded quotes
+long          TXT   "a multi-segment TXT record" "usually used for really long TXT records" "since each segment can only span 255 chars"
+@             SPF   "v=spf1 a a:other.domain.com ~all"
+
+45        IN   PTR   @
+
+$ORIGIN test.example.com.
+$TTL 3600; expire in 1 day.
+@             A     10.1.0.1              ; Test with alternate origin
+              MX    10  mail.example.com.
+www           A     10.1.0.2              ; www.test.example.com.
