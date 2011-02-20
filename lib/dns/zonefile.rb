@@ -45,16 +45,16 @@ module DNS
           @records << SOA.new(@vars, e)
         when :record
           case e.record_type
-          when 'A'      : @records << A.new(@vars, e)
-          when 'AAAA'   : @records << AAAA.new(@vars, e)
-          when 'CNAME'  : @records << CNAME.new(@vars, e)
-          when 'MX'     : @records << MX.new(@vars, e)
-          when 'NAPTR'  : @records << NAPTR.new(@vars, e)
-          when 'NS'     : @records << NS.new(@vars, e)
-          when 'PTR'    : @records << PTR.new(@vars, e)
-          when 'SRV'    : @records << SRV.new(@vars, e)
-          when 'SPF'    : @records << SPF.new(@vars, e)
-          when 'TXT'    : @records << TXT.new(@vars, e)
+          when 'A'      then @records << A.new(@vars, e)
+          when 'AAAA'   then @records << AAAA.new(@vars, e)
+          when 'CNAME'  then @records << CNAME.new(@vars, e)
+          when 'MX'     then @records << MX.new(@vars, e)
+          when 'NAPTR'  then @records << NAPTR.new(@vars, e)
+          when 'NS'     then @records << NS.new(@vars, e)
+          when 'PTR'    then @records << PTR.new(@vars, e)
+          when 'SRV'    then @records << SRV.new(@vars, e)
+          when 'SPF'    then @records << SPF.new(@vars, e)
+          when 'TXT'    then @records << TXT.new(@vars, e)
           else
             raise UnknownRecordType, "Unknown record type: #{e.record_type}"
           end

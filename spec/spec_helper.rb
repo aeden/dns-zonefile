@@ -1,2 +1,2 @@
-require 'spec'
+require 'rspec'
 require 'dns/zonefile'

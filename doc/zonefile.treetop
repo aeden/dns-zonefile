@@ -301,10 +301,10 @@ grammar Zonefile
       end
       def to_i
         case text_value.downcase
-          when 'm' : 60
-          when 'h' : 60 * 60
-          when 'd' : 60 * 60 * 24
-          when 'w' : 60 * 60 * 24 * 7
+          when 'm' then 60
+          when 'h' then 60 * 60
+          when 'd' then 60 * 60 * 24
+          when 'w' then 60 * 60 * 24 * 7
           else
             1
         end
