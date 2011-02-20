@@ -317,4 +317,26 @@ ZONE
       }.should_not be_nil
     end
   end
+
+  describe "parsing an SOA without parens" do
+    before(:each) do
+      @zonefile =<<-ZONE
+example.com.	86400	IN	SOA	ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+ZONE
+    end
+
+    it "should parse the SOA record correctly" do
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      soa.klass.should eql('IN')
+      soa.ttl.should eql(86400)
+      soa.nameserver.should eql('ns0.example.com.')
+      soa.responsible_party.should eql('hostmaster.example.com.')
+      soa.serial.should eql(2006010558)
+      soa.refresh_time.should eql(43200)
+      soa.retry_time.should eql(3600)
+      soa.expiry_time.should eql(1209600)
+      soa.nxttl.should eql(180)
+    end
+  end
 end
