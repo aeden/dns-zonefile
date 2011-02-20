@@ -380,7 +380,7 @@ grammar Zonefile
   end
   
   rule txt_data
-    '"' ('\\"' / !'"' [^\n\r])* '"' (space '"' ('\\"' / !'"' [^\n\r])* '"')* {
+    '"'? ('\\"' / !'"' [^\n\r])* '"'? (space '"' ('\\"' / !'"' [^\n\r])* '"')* {
       def to_s
         text_value
       end

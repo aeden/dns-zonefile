@@ -3081,186 +3081,196 @@ module DNS
 	
 	    i0, s0 = index, []
 	    if has_terminal?('"', false, index)
-	      r1 = instantiate_node(SyntaxNode,input, index...(index + 1))
+	      r2 = instantiate_node(SyntaxNode,input, index...(index + 1))
 	      @index += 1
 	    else
 	      terminal_parse_failure('"')
-	      r1 = nil
+	      r2 = nil
+	    end
+	    if r2
+	      r1 = r2
+	    else
+	      r1 = instantiate_node(SyntaxNode,input, index...index)
 	    end
 	    s0 << r1
 	    if r1
-	      s2, i2 = [], index
+	      s3, i3 = [], index
 	      loop do
-	        i3 = index
+	        i4 = index
 	        if has_terminal?('\\"', false, index)
-	          r4 = instantiate_node(SyntaxNode,input, index...(index + 2))
+	          r5 = instantiate_node(SyntaxNode,input, index...(index + 2))
 	          @index += 2
 	        else
 	          terminal_parse_failure('\\"')
-	          r4 = nil
+	          r5 = nil
 	        end
-	        if r4
-	          r3 = r4
+	        if r5
+	          r4 = r5
 	        else
-	          i5, s5 = index, []
-	          i6 = index
+	          i6, s6 = index, []
+	          i7 = index
 	          if has_terminal?('"', false, index)
-	            r7 = instantiate_node(SyntaxNode,input, index...(index + 1))
+	            r8 = instantiate_node(SyntaxNode,input, index...(index + 1))
 	            @index += 1
 	          else
 	            terminal_parse_failure('"')
+	            r8 = nil
+	          end
+	          if r8
 	            r7 = nil
-	          end
-	          if r7
-	            r6 = nil
 	          else
-	            @index = i6
-	            r6 = instantiate_node(SyntaxNode,input, index...index)
+	            @index = i7
+	            r7 = instantiate_node(SyntaxNode,input, index...index)
 	          end
-	          s5 << r6
-	          if r6
+	          s6 << r7
+	          if r7
 	            if has_terminal?('\G[^\\n\\r]', true, index)
-	              r8 = true
+	              r9 = true
 	              @index += 1
 	            else
-	              r8 = nil
+	              r9 = nil
 	            end
-	            s5 << r8
+	            s6 << r9
 	          end
-	          if s5.last
-	            r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
-	            r5.extend(TxtData0)
+	          if s6.last
+	            r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
+	            r6.extend(TxtData0)
 	          else
-	            @index = i5
-	            r5 = nil
+	            @index = i6
+	            r6 = nil
 	          end
-	          if r5
-	            r3 = r5
+	          if r6
+	            r4 = r6
 	          else
-	            @index = i3
-	            r3 = nil
+	            @index = i4
+	            r4 = nil
 	          end
 	        end
-	        if r3
-	          s2 << r3
+	        if r4
+	          s3 << r4
 	        else
 	          break
 	        end
 	      end
-	      r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
-	      s0 << r2
-	      if r2
+	      r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+	      s0 << r3
+	      if r3
 	        if has_terminal?('"', false, index)
-	          r9 = instantiate_node(SyntaxNode,input, index...(index + 1))
+	          r11 = instantiate_node(SyntaxNode,input, index...(index + 1))
 	          @index += 1
 	        else
 	          terminal_parse_failure('"')
-	          r9 = nil
+	          r11 = nil
 	        end
-	        s0 << r9
-	        if r9
-	          s10, i10 = [], index
+	        if r11
+	          r10 = r11
+	        else
+	          r10 = instantiate_node(SyntaxNode,input, index...index)
+	        end
+	        s0 << r10
+	        if r10
+	          s12, i12 = [], index
 	          loop do
-	            i11, s11 = index, []
-	            r12 = _nt_space
-	            s11 << r12
-	            if r12
+	            i13, s13 = index, []
+	            r14 = _nt_space
+	            s13 << r14
+	            if r14
 	              if has_terminal?('"', false, index)
-	                r13 = instantiate_node(SyntaxNode,input, index...(index + 1))
+	                r15 = instantiate_node(SyntaxNode,input, index...(index + 1))
 	                @index += 1
 	              else
 	                terminal_parse_failure('"')
-	                r13 = nil
+	                r15 = nil
 	              end
-	              s11 << r13
-	              if r13
-	                s14, i14 = [], index
+	              s13 << r15
+	              if r15
+	                s16, i16 = [], index
 	                loop do
-	                  i15 = index
+	                  i17 = index
 	                  if has_terminal?('\\"', false, index)
-	                    r16 = instantiate_node(SyntaxNode,input, index...(index + 2))
+	                    r18 = instantiate_node(SyntaxNode,input, index...(index + 2))
 	                    @index += 2
 	                  else
 	                    terminal_parse_failure('\\"')
-	                    r16 = nil
+	                    r18 = nil
 	                  end
-	                  if r16
-	                    r15 = r16
+	                  if r18
+	                    r17 = r18
 	                  else
-	                    i17, s17 = index, []
-	                    i18 = index
+	                    i19, s19 = index, []
+	                    i20 = index
 	                    if has_terminal?('"', false, index)
-	                      r19 = instantiate_node(SyntaxNode,input, index...(index + 1))
+	                      r21 = instantiate_node(SyntaxNode,input, index...(index + 1))
 	                      @index += 1
 	                    else
 	                      terminal_parse_failure('"')
+	                      r21 = nil
+	                    end
+	                    if r21
+	                      r20 = nil
+	                    else
+	                      @index = i20
+	                      r20 = instantiate_node(SyntaxNode,input, index...index)
+	                    end
+	                    s19 << r20
+	                    if r20
+	                      if has_terminal?('\G[^\\n\\r]', true, index)
+	                        r22 = true
+	                        @index += 1
+	                      else
+	                        r22 = nil
+	                      end
+	                      s19 << r22
+	                    end
+	                    if s19.last
+	                      r19 = instantiate_node(SyntaxNode,input, i19...index, s19)
+	                      r19.extend(TxtData1)
+	                    else
+	                      @index = i19
 	                      r19 = nil
 	                    end
 	                    if r19
-	                      r18 = nil
-	                    else
-	                      @index = i18
-	                      r18 = instantiate_node(SyntaxNode,input, index...index)
-	                    end
-	                    s17 << r18
-	                    if r18
-	                      if has_terminal?('\G[^\\n\\r]', true, index)
-	                        r20 = true
-	                        @index += 1
-	                      else
-	                        r20 = nil
-	                      end
-	                      s17 << r20
-	                    end
-	                    if s17.last
-	                      r17 = instantiate_node(SyntaxNode,input, i17...index, s17)
-	                      r17.extend(TxtData1)
+	                      r17 = r19
 	                    else
 	                      @index = i17
 	                      r17 = nil
 	                    end
-	                    if r17
-	                      r15 = r17
-	                    else
-	                      @index = i15
-	                      r15 = nil
-	                    end
 	                  end
-	                  if r15
-	                    s14 << r15
+	                  if r17
+	                    s16 << r17
 	                  else
 	                    break
 	                  end
 	                end
-	                r14 = instantiate_node(SyntaxNode,input, i14...index, s14)
-	                s11 << r14
-	                if r14
+	                r16 = instantiate_node(SyntaxNode,input, i16...index, s16)
+	                s13 << r16
+	                if r16
 	                  if has_terminal?('"', false, index)
-	                    r21 = instantiate_node(SyntaxNode,input, index...(index + 1))
+	                    r23 = instantiate_node(SyntaxNode,input, index...(index + 1))
 	                    @index += 1
 	                  else
 	                    terminal_parse_failure('"')
-	                    r21 = nil
+	                    r23 = nil
 	                  end
-	                  s11 << r21
+	                  s13 << r23
 	                end
 	              end
 	            end
-	            if s11.last
-	              r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
-	              r11.extend(TxtData2)
+	            if s13.last
+	              r13 = instantiate_node(SyntaxNode,input, i13...index, s13)
+	              r13.extend(TxtData2)
 	            else
-	              @index = i11
-	              r11 = nil
+	              @index = i13
+	              r13 = nil
 	            end
-	            if r11
-	              s10 << r11
+	            if r13
+	              s12 << r13
 	            else
 	              break
 	            end
 	          end
-	          r10 = instantiate_node(SyntaxNode,input, i10...index, s10)
-	          s0 << r10
+	          r12 = instantiate_node(SyntaxNode,input, i12...index, s12)
+	          s0 << r12
 	        end
 	      end
 	    end

@@ -76,6 +76,7 @@ _domainkey    TXT   "v=DKIM1\\;g=*\\;k=rsa\\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmf
 
 @             TXT   "some other \\"message\\" goes here" ; embedded quotes
 long          TXT   "a multi-segment TXT record" "usually used for really long TXT records" "since each segment can only span 255 chars"
+unquoted      TXT   some text data
 @             SPF   "v=spf1 a a:other.domain.com ~all"
 
 45        IN   PTR   @
@@ -121,7 +122,7 @@ ZONE
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      zone.rr.size.should be(32)
+      zone.rr.size.should be(33)
     end
 
     it "should build the correct NS records" do
@@ -277,7 +278,7 @@ ZONE
     it "should build the correct TXT records" do
       zone = DNS::Zonefile.load(@zonefile)
       txt_records = zone.records_of DNS::TXT
-      txt_records.size.should be(3)
+      txt_records.size.should be(4)
 
       txt_records.detect { |r|
         r.host == "_domainkey.example.com." && r.data == '"v=DKIM1\;g=*\;k=rsa\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"'
@@ -289,6 +290,10 @@ ZONE
 
       txt_records.detect { |r|
         r.host == "long.example.com." && r.data == '"a multi-segment TXT record" "usually used for really long TXT records" "since each segment can only span 255 chars"'
+      }.should_not be_nil
+
+      txt_records.detect { |r|
+        r.host == "unquoted.example.com." && r.data == 'some text data'
       }.should_not be_nil
     end
 
