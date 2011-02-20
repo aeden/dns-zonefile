@@ -43,7 +43,7 @@ grammar Zonefile
   end
 
   rule soa
-    origin space ttl klass "SOA" space ns space rp space "(" space_or_break* serial space_or_break refresh space_or_break reretry space_or_break expiry space_or_break nxttl space_or_break* ")" {
+    origin space ttl klass "SOA" space ns space rp space "("? space_or_break* serial space_or_break refresh space_or_break reretry space_or_break expiry space_or_break nxttl space_or_break* ")"? {
       def to_s
         "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{serial} #{refresh} #{reretry} #{expiry} #{nxttl})"
       end

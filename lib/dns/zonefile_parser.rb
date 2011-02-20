@@ -404,73 +404,83 @@ module DNS
 	                      s0 << r10
 	                      if r10
 	                        if has_terminal?("(", false, index)
-	                          r11 = instantiate_node(SyntaxNode,input, index...(index + 1))
+	                          r12 = instantiate_node(SyntaxNode,input, index...(index + 1))
 	                          @index += 1
 	                        else
 	                          terminal_parse_failure("(")
-	                          r11 = nil
+	                          r12 = nil
+	                        end
+	                        if r12
+	                          r11 = r12
+	                        else
+	                          r11 = instantiate_node(SyntaxNode,input, index...index)
 	                        end
 	                        s0 << r11
 	                        if r11
-	                          s12, i12 = [], index
+	                          s13, i13 = [], index
 	                          loop do
-	                            r13 = _nt_space_or_break
-	                            if r13
-	                              s12 << r13
+	                            r14 = _nt_space_or_break
+	                            if r14
+	                              s13 << r14
 	                            else
 	                              break
 	                            end
 	                          end
-	                          r12 = instantiate_node(SyntaxNode,input, i12...index, s12)
-	                          s0 << r12
-	                          if r12
-	                            r14 = _nt_serial
-	                            s0 << r14
-	                            if r14
-	                              r15 = _nt_space_or_break
-	                              s0 << r15
-	                              if r15
-	                                r16 = _nt_refresh
-	                                s0 << r16
-	                                if r16
-	                                  r17 = _nt_space_or_break
-	                                  s0 << r17
-	                                  if r17
-	                                    r18 = _nt_reretry
-	                                    s0 << r18
-	                                    if r18
-	                                      r19 = _nt_space_or_break
-	                                      s0 << r19
-	                                      if r19
-	                                        r20 = _nt_expiry
-	                                        s0 << r20
-	                                        if r20
-	                                          r21 = _nt_space_or_break
-	                                          s0 << r21
-	                                          if r21
-	                                            r22 = _nt_nxttl
-	                                            s0 << r22
-	                                            if r22
-	                                              s23, i23 = [], index
+	                          r13 = instantiate_node(SyntaxNode,input, i13...index, s13)
+	                          s0 << r13
+	                          if r13
+	                            r15 = _nt_serial
+	                            s0 << r15
+	                            if r15
+	                              r16 = _nt_space_or_break
+	                              s0 << r16
+	                              if r16
+	                                r17 = _nt_refresh
+	                                s0 << r17
+	                                if r17
+	                                  r18 = _nt_space_or_break
+	                                  s0 << r18
+	                                  if r18
+	                                    r19 = _nt_reretry
+	                                    s0 << r19
+	                                    if r19
+	                                      r20 = _nt_space_or_break
+	                                      s0 << r20
+	                                      if r20
+	                                        r21 = _nt_expiry
+	                                        s0 << r21
+	                                        if r21
+	                                          r22 = _nt_space_or_break
+	                                          s0 << r22
+	                                          if r22
+	                                            r23 = _nt_nxttl
+	                                            s0 << r23
+	                                            if r23
+	                                              s24, i24 = [], index
 	                                              loop do
-	                                                r24 = _nt_space_or_break
-	                                                if r24
-	                                                  s23 << r24
+	                                                r25 = _nt_space_or_break
+	                                                if r25
+	                                                  s24 << r25
 	                                                else
 	                                                  break
 	                                                end
 	                                              end
-	                                              r23 = instantiate_node(SyntaxNode,input, i23...index, s23)
-	                                              s0 << r23
-	                                              if r23
+	                                              r24 = instantiate_node(SyntaxNode,input, i24...index, s24)
+	                                              s0 << r24
+	                                              if r24
 	                                                if has_terminal?(")", false, index)
-	                                                  r25 = instantiate_node(SyntaxNode,input, index...(index + 1))
+	                                                  r27 = instantiate_node(SyntaxNode,input, index...(index + 1))
 	                                                  @index += 1
 	                                                else
 	                                                  terminal_parse_failure(")")
-	                                                  r25 = nil
+	                                                  r27 = nil
 	                                                end
-	                                                s0 << r25
+	                                                if r27
+	                                                  r26 = r27
+	                                                else
+	                                                  r26 = instantiate_node(SyntaxNode,input, index...index)
+	                                                end
+	                                                s0 << r26
 	                                              end
 	                                            end
 	                                          end
