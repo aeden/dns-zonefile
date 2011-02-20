@@ -614,8 +614,13 @@ module DNS
 	                      if r11
 	                        r1 = r11
 	                      else
-	                        @index = i1
-	                        r1 = nil
+	                        r12 = _nt_soa_record
+	                        if r12
+	                          r1 = r12
+	                        else
+	                          @index = i1
+	                          r1 = nil
+	                        end
 	                      end
 	                    end
 	                  end
@@ -628,28 +633,28 @@ module DNS
 	    end
 	    s0 << r1
 	    if r1
-	      s12, i12 = [], index
+	      s13, i13 = [], index
 	      loop do
-	        r13 = _nt_space
-	        if r13
-	          s12 << r13
+	        r14 = _nt_space
+	        if r14
+	          s13 << r14
 	        else
 	          break
 	        end
 	      end
-	      r12 = instantiate_node(SyntaxNode,input, i12...index, s12)
-	      s0 << r12
-	      if r12
-	        r15 = _nt_comment
-	        if r15
-	          r14 = r15
+	      r13 = instantiate_node(SyntaxNode,input, i13...index, s13)
+	      s0 << r13
+	      if r13
+	        r16 = _nt_comment
+	        if r16
+	          r15 = r16
 	        else
-	          r14 = instantiate_node(SyntaxNode,input, index...index)
+	          r15 = instantiate_node(SyntaxNode,input, index...index)
 	        end
-	        s0 << r14
-	        if r14
-	          r16 = _nt_linebreak
-	          s0 << r16
+	        s0 << r15
+	        if r15
+	          r17 = _nt_linebreak
+	          s0 << r17
 	        end
 	      end
 	    end
@@ -1511,6 +1516,128 @@ module DNS
 	    end
 	
 	    node_cache[:ptr_record][start_index] = r0
+	
+	    r0
+	  end
+	
+	  module SoaRecord0
+	    def origin
+	      elements[0]
+	    end
+	
+	    def space1
+	      elements[1]
+	    end
+	
+	    def ttl
+	      elements[2]
+	    end
+	
+	    def klass
+	      elements[3]
+	    end
+	
+	    def space2
+	      elements[5]
+	    end
+	
+	    def ns
+	      elements[6]
+	    end
+	
+	    def space3
+	      elements[7]
+	    end
+	
+	    def rp
+	      elements[8]
+	    end
+	
+	    def space4
+	      elements[9]
+	    end
+	
+	    def data
+	      elements[10]
+	    end
+	  end
+	
+	  module SoaRecord1
+	    def to_s
+	      "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{space})"
+	    end
+	  end
+	
+	  def _nt_soa_record
+	    start_index = index
+	    if node_cache[:soa_record].has_key?(index)
+	      cached = node_cache[:soa_record][index]
+	      if cached
+	        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+	        @index = cached.interval.end
+	      end
+	      return cached
+	    end
+	
+	    i0, s0 = index, []
+	    r1 = _nt_origin
+	    s0 << r1
+	    if r1
+	      r2 = _nt_space
+	      s0 << r2
+	      if r2
+	        r3 = _nt_ttl
+	        s0 << r3
+	        if r3
+	          r4 = _nt_klass
+	          s0 << r4
+	          if r4
+	            if has_terminal?("SOA", false, index)
+	              r5 = instantiate_node(SyntaxNode,input, index...(index + 3))
+	              @index += 3
+	            else
+	              terminal_parse_failure("SOA")
+	              r5 = nil
+	            end
+	            s0 << r5
+	            if r5
+	              r6 = _nt_space
+	              s0 << r6
+	              if r6
+	                r7 = _nt_ns
+	                s0 << r7
+	                if r7
+	                  r8 = _nt_space
+	                  s0 << r8
+	                  if r8
+	                    r9 = _nt_rp
+	                    s0 << r9
+	                    if r9
+	                      r10 = _nt_space
+	                      s0 << r10
+	                      if r10
+	                        r11 = _nt_data
+	                        s0 << r11
+	                      end
+	                    end
+	                  end
+	                end
+	              end
+	            end
+	          end
+	        end
+	      end
+	    end
+	    if s0.last
+	      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+	      r0.extend(SoaRecord0)
+	      r0.extend(SoaRecord1)
+	    else
+	      @index = i0
+	      r0 = nil
+	    end
+	
+	    node_cache[:soa_record][start_index] = r0
 	
 	    r0
 	  end

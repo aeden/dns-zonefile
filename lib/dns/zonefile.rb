@@ -55,6 +55,7 @@ module DNS
           when 'SRV'    then @records << SRV.new(@vars, e)
           when 'SPF'    then @records << SPF.new(@vars, e)
           when 'TXT'    then @records << TXT.new(@vars, e)
+          when 'SOA'    then ;
           else
             raise UnknownRecordType, "Unknown record type: #{e.record_type}"
           end

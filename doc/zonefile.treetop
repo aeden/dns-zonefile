@@ -53,7 +53,7 @@ grammar Zonefile
   end
 
   rule resource_record
-    record:(a_record / aaaa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / txt_record) space* comment? linebreak {
+    record:(a_record / aaaa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / txt_record / soa_record) space* comment? linebreak {
       def zone
         p = parent
         while p.respond_to?(:parent) && p.parent
@@ -156,6 +156,14 @@ grammar Zonefile
     host space ttl klass "PTR" space target:host {
       def to_s
         "#{host} #{ttl} #{klass} PTR #{target}"
+      end
+    }
+  end
+
+  rule soa_record
+    origin space ttl klass "SOA" space ns space rp space data {
+      def to_s
+        "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{space})"
       end
     }
   end

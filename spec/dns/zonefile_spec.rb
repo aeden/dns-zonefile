@@ -322,6 +322,9 @@ ZONE
     before(:each) do
       @zonefile =<<-ZONE
 example.com.	86400	IN	SOA	ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+example.com.    3600    IN      A       1.2.3.4
+example.com.	86400	IN	SOA	ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+
 ZONE
     end
 
