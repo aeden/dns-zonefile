@@ -4,8 +4,6 @@ module DNS
   class ParsingError < RuntimeError ; end
   class UnknownRecordType < RuntimeError ; end
   class Zonefile
-    VERSION = "0.5.0"
-
     attr_reader :origin, :soa
 
     class << self

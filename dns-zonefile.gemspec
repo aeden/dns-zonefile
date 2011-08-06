@@ -1,5 +1,5 @@
 $:.unshift File.dirname(__FILE__) + '/lib'
-require 'dns/zonefile'
+require 'dns/zonefile_version'
 
 spec = Gem::Specification.new do |s|
   s.name = 'dns-zonefile'
