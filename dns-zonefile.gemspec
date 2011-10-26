@@ -1,18 +1,24 @@
-$:.unshift File.dirname(__FILE__) + '/lib'
-require 'dns/zonefile_version'
+# -*- encoding: utf-8 -*-
+$:.push File.expand_path("../lib", __FILE__)
+require "dns/zonefile/version"
 
-spec = Gem::Specification.new do |s|
-  s.name = 'dns-zonefile'
-  s.version = DNS::Zonefile::VERSION
-  s.summary = "Parse and manipulate with DNS zonefiles."
-  s.description = %{Parse and manipulate with DNS zonefiles. Great for working with BIND.}
-  s.files = Dir['lib/**/*.rb'] + Dir['spec/**/*.rb']
-  s.require_path = 'lib'
-  s.autorequire = 'dns/zonefile'
-  s.has_rdoc = true
-  s.extra_rdoc_files = Dir['[A-Z]*'] + Dir['doc/**/*']
-  s.rdoc_options << '--title' <<  'DNS::Zonefile -- Work with zonefiles'
-  s.author = "Craig R Webster"
-  s.email = "craig@barkingiguana.com"
-  s.homepage = "http://barkingiguana.com/"
+Gem::Specification.new do |s|
+  s.name        = "dns-zonefile"
+  s.version     = DNS::Zonefile::VERSION
+  s.authors     = ["Craig R Webster"]
+  s.email       = ["craig@barkingiguana.com"]
+  s.homepage    = ""
+  s.summary     = %q{TODO: Write a gem summary}
+  s.description = %q{TODO: Write a gem description}
+
+  s.rubyforge_project = "dns-zonefile"
+
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.require_paths = ["lib"]
+
+  s.add_development_dependency "rspec", "= 2.6"
+  s.add_development_dependency "treetop"
+  s.add_runtime_dependency "polyglot"
 end

@@ -8,12 +8,8 @@ describe "DNS::Zonefile" do
     }.should_not raise_error
   end
 
-  it "should be version 0.5.0" do
-    DNS::Zonefile::VERSION.should eql("0.5.0")
-  end
-
-  it "should have an origin" do
-    DNS::Zonefile.new.should respond_to(:origin)
+  it "should be version 1.0.0" do
+    DNS::Zonefile::VERSION.should eql("1.0.0")
   end
 
   it "should provide a way of parsing a string" do
@@ -26,7 +22,7 @@ describe "DNS::Zonefile" do
 ; Hi! I'm an example zonefile.
 $ORIGIN example.com.
 $TTL 86400; expire in 1 day.
-$OTHER abc 
+$OTHER abc
 ; line above has spaces at the end, but no comment
 @             IN  SOA  ns.example.com. hostmaster.example.com. (
               2007120710 ; serial number of this zone file
@@ -44,7 +40,7 @@ $OTHER abc
 example.com.  NS    ns                    ; ns.example.com is the nameserver for example.com
 example.com.  NS    ns.somewhere.com.     ; ns.somewhere.com is a backup nameserver for example.com
 example.com.  A     10.0.0.1              ; ip address for "example.com". next line has spaces after the IP, but no actual comment.
-@             A     10.0.0.11             
+@             A     10.0.0.11
               A     10.0.0.12             ; tertiary ip for "example.com"
 ns            A     10.0.0.2              ; ip address for "ns.example.com"
           60  A     10.0.0.21             ; secondary ip for "ns.example.com" with TTL
@@ -84,7 +80,7 @@ unquoted      TXT   some text data
 $ORIGIN test.example.com.
 $TTL 3600; expire in 1 day.
 @             A     10.1.0.1              ; Test with alternate origin
-              MX    10  mail.example.com. 
+              MX    10  mail.example.com.
 www           A     10.1.0.2              ; www.test.example.com.
 
 ZONE
@@ -127,7 +123,7 @@ ZONE
 
     it "should build the correct NS records" do
       zone = DNS::Zonefile.load(@zonefile)
-      ns_records = zone.records_of DNS::NS
+      ns_records = zone.records_of DNS::Zonefile::NS
       ns_records.size.should be(2)
 
       ns_records.detect { |ns|
@@ -141,7 +137,7 @@ ZONE
 
     it "should build the correct A records" do
       zone = DNS::Zonefile.load(@zonefile)
-      a_records = zone.records_of DNS::A
+      a_records = zone.records_of DNS::Zonefile::A
       a_records.size.should be(12)
 
       a_records.detect { |a|
@@ -195,7 +191,7 @@ ZONE
 
     it "should build the correct CNAME records" do
       zone = DNS::Zonefile.load(@zonefile)
-      cname_records = zone.records_of DNS::CNAME
+      cname_records = zone.records_of DNS::Zonefile::CNAME
       cname_records.size.should be(3)
 
       cname_records.detect { |cname|
@@ -213,7 +209,7 @@ ZONE
 
     it "should build the correct MX records" do
       zone = DNS::Zonefile.load(@zonefile)
-      mx_records = zone.records_of DNS::MX
+      mx_records = zone.records_of DNS::Zonefile::MX
       mx_records.size.should be(4)
 
       mx_records.detect { |mx|
@@ -235,7 +231,7 @@ ZONE
 
     it "should build the correct AAAA records" do
       zone = DNS::Zonefile.load(@zonefile)
-      aaaa_records = zone.records_of DNS::AAAA
+      aaaa_records = zone.records_of DNS::Zonefile::AAAA
       aaaa_records.size.should be(3)
 
       aaaa_records.detect { |a|
@@ -253,7 +249,7 @@ ZONE
 
     it "should build the correct NAPTR records" do
       zone = DNS::Zonefile.load(@zonefile)
-      naptr_records = zone.records_of DNS::NAPTR
+      naptr_records = zone.records_of DNS::Zonefile::NAPTR
       naptr_records.size.should be(2)
 
       naptr_records.detect { |r|
@@ -267,17 +263,17 @@ ZONE
 
     it "should build the correct SRV records" do
       zone = DNS::Zonefile.load(@zonefile)
-      srv_records = zone.records_of DNS::SRV
+      srv_records = zone.records_of DNS::Zonefile::SRV
       srv_records.size.should be(1)
 
       srv_records.detect { |r|
         r.host == "_xmpp-server._tcp.example.com." && r.priority == 5 && r.weight == 0 && r.port == 5269 && r.target == 'xmpp-server.l.google.com.' && r.ttl == 86400
       }.should_not be_nil
     end
-    
+
     it "should build the correct TXT records" do
       zone = DNS::Zonefile.load(@zonefile)
-      txt_records = zone.records_of DNS::TXT
+      txt_records = zone.records_of DNS::Zonefile::TXT
       txt_records.size.should be(4)
 
       txt_records.detect { |r|
@@ -299,7 +295,7 @@ ZONE
 
     it "should build the correct SPF records" do
       zone = DNS::Zonefile.load(@zonefile)
-      spf_records = zone.records_of DNS::SPF
+      spf_records = zone.records_of DNS::Zonefile::SPF
       spf_records.size.should be(1)
 
       spf_records.detect { |r|
@@ -309,7 +305,7 @@ ZONE
 
     it "should build the correct PTR records" do
       zone = DNS::Zonefile.load(@zonefile)
-      ptr_records = zone.records_of DNS::PTR
+      ptr_records = zone.records_of DNS::Zonefile::PTR 
       ptr_records.size.should be(1)
 
       ptr_records.detect { |r|
