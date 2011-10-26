@@ -8,8 +8,14 @@ Gem::Specification.new do |s|
   s.authors     = ["Craig R Webster"]
   s.email       = ["craig@barkingiguana.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{Work with zonefiles (RFC 1035 section 5 and RFC 1034 section 3.6.1)}
+  s.description = %q{The format of a DNS Zonefile is defined in RFC 1035 section 5 and RFC
+1034 section 3.6.1. To anyone who's using BIND they'll look very 
+familiar.
+
+This is an attempt to use Ruby parse them into an object graph which can 
+be investigated programatically, manipulated, validated or printed into 
+some canonical form.}
 
   s.rubyforge_project = "dns-zonefile"
 
