@@ -24,7 +24,8 @@ some canonical form.}
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_developmeny_dependency "rspec", "= 2.6"
+  s.add_development_dependency "rspec", "= 2.6"
+  s.add_development_dependency "rake"
   s.add_runtime_dependency "treetop"
   s.add_runtime_dependency "polyglot"
 end
