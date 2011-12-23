@@ -249,7 +249,7 @@ grammar Zonefile
   end
 
   rule rp
-    ([a-zA-Z0-9\-\\]+ ".")+ {
+    (("\\." / [a-zA-Z0-9\-)])+ ".")+ {
       def to_s
         text_value
       end

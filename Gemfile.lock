@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dns-zonefile (1.0.0)
+    dns-zonefile (1.0.2)
       polyglot
       treetop
 

@@ -2369,11 +2369,29 @@ module DNS
           i1, s1 = index, []
           s2, i2 = [], index
           loop do
-            if has_terminal?('\G[a-zA-Z0-9\\-\\\\]', true, index)
-              r3 = true
-              @index += 1
+            i3 = index
+            if has_terminal?("\\.", false, index)
+              r4 = instantiate_node(SyntaxNode,input, index...(index + 2))
+              @index += 2
             else
-              r3 = nil
+              terminal_parse_failure("\\.")
+              r4 = nil
+            end
+            if r4
+              r3 = r4
+            else
+              if has_terminal?('\G[a-zA-Z0-9\\-)]', true, index)
+                r5 = true
+                @index += 1
+              else
+                r5 = nil
+              end
+              if r5
+                r3 = r5
+              else
+                @index = i3
+                r3 = nil
+              end
             end
             if r3
               s2 << r3
@@ -2390,13 +2408,13 @@ module DNS
           s1 << r2
           if r2
             if has_terminal?(".", false, index)
-              r4 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              r6 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure(".")
-              r4 = nil
+              r6 = nil
             end
-            s1 << r4
+            s1 << r6
           end
           if s1.last
             r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
