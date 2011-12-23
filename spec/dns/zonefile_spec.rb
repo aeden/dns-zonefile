@@ -24,7 +24,7 @@ $ORIGIN example.com.
 $TTL 86400; expire in 1 day.
 $OTHER abc
 ; line above has spaces at the end, but no comment
-@             IN  SOA  ns.example.com. hostmaster.example.com. (
+@             IN  SOA  ns.example.com. hostmaster\\.awesome.example.com. (
               2007120710 ; serial number of this zone file
               1d         ; slave refresh (1 day)
               1d         ; slave retry time in case of a problem (1 day)
@@ -108,7 +108,7 @@ ZONE
       soa.klass.should eql('IN')
       soa.ttl.should eql(86400)
       soa.nameserver.should eql('ns.example.com.')
-      soa.responsible_party.should eql('hostmaster.example.com.')
+      soa.responsible_party.should eql('hostmaster\.awesome.example.com.')
       soa.serial.should eql(2007120710)
       soa.refresh_time.should eql(86400)
       soa.retry_time.should eql(86400)
