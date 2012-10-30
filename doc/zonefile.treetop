@@ -121,7 +121,12 @@ grammar Zonefile
   end
 
   rule cname_record
-    host space ttl klass "CNAME" space target:host {
+    (
+     host space ttl klass "CNAME" space target:host /
+     host space klass ttl "CNAME" space target:host /
+     host space ttl "CNAME" space target:host /
+     host space klass "CNAME" space target:host 
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} CNAME #{target}"
       end
@@ -169,7 +174,12 @@ grammar Zonefile
   end
 
   rule srv_record
-    host space ttl klass "SRV" space priority:integer space weight:integer space port:integer space target:host {
+    (
+     host space ttl klass "SRV" space priority:integer space weight:integer space port:integer space target:host /
+     host space klass ttl "SRV" space priority:integer space weight:integer space port:integer space target:host /
+     host space ttl "SRV" space priority:integer space weight:integer space port:integer space target:host /
+     host space klass "SRV" space priority:integer space weight:integer space port:integer space target:host
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} SRV #{priority} #{weight} #{port} #{target}"
       end
@@ -249,7 +259,7 @@ grammar Zonefile
   end
 
   rule rp
-    (("\\." / [a-zA-Z0-9\-)])+ ".")+ {
+    (("\\." / [+a-zA-Z0-9\-)])+ ".")+ {
       def to_s
         text_value
       end

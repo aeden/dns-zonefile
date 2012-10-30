@@ -52,7 +52,7 @@ handled in this mode.
     puts zone.soa.nameserver
     puts zone.records[1]
     # get all MX records
-    puts zone.records_of(DNS::MX)
+    puts zone.records_of(DNS::Zonefile::MX)
 
 
 ## Authors
