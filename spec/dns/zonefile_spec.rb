@@ -73,6 +73,12 @@ unquoted      TXT   some text data
 
 45        IN   PTR   @
 
+eam 900 IN CNAME www
+eam IN 900 CNAME www
+eam IN CNAME www
+eam 900 CNAME www
+eam CNAME www
+
 $ORIGIN test.example.com.
 $TTL 3600; expire in 1 day.
 @             A     10.1.0.1              ; Test with alternate origin
@@ -114,7 +120,7 @@ ZONE
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      zone.rr.size.should be(33)
+      zone.rr.size.should be(38)
     end
 
     it "should build the correct NS records" do
@@ -188,7 +194,7 @@ ZONE
     it "should build the correct CNAME records" do
       zone = DNS::Zonefile.load(@zonefile)
       cname_records = zone.records_of DNS::Zonefile::CNAME
-      cname_records.size.should be(3)
+      cname_records.size.should be(8)
 
       cname_records.detect { |cname|
         cname.host == "www.example.com." && cname.target == "ns.example.com."
@@ -201,6 +207,18 @@ ZONE
       cname_records.detect { |cname|
         cname.host == "www2.example.com." && cname.domainname == "ns.example.com." && cname.ttl == 86400
       }.should_not be_nil
+
+     eam_records = cname_records.select { |c| c.host =~ /eam\./ }
+
+     eam_records.should have(5).records
+
+     eam_records.each { |cname|
+       cname.target.should == "www.example.com."
+     }
+
+     r = eam_records.group_by { |c| c.ttl }
+     (r[900] || []).should have(3).records
+     (r[86400] || []).should have(2).records
     end
 
     it "should build the correct MX records" do
