@@ -73,6 +73,13 @@ unquoted      TXT   some text data
 
 45        IN   PTR   @
 
+
+eam 900 IN SRV 5 0 5269 www
+eam IN 900 SRV 5 0 5269 www
+eam IN SRV 5 0 5269 www
+eam 900 SRV 5 0 5269 www
+eam SRV 5 0 5269 www
+
 eam 900 IN CNAME www
 eam IN 900 CNAME www
 eam IN CNAME www
@@ -120,7 +127,7 @@ ZONE
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      zone.rr.size.should be(38)
+      zone.rr.size.should be(43)
     end
 
     it "should build the correct NS records" do
@@ -278,11 +285,24 @@ ZONE
     it "should build the correct SRV records" do
       zone = DNS::Zonefile.load(@zonefile)
       srv_records = zone.records_of DNS::Zonefile::SRV
-      srv_records.size.should be(1)
+      srv_records.size.should be(6)
 
       srv_records.detect { |r|
         r.host == "_xmpp-server._tcp.example.com." && r.priority == 5 && r.weight == 0 && r.port == 5269 && r.target == 'xmpp-server.l.google.com.' && r.ttl == 86400
       }.should_not be_nil
+
+      eam_records = srv_records.select { |s| s.host =~ /eam\./ }
+      eam_records.should have(5).records
+      eam_records.each { |srv|
+        srv.target.should == "www.example.com."
+        srv.priority.should == 5
+        srv.port.should == 5269
+        srv.weight.should == 0
+      }
+
+      r = eam_records.group_by { |c| c.ttl }
+      (r[900] || []).should have(3).records
+      (r[86400] || []).should have(2).records
     end
 
     it "should build the correct TXT records" do
