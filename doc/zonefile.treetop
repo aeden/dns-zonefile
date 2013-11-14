@@ -33,7 +33,7 @@ grammar Zonefile
   end
 
   rule variable
-    "$" name:([a-zA-Z0-9]+) space value:([a-zA-Z0-9\.\-]+) space? comment? {
+    "$" name:([a-zA-Z0-9]+) space value:([a-zA-Z0-9\.\-_]+) space? comment? {
       def to_s
         "$#{name.text_value.to_s} #{value.text_value.to_s}"
       end

@@ -219,7 +219,7 @@ module DNS
             if r4
               s5, i5 = [], index
               loop do
-                if has_terminal?('\G[a-zA-Z0-9\\.\\-]', true, index)
+                if has_terminal?('\G[a-zA-Z0-9\\.\\-_]', true, index)
                   r6 = true
                   @index += 1
                 else
