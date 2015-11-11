@@ -397,10 +397,35 @@ grammar Zonefile
   end
   
   rule txt_data
-    '"'? ('\\"' / !'"' [^\n\r])* '"'? (space '"' ('\\"' / !'"' [^\n\r])* '"')* {
+    txt_string (space txt_data)* {
       def to_s
         text_value
       end
     }
   end
+
+  rule txt_string
+    (quoted_string / unquoted_string) {
+      def to_s
+        text_value
+      end
+    }
+  end
+
+  rule quoted_string
+    ( '"' ( '\"' / [^"] )* '"') {
+      def to_s
+        text_value
+      end
+    }
+  end
+
+  rule unquoted_string
+    [a-zA-Z0-9]+ {
+      def to_s
+        text_value
+      end
+    }
+  end
+
 end
