@@ -552,7 +552,7 @@ module DNS
         end
 
         def record_type
-          record.elements[4].text_value
+          record.record_type
         end
 
         def ttl
@@ -703,26 +703,34 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
-        def klass
+        def ttl
           elements[3]
         end
 
+        def klass
+          elements[4]
+        end
+
         def space2
-          elements[5]
+          elements[6]
         end
 
         def ip_address
-          elements[6]
+          elements[7]
         end
       end
 
       module ARecord1
         def to_s
-          "#{host} #{ttl} #{klass} A #{ip_address}"
+          "#{host} #{ms_age} #{ttl} #{klass} A #{ip_address}"
+        end
+
+        def record_type
+          "A"
         end
       end
 
@@ -744,26 +752,30 @@ module DNS
           r2 = _nt_space
           s0 << r2
           if r2
-            r3 = _nt_ttl
+            r3 = _nt_ms_age
             s0 << r3
             if r3
-              r4 = _nt_klass
+              r4 = _nt_ttl
               s0 << r4
               if r4
-                if (match_len = has_terminal?("A", false, index))
-                  r5 = true
-                  @index += match_len
-                else
-                  terminal_parse_failure('"A"')
-                  r5 = nil
-                end
+                r5 = _nt_klass
                 s0 << r5
                 if r5
-                  r6 = _nt_space
+                  if (match_len = has_terminal?("A", false, index))
+                    r6 = true
+                    @index += match_len
+                  else
+                    terminal_parse_failure('"A"')
+                    r6 = nil
+                  end
                   s0 << r6
                   if r6
-                    r7 = _nt_ip_address
+                    r7 = _nt_space
                     s0 << r7
+                    if r7
+                      r8 = _nt_ip_address
+                      s0 << r8
+                    end
                   end
                 end
               end
@@ -972,6 +984,10 @@ module DNS
       module AaaaRecord1
         def to_s
           "#{host} #{ttl} #{klass} AAAA #{ip_address}"
+        end
+
+        def record_type
+          "AAAA"
         end
       end
 
@@ -1183,6 +1199,10 @@ module DNS
       module CnameRecord4
         def to_s
           "#{host} #{ttl} #{klass} CNAME #{target}"
+        end
+
+        def record_type
+          "CNAME"
         end
       end
 
@@ -1420,6 +1440,10 @@ module DNS
         def to_s
           "#{host} #{ttl} #{klass} MX #{priority} #{exchanger}"
         end
+
+        def record_type
+          "MX"
+        end
       end
 
       def _nt_mx_record
@@ -1518,6 +1542,10 @@ module DNS
         def to_s
           "#{host} #{ttl} #{klass} NAPTR #{data}"
         end
+
+        def record_type
+          "NAPTR"
+        end
       end
 
       def _nt_naptr_record
@@ -1608,6 +1636,10 @@ module DNS
         def to_s
           "#{host} #{ttl} #{klass} NS #{nameserver}"
         end
+
+        def record_type
+          "NS"
+        end
       end
 
       def _nt_ns_record
@@ -1697,6 +1729,10 @@ module DNS
       module PtrRecord1
         def to_s
           "#{host} #{ttl} #{klass} PTR #{target}"
+        end
+
+        def record_type
+          "PTR"
         end
       end
 
@@ -1803,6 +1839,10 @@ module DNS
       module SoaRecord1
         def to_s
           "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{space})"
+        end
+
+        def record_type
+          "SOA"
         end
       end
 
@@ -2075,6 +2115,10 @@ module DNS
       module SrvRecord4
         def to_s
           "#{host} #{ttl} #{klass} SRV #{priority} #{weight} #{port} #{target}"
+        end
+
+        def record_type
+          "SRV"
         end
       end
 
@@ -2400,6 +2444,10 @@ module DNS
         def to_s
           "#{host} #{ttl} #{klass} SPF #{data}"
         end
+
+        def record_type
+          "SPF"
+        end
       end
 
       def _nt_spf_record
@@ -2490,6 +2538,10 @@ module DNS
         def to_s
           "#{host} #{ttl} #{klass} TXT #{data}"
         end
+
+        def record_type
+          "TXT"
+        end
       end
 
       def _nt_txt_record
@@ -2528,7 +2580,7 @@ module DNS
                   r6 = _nt_space
                   s0 << r6
                   if r6
-                    r7 = _nt_txt_data
+                    r7 = _nt_ms_txt_data
                     s0 << r7
                   end
                 end
@@ -3604,6 +3656,111 @@ module DNS
         r0
       end
 
+      module MsAge0
+        def space
+          elements[3]
+        end
+      end
+
+      module MsAge1
+        def to_s
+          text_value
+        end
+      end
+
+      def _nt_ms_age
+        start_index = index
+        if node_cache[:ms_age].has_key?(index)
+          cached = node_cache[:ms_age][index]
+          if cached
+            node_cache[:ms_age][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+            @index = cached.interval.end
+          end
+          return cached
+        end
+
+        i0 = index
+        i1, s1 = index, []
+        if (match_len = has_terminal?("[AGE:", false, index))
+          r2 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+          @index += match_len
+        else
+          terminal_parse_failure('"[AGE:"')
+          r2 = nil
+        end
+        s1 << r2
+        if r2
+          s3, i3 = [], index
+          loop do
+            if has_terminal?(@regexps[gr = '\A[\\d]'] ||= Regexp.new(gr), :regexp, index)
+              r4 = true
+              @index += 1
+            else
+              terminal_parse_failure('[\\d]')
+              r4 = nil
+            end
+            if r4
+              s3 << r4
+            else
+              break
+            end
+          end
+          if s3.empty?
+            @index = i3
+            r3 = nil
+          else
+            r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+          end
+          s1 << r3
+          if r3
+            if (match_len = has_terminal?("]", false, index))
+              r5 = true
+              @index += match_len
+            else
+              terminal_parse_failure('"]"')
+              r5 = nil
+            end
+            s1 << r5
+            if r5
+              r6 = _nt_space
+              s1 << r6
+            end
+          end
+        end
+        if s1.last
+          r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
+          r1.extend(MsAge0)
+        else
+          @index = i1
+          r1 = nil
+        end
+        if r1
+          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+          r0 = r1
+          r0.extend(MsAge1)
+        else
+          if (match_len = has_terminal?('', false, index))
+            r7 = true
+            @index += match_len
+          else
+            terminal_parse_failure('\'\'')
+            r7 = nil
+          end
+          if r7
+            r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+            r0 = r7
+            r0.extend(MsAge1)
+          else
+            @index = i0
+            r0 = nil
+          end
+        end
+
+        node_cache[:ms_age][start_index] = r0
+
+        r0
+      end
+
       module Ttl0
         def time_interval
           elements[0]
@@ -3816,6 +3973,123 @@ module DNS
         end
 
         node_cache[:data][start_index] = r0
+
+        r0
+      end
+
+      module MsTxtData0
+        def data
+          elements[2]
+        end
+
+      end
+
+      module MsTxtData1
+        def data
+          elements[0]
+        end
+      end
+
+      module MsTxtData2
+        def to_s
+          data.to_s
+        end
+      end
+
+      def _nt_ms_txt_data
+        start_index = index
+        if node_cache[:ms_txt_data].has_key?(index)
+          cached = node_cache[:ms_txt_data][index]
+          if cached
+            node_cache[:ms_txt_data][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+            @index = cached.interval.end
+          end
+          return cached
+        end
+
+        i0 = index
+        i1, s1 = index, []
+        if (match_len = has_terminal?("(", false, index))
+          r2 = true
+          @index += match_len
+        else
+          terminal_parse_failure('"("')
+          r2 = nil
+        end
+        s1 << r2
+        if r2
+          s3, i3 = [], index
+          loop do
+            r4 = _nt_space
+            if r4
+              s3 << r4
+            else
+              break
+            end
+          end
+          r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+          s1 << r3
+          if r3
+            r5 = _nt_txt_data
+            s1 << r5
+            if r5
+              s6, i6 = [], index
+              loop do
+                r7 = _nt_space
+                if r7
+                  s6 << r7
+                else
+                  break
+                end
+              end
+              r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
+              s1 << r6
+              if r6
+                if (match_len = has_terminal?(")", false, index))
+                  r8 = true
+                  @index += match_len
+                else
+                  terminal_parse_failure('")"')
+                  r8 = nil
+                end
+                s1 << r8
+              end
+            end
+          end
+        end
+        if s1.last
+          r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
+          r1.extend(MsTxtData0)
+        else
+          @index = i1
+          r1 = nil
+        end
+        if r1
+          r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+          r0 = r1
+          r0.extend(MsTxtData2)
+        else
+          i9, s9 = index, []
+          r10 = _nt_txt_data
+          s9 << r10
+          if s9.last
+            r9 = instantiate_node(SyntaxNode,input, i9...index, s9)
+            r9.extend(MsTxtData1)
+          else
+            @index = i9
+            r9 = nil
+          end
+          if r9
+            r9 = SyntaxNode.new(input, (index-1)...index) if r9 == true
+            r0 = r9
+            r0.extend(MsTxtData2)
+          else
+            @index = i0
+            r0 = nil
+          end
+        end
+
+        node_cache[:ms_txt_data][start_index] = r0
 
         r0
       end
