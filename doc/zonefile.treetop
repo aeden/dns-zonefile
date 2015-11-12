@@ -109,7 +109,7 @@ grammar Zonefile
   end
   
   rule aaaa_record
-    host space ttl klass "AAAA" space ip_address:ip6_address {
+    host space ms_age ttl klass "AAAA" space ip_address:ip6_address {
       def to_s
         "#{host} #{ttl} #{klass} AAAA #{ip_address}"
       end
@@ -130,9 +130,9 @@ grammar Zonefile
 
   rule cname_record
     (
-     host space ttl klass "CNAME" space target:host /
-     host space klass ttl "CNAME" space target:host /
-     host space ttl "CNAME" space target:host /
+     host space ms_age ttl klass "CNAME" space target:host /
+     host space klass ms_age ttl "CNAME" space target:host /
+     host space ms_age ttl "CNAME" space target:host /
      host space klass "CNAME" space target:host 
     ) {
       def to_s
@@ -158,7 +158,7 @@ grammar Zonefile
   end
   
   rule naptr_record
-    host space ttl klass "NAPTR" space data {
+    host space ms_age ttl klass "NAPTR" space data {
       def to_s
         "#{host} #{ttl} #{klass} NAPTR #{data}"
       end
@@ -170,7 +170,7 @@ grammar Zonefile
   end
 
   rule ns_record
-    host space ttl klass "NS" space nameserver:host {
+    host space ms_age ttl klass "NS" space nameserver:host {
       def to_s
         "#{host} #{ttl} #{klass} NS #{nameserver}"
       end
@@ -182,7 +182,7 @@ grammar Zonefile
   end
 
   rule ptr_record
-    host space ttl klass "PTR" space target:host {
+    host space ms_age ttl klass "PTR" space target:host {
       def to_s
         "#{host} #{ttl} #{klass} PTR #{target}"
       end
@@ -194,7 +194,7 @@ grammar Zonefile
   end
 
   rule soa_record
-    origin space ttl klass "SOA" space ns space rp space data {
+    origin space ms_age ttl klass "SOA" space ns space rp space data {
       def to_s
         "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{space})"
       end
@@ -207,9 +207,9 @@ grammar Zonefile
 
   rule srv_record
     (
-     host space ttl klass "SRV" space priority:integer space weight:integer space port:integer space target:host /
-     host space klass ttl "SRV" space priority:integer space weight:integer space port:integer space target:host /
-     host space ttl "SRV" space priority:integer space weight:integer space port:integer space target:host /
+     host space ms_age ttl klass "SRV" space priority:integer space weight:integer space port:integer space target:host /
+     host space klass ms_age ttl "SRV" space priority:integer space weight:integer space port:integer space target:host /
+     host space ms_age ttl "SRV" space priority:integer space weight:integer space port:integer space target:host /
      host space klass "SRV" space priority:integer space weight:integer space port:integer space target:host
     ) {
       def to_s
@@ -223,7 +223,7 @@ grammar Zonefile
   end
   
   rule spf_record
-    host space ttl klass "SPF" space data:txt_data {
+    host space ms_age ttl klass "SPF" space data:txt_data {
       def to_s
         "#{host} #{ttl} #{klass} SPF #{data}"
       end
@@ -235,7 +235,7 @@ grammar Zonefile
   end
   
   rule txt_record
-    host space ttl klass "TXT" space data:ms_txt_data {
+    host space ms_age ttl klass "TXT" space data:ms_txt_data {
       def to_s
         "#{host} #{ttl} #{klass} TXT #{data}"
       end

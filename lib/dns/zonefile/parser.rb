@@ -964,20 +964,24 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
-        def klass
+        def ttl
           elements[3]
         end
 
+        def klass
+          elements[4]
+        end
+
         def space2
-          elements[5]
+          elements[6]
         end
 
         def ip_address
-          elements[6]
+          elements[7]
         end
       end
 
@@ -1009,26 +1013,30 @@ module DNS
           r2 = _nt_space
           s0 << r2
           if r2
-            r3 = _nt_ttl
+            r3 = _nt_ms_age
             s0 << r3
             if r3
-              r4 = _nt_klass
+              r4 = _nt_ttl
               s0 << r4
               if r4
-                if (match_len = has_terminal?("AAAA", false, index))
-                  r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                  @index += match_len
-                else
-                  terminal_parse_failure('"AAAA"')
-                  r5 = nil
-                end
+                r5 = _nt_klass
                 s0 << r5
                 if r5
-                  r6 = _nt_space
+                  if (match_len = has_terminal?("AAAA", false, index))
+                    r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                    @index += match_len
+                  else
+                    terminal_parse_failure('"AAAA"')
+                    r6 = nil
+                  end
                   s0 << r6
                   if r6
-                    r7 = _nt_ip6_address
+                    r7 = _nt_space
                     s0 << r7
+                    if r7
+                      r8 = _nt_ip6_address
+                      s0 << r8
+                    end
                   end
                 end
               end
@@ -1109,20 +1117,24 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
-        def klass
+        def ttl
           elements[3]
         end
 
+        def klass
+          elements[4]
+        end
+
         def space2
-          elements[5]
+          elements[6]
         end
 
         def target
-          elements[6]
+          elements[7]
         end
       end
 
@@ -1139,16 +1151,20 @@ module DNS
           elements[2]
         end
 
-        def ttl
+        def ms_age
           elements[3]
         end
 
+        def ttl
+          elements[4]
+        end
+
         def space2
-          elements[5]
+          elements[6]
         end
 
         def target
-          elements[6]
+          elements[7]
         end
       end
 
@@ -1161,16 +1177,20 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
+        def ttl
+          elements[3]
+        end
+
         def space2
-          elements[4]
+          elements[5]
         end
 
         def target
-          elements[5]
+          elements[6]
         end
       end
 
@@ -1225,26 +1245,30 @@ module DNS
           r3 = _nt_space
           s1 << r3
           if r3
-            r4 = _nt_ttl
+            r4 = _nt_ms_age
             s1 << r4
             if r4
-              r5 = _nt_klass
+              r5 = _nt_ttl
               s1 << r5
               if r5
-                if (match_len = has_terminal?("CNAME", false, index))
-                  r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                  @index += match_len
-                else
-                  terminal_parse_failure('"CNAME"')
-                  r6 = nil
-                end
+                r6 = _nt_klass
                 s1 << r6
                 if r6
-                  r7 = _nt_space
+                  if (match_len = has_terminal?("CNAME", false, index))
+                    r7 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                    @index += match_len
+                  else
+                    terminal_parse_failure('"CNAME"')
+                    r7 = nil
+                  end
                   s1 << r7
                   if r7
-                    r8 = _nt_host
+                    r8 = _nt_space
                     s1 << r8
+                    if r8
+                      r9 = _nt_host
+                      s1 << r9
+                    end
                   end
                 end
               end
@@ -1263,131 +1287,139 @@ module DNS
           r0 = r1
           r0.extend(CnameRecord4)
         else
-          i9, s9 = index, []
-          r10 = _nt_host
-          s9 << r10
-          if r10
-            r11 = _nt_space
-            s9 << r11
-            if r11
-              r12 = _nt_klass
-              s9 << r12
-              if r12
-                r13 = _nt_ttl
-                s9 << r13
-                if r13
-                  if (match_len = has_terminal?("CNAME", false, index))
-                    r14 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                    @index += match_len
-                  else
-                    terminal_parse_failure('"CNAME"')
-                    r14 = nil
-                  end
-                  s9 << r14
-                  if r14
-                    r15 = _nt_space
-                    s9 << r15
-                    if r15
-                      r16 = _nt_host
-                      s9 << r16
-                    end
-                  end
-                end
-              end
-            end
-          end
-          if s9.last
-            r9 = instantiate_node(SyntaxNode,input, i9...index, s9)
-            r9.extend(CnameRecord1)
-          else
-            @index = i9
-            r9 = nil
-          end
-          if r9
-            r9 = SyntaxNode.new(input, (index-1)...index) if r9 == true
-            r0 = r9
-            r0.extend(CnameRecord4)
-          else
-            i17, s17 = index, []
-            r18 = _nt_host
-            s17 << r18
-            if r18
-              r19 = _nt_space
-              s17 << r19
-              if r19
-                r20 = _nt_ttl
-                s17 << r20
-                if r20
-                  if (match_len = has_terminal?("CNAME", false, index))
-                    r21 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                    @index += match_len
-                  else
-                    terminal_parse_failure('"CNAME"')
-                    r21 = nil
-                  end
-                  s17 << r21
-                  if r21
-                    r22 = _nt_space
-                    s17 << r22
-                    if r22
-                      r23 = _nt_host
-                      s17 << r23
-                    end
-                  end
-                end
-              end
-            end
-            if s17.last
-              r17 = instantiate_node(SyntaxNode,input, i17...index, s17)
-              r17.extend(CnameRecord2)
-            else
-              @index = i17
-              r17 = nil
-            end
-            if r17
-              r17 = SyntaxNode.new(input, (index-1)...index) if r17 == true
-              r0 = r17
-              r0.extend(CnameRecord4)
-            else
-              i24, s24 = index, []
-              r25 = _nt_host
-              s24 << r25
-              if r25
-                r26 = _nt_space
-                s24 << r26
-                if r26
-                  r27 = _nt_klass
-                  s24 << r27
-                  if r27
+          i10, s10 = index, []
+          r11 = _nt_host
+          s10 << r11
+          if r11
+            r12 = _nt_space
+            s10 << r12
+            if r12
+              r13 = _nt_klass
+              s10 << r13
+              if r13
+                r14 = _nt_ms_age
+                s10 << r14
+                if r14
+                  r15 = _nt_ttl
+                  s10 << r15
+                  if r15
                     if (match_len = has_terminal?("CNAME", false, index))
-                      r28 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                      r16 = instantiate_node(SyntaxNode,input, index...(index + match_len))
                       @index += match_len
                     else
                       terminal_parse_failure('"CNAME"')
-                      r28 = nil
+                      r16 = nil
                     end
-                    s24 << r28
-                    if r28
-                      r29 = _nt_space
-                      s24 << r29
-                      if r29
-                        r30 = _nt_host
-                        s24 << r30
+                    s10 << r16
+                    if r16
+                      r17 = _nt_space
+                      s10 << r17
+                      if r17
+                        r18 = _nt_host
+                        s10 << r18
                       end
                     end
                   end
                 end
               end
-              if s24.last
-                r24 = instantiate_node(SyntaxNode,input, i24...index, s24)
-                r24.extend(CnameRecord3)
-              else
-                @index = i24
-                r24 = nil
+            end
+          end
+          if s10.last
+            r10 = instantiate_node(SyntaxNode,input, i10...index, s10)
+            r10.extend(CnameRecord1)
+          else
+            @index = i10
+            r10 = nil
+          end
+          if r10
+            r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
+            r0 = r10
+            r0.extend(CnameRecord4)
+          else
+            i19, s19 = index, []
+            r20 = _nt_host
+            s19 << r20
+            if r20
+              r21 = _nt_space
+              s19 << r21
+              if r21
+                r22 = _nt_ms_age
+                s19 << r22
+                if r22
+                  r23 = _nt_ttl
+                  s19 << r23
+                  if r23
+                    if (match_len = has_terminal?("CNAME", false, index))
+                      r24 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                      @index += match_len
+                    else
+                      terminal_parse_failure('"CNAME"')
+                      r24 = nil
+                    end
+                    s19 << r24
+                    if r24
+                      r25 = _nt_space
+                      s19 << r25
+                      if r25
+                        r26 = _nt_host
+                        s19 << r26
+                      end
+                    end
+                  end
+                end
               end
-              if r24
-                r24 = SyntaxNode.new(input, (index-1)...index) if r24 == true
-                r0 = r24
+            end
+            if s19.last
+              r19 = instantiate_node(SyntaxNode,input, i19...index, s19)
+              r19.extend(CnameRecord2)
+            else
+              @index = i19
+              r19 = nil
+            end
+            if r19
+              r19 = SyntaxNode.new(input, (index-1)...index) if r19 == true
+              r0 = r19
+              r0.extend(CnameRecord4)
+            else
+              i27, s27 = index, []
+              r28 = _nt_host
+              s27 << r28
+              if r28
+                r29 = _nt_space
+                s27 << r29
+                if r29
+                  r30 = _nt_klass
+                  s27 << r30
+                  if r30
+                    if (match_len = has_terminal?("CNAME", false, index))
+                      r31 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                      @index += match_len
+                    else
+                      terminal_parse_failure('"CNAME"')
+                      r31 = nil
+                    end
+                    s27 << r31
+                    if r31
+                      r32 = _nt_space
+                      s27 << r32
+                      if r32
+                        r33 = _nt_host
+                        s27 << r33
+                      end
+                    end
+                  end
+                end
+              end
+              if s27.last
+                r27 = instantiate_node(SyntaxNode,input, i27...index, s27)
+                r27.extend(CnameRecord3)
+              else
+                @index = i27
+                r27 = nil
+              end
+              if r27
+                r27 = SyntaxNode.new(input, (index-1)...index) if r27 == true
+                r0 = r27
                 r0.extend(CnameRecord4)
               else
                 @index = i0
@@ -1521,20 +1553,24 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
-        def klass
+        def ttl
           elements[3]
         end
 
+        def klass
+          elements[4]
+        end
+
         def space2
-          elements[5]
+          elements[6]
         end
 
         def data
-          elements[6]
+          elements[7]
         end
       end
 
@@ -1566,26 +1602,30 @@ module DNS
           r2 = _nt_space
           s0 << r2
           if r2
-            r3 = _nt_ttl
+            r3 = _nt_ms_age
             s0 << r3
             if r3
-              r4 = _nt_klass
+              r4 = _nt_ttl
               s0 << r4
               if r4
-                if (match_len = has_terminal?("NAPTR", false, index))
-                  r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                  @index += match_len
-                else
-                  terminal_parse_failure('"NAPTR"')
-                  r5 = nil
-                end
+                r5 = _nt_klass
                 s0 << r5
                 if r5
-                  r6 = _nt_space
+                  if (match_len = has_terminal?("NAPTR", false, index))
+                    r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                    @index += match_len
+                  else
+                    terminal_parse_failure('"NAPTR"')
+                    r6 = nil
+                  end
                   s0 << r6
                   if r6
-                    r7 = _nt_data
+                    r7 = _nt_space
                     s0 << r7
+                    if r7
+                      r8 = _nt_data
+                      s0 << r8
+                    end
                   end
                 end
               end
@@ -1615,20 +1655,24 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
-        def klass
+        def ttl
           elements[3]
         end
 
+        def klass
+          elements[4]
+        end
+
         def space2
-          elements[5]
+          elements[6]
         end
 
         def nameserver
-          elements[6]
+          elements[7]
         end
       end
 
@@ -1660,26 +1704,30 @@ module DNS
           r2 = _nt_space
           s0 << r2
           if r2
-            r3 = _nt_ttl
+            r3 = _nt_ms_age
             s0 << r3
             if r3
-              r4 = _nt_klass
+              r4 = _nt_ttl
               s0 << r4
               if r4
-                if (match_len = has_terminal?("NS", false, index))
-                  r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                  @index += match_len
-                else
-                  terminal_parse_failure('"NS"')
-                  r5 = nil
-                end
+                r5 = _nt_klass
                 s0 << r5
                 if r5
-                  r6 = _nt_space
+                  if (match_len = has_terminal?("NS", false, index))
+                    r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                    @index += match_len
+                  else
+                    terminal_parse_failure('"NS"')
+                    r6 = nil
+                  end
                   s0 << r6
                   if r6
-                    r7 = _nt_host
+                    r7 = _nt_space
                     s0 << r7
+                    if r7
+                      r8 = _nt_host
+                      s0 << r8
+                    end
                   end
                 end
               end
@@ -1709,20 +1757,24 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
-        def klass
+        def ttl
           elements[3]
         end
 
+        def klass
+          elements[4]
+        end
+
         def space2
-          elements[5]
+          elements[6]
         end
 
         def target
-          elements[6]
+          elements[7]
         end
       end
 
@@ -1754,26 +1806,30 @@ module DNS
           r2 = _nt_space
           s0 << r2
           if r2
-            r3 = _nt_ttl
+            r3 = _nt_ms_age
             s0 << r3
             if r3
-              r4 = _nt_klass
+              r4 = _nt_ttl
               s0 << r4
               if r4
-                if (match_len = has_terminal?("PTR", false, index))
-                  r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                  @index += match_len
-                else
-                  terminal_parse_failure('"PTR"')
-                  r5 = nil
-                end
+                r5 = _nt_klass
                 s0 << r5
                 if r5
-                  r6 = _nt_space
+                  if (match_len = has_terminal?("PTR", false, index))
+                    r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                    @index += match_len
+                  else
+                    terminal_parse_failure('"PTR"')
+                    r6 = nil
+                  end
                   s0 << r6
                   if r6
-                    r7 = _nt_host
+                    r7 = _nt_space
                     s0 << r7
+                    if r7
+                      r8 = _nt_host
+                      s0 << r8
+                    end
                   end
                 end
               end
@@ -1803,36 +1859,40 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
-        def klass
+        def ttl
           elements[3]
         end
 
-        def space2
-          elements[5]
+        def klass
+          elements[4]
         end
 
-        def ns
+        def space2
           elements[6]
         end
 
-        def space3
+        def ns
           elements[7]
         end
 
-        def rp
+        def space3
           elements[8]
         end
 
-        def space4
+        def rp
           elements[9]
         end
 
-        def data
+        def space4
           elements[10]
+        end
+
+        def data
+          elements[11]
         end
       end
 
@@ -1864,38 +1924,42 @@ module DNS
           r2 = _nt_space
           s0 << r2
           if r2
-            r3 = _nt_ttl
+            r3 = _nt_ms_age
             s0 << r3
             if r3
-              r4 = _nt_klass
+              r4 = _nt_ttl
               s0 << r4
               if r4
-                if (match_len = has_terminal?("SOA", false, index))
-                  r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                  @index += match_len
-                else
-                  terminal_parse_failure('"SOA"')
-                  r5 = nil
-                end
+                r5 = _nt_klass
                 s0 << r5
                 if r5
-                  r6 = _nt_space
+                  if (match_len = has_terminal?("SOA", false, index))
+                    r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                    @index += match_len
+                  else
+                    terminal_parse_failure('"SOA"')
+                    r6 = nil
+                  end
                   s0 << r6
                   if r6
-                    r7 = _nt_ns
+                    r7 = _nt_space
                     s0 << r7
                     if r7
-                      r8 = _nt_space
+                      r8 = _nt_ns
                       s0 << r8
                       if r8
-                        r9 = _nt_rp
+                        r9 = _nt_space
                         s0 << r9
                         if r9
-                          r10 = _nt_space
+                          r10 = _nt_rp
                           s0 << r10
                           if r10
-                            r11 = _nt_data
+                            r11 = _nt_space
                             s0 << r11
+                            if r11
+                              r12 = _nt_data
+                              s0 << r12
+                            end
                           end
                         end
                       end
@@ -1929,44 +1993,48 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
-        def klass
+        def ttl
           elements[3]
         end
 
-        def space2
-          elements[5]
+        def klass
+          elements[4]
         end
 
-        def priority
+        def space2
           elements[6]
         end
 
-        def space3
+        def priority
           elements[7]
         end
 
-        def weight
+        def space3
           elements[8]
         end
 
-        def space4
+        def weight
           elements[9]
         end
 
-        def port
+        def space4
           elements[10]
         end
 
-        def space5
+        def port
           elements[11]
         end
 
-        def target
+        def space5
           elements[12]
+        end
+
+        def target
+          elements[13]
         end
       end
 
@@ -1983,6 +2051,60 @@ module DNS
           elements[2]
         end
 
+        def ms_age
+          elements[3]
+        end
+
+        def ttl
+          elements[4]
+        end
+
+        def space2
+          elements[6]
+        end
+
+        def priority
+          elements[7]
+        end
+
+        def space3
+          elements[8]
+        end
+
+        def weight
+          elements[9]
+        end
+
+        def space4
+          elements[10]
+        end
+
+        def port
+          elements[11]
+        end
+
+        def space5
+          elements[12]
+        end
+
+        def target
+          elements[13]
+        end
+      end
+
+      module SrvRecord2
+        def host
+          elements[0]
+        end
+
+        def space1
+          elements[1]
+        end
+
+        def ms_age
+          elements[2]
+        end
+
         def ttl
           elements[3]
         end
@@ -2017,52 +2139,6 @@ module DNS
 
         def target
           elements[12]
-        end
-      end
-
-      module SrvRecord2
-        def host
-          elements[0]
-        end
-
-        def space1
-          elements[1]
-        end
-
-        def ttl
-          elements[2]
-        end
-
-        def space2
-          elements[4]
-        end
-
-        def priority
-          elements[5]
-        end
-
-        def space3
-          elements[6]
-        end
-
-        def weight
-          elements[7]
-        end
-
-        def space4
-          elements[8]
-        end
-
-        def port
-          elements[9]
-        end
-
-        def space5
-          elements[10]
-        end
-
-        def target
-          elements[11]
         end
       end
 
@@ -2141,44 +2217,48 @@ module DNS
           r3 = _nt_space
           s1 << r3
           if r3
-            r4 = _nt_ttl
+            r4 = _nt_ms_age
             s1 << r4
             if r4
-              r5 = _nt_klass
+              r5 = _nt_ttl
               s1 << r5
               if r5
-                if (match_len = has_terminal?("SRV", false, index))
-                  r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                  @index += match_len
-                else
-                  terminal_parse_failure('"SRV"')
-                  r6 = nil
-                end
+                r6 = _nt_klass
                 s1 << r6
                 if r6
-                  r7 = _nt_space
+                  if (match_len = has_terminal?("SRV", false, index))
+                    r7 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                    @index += match_len
+                  else
+                    terminal_parse_failure('"SRV"')
+                    r7 = nil
+                  end
                   s1 << r7
                   if r7
-                    r8 = _nt_integer
+                    r8 = _nt_space
                     s1 << r8
                     if r8
-                      r9 = _nt_space
+                      r9 = _nt_integer
                       s1 << r9
                       if r9
-                        r10 = _nt_integer
+                        r10 = _nt_space
                         s1 << r10
                         if r10
-                          r11 = _nt_space
+                          r11 = _nt_integer
                           s1 << r11
                           if r11
-                            r12 = _nt_integer
+                            r12 = _nt_space
                             s1 << r12
                             if r12
-                              r13 = _nt_space
+                              r13 = _nt_integer
                               s1 << r13
                               if r13
-                                r14 = _nt_host
+                                r14 = _nt_space
                                 s1 << r14
+                                if r14
+                                  r15 = _nt_host
+                                  s1 << r15
+                                end
                               end
                             end
                           end
@@ -2203,182 +2283,54 @@ module DNS
           r0 = r1
           r0.extend(SrvRecord4)
         else
-          i15, s15 = index, []
-          r16 = _nt_host
-          s15 << r16
-          if r16
-            r17 = _nt_space
-            s15 << r17
-            if r17
-              r18 = _nt_klass
-              s15 << r18
-              if r18
-                r19 = _nt_ttl
-                s15 << r19
-                if r19
-                  if (match_len = has_terminal?("SRV", false, index))
-                    r20 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                    @index += match_len
-                  else
-                    terminal_parse_failure('"SRV"')
-                    r20 = nil
-                  end
-                  s15 << r20
-                  if r20
-                    r21 = _nt_space
-                    s15 << r21
-                    if r21
-                      r22 = _nt_integer
-                      s15 << r22
-                      if r22
-                        r23 = _nt_space
-                        s15 << r23
-                        if r23
-                          r24 = _nt_integer
-                          s15 << r24
-                          if r24
-                            r25 = _nt_space
-                            s15 << r25
-                            if r25
-                              r26 = _nt_integer
-                              s15 << r26
-                              if r26
-                                r27 = _nt_space
-                                s15 << r27
-                                if r27
-                                  r28 = _nt_host
-                                  s15 << r28
-                                end
-                              end
-                            end
-                          end
-                        end
-                      end
-                    end
-                  end
-                end
-              end
-            end
-          end
-          if s15.last
-            r15 = instantiate_node(SyntaxNode,input, i15...index, s15)
-            r15.extend(SrvRecord1)
-          else
-            @index = i15
-            r15 = nil
-          end
-          if r15
-            r15 = SyntaxNode.new(input, (index-1)...index) if r15 == true
-            r0 = r15
-            r0.extend(SrvRecord4)
-          else
-            i29, s29 = index, []
-            r30 = _nt_host
-            s29 << r30
-            if r30
-              r31 = _nt_space
-              s29 << r31
-              if r31
-                r32 = _nt_ttl
-                s29 << r32
-                if r32
-                  if (match_len = has_terminal?("SRV", false, index))
-                    r33 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                    @index += match_len
-                  else
-                    terminal_parse_failure('"SRV"')
-                    r33 = nil
-                  end
-                  s29 << r33
-                  if r33
-                    r34 = _nt_space
-                    s29 << r34
-                    if r34
-                      r35 = _nt_integer
-                      s29 << r35
-                      if r35
-                        r36 = _nt_space
-                        s29 << r36
-                        if r36
-                          r37 = _nt_integer
-                          s29 << r37
-                          if r37
-                            r38 = _nt_space
-                            s29 << r38
-                            if r38
-                              r39 = _nt_integer
-                              s29 << r39
-                              if r39
-                                r40 = _nt_space
-                                s29 << r40
-                                if r40
-                                  r41 = _nt_host
-                                  s29 << r41
-                                end
-                              end
-                            end
-                          end
-                        end
-                      end
-                    end
-                  end
-                end
-              end
-            end
-            if s29.last
-              r29 = instantiate_node(SyntaxNode,input, i29...index, s29)
-              r29.extend(SrvRecord2)
-            else
-              @index = i29
-              r29 = nil
-            end
-            if r29
-              r29 = SyntaxNode.new(input, (index-1)...index) if r29 == true
-              r0 = r29
-              r0.extend(SrvRecord4)
-            else
-              i42, s42 = index, []
-              r43 = _nt_host
-              s42 << r43
-              if r43
-                r44 = _nt_space
-                s42 << r44
-                if r44
-                  r45 = _nt_klass
-                  s42 << r45
-                  if r45
+          i16, s16 = index, []
+          r17 = _nt_host
+          s16 << r17
+          if r17
+            r18 = _nt_space
+            s16 << r18
+            if r18
+              r19 = _nt_klass
+              s16 << r19
+              if r19
+                r20 = _nt_ms_age
+                s16 << r20
+                if r20
+                  r21 = _nt_ttl
+                  s16 << r21
+                  if r21
                     if (match_len = has_terminal?("SRV", false, index))
-                      r46 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                      r22 = instantiate_node(SyntaxNode,input, index...(index + match_len))
                       @index += match_len
                     else
                       terminal_parse_failure('"SRV"')
-                      r46 = nil
+                      r22 = nil
                     end
-                    s42 << r46
-                    if r46
-                      r47 = _nt_space
-                      s42 << r47
-                      if r47
-                        r48 = _nt_integer
-                        s42 << r48
-                        if r48
-                          r49 = _nt_space
-                          s42 << r49
-                          if r49
-                            r50 = _nt_integer
-                            s42 << r50
-                            if r50
-                              r51 = _nt_space
-                              s42 << r51
-                              if r51
-                                r52 = _nt_integer
-                                s42 << r52
-                                if r52
-                                  r53 = _nt_space
-                                  s42 << r53
-                                  if r53
-                                    r54 = _nt_host
-                                    s42 << r54
+                    s16 << r22
+                    if r22
+                      r23 = _nt_space
+                      s16 << r23
+                      if r23
+                        r24 = _nt_integer
+                        s16 << r24
+                        if r24
+                          r25 = _nt_space
+                          s16 << r25
+                          if r25
+                            r26 = _nt_integer
+                            s16 << r26
+                            if r26
+                              r27 = _nt_space
+                              s16 << r27
+                              if r27
+                                r28 = _nt_integer
+                                s16 << r28
+                                if r28
+                                  r29 = _nt_space
+                                  s16 << r29
+                                  if r29
+                                    r30 = _nt_host
+                                    s16 << r30
                                   end
                                 end
                               end
@@ -2390,16 +2342,152 @@ module DNS
                   end
                 end
               end
-              if s42.last
-                r42 = instantiate_node(SyntaxNode,input, i42...index, s42)
-                r42.extend(SrvRecord3)
-              else
-                @index = i42
-                r42 = nil
+            end
+          end
+          if s16.last
+            r16 = instantiate_node(SyntaxNode,input, i16...index, s16)
+            r16.extend(SrvRecord1)
+          else
+            @index = i16
+            r16 = nil
+          end
+          if r16
+            r16 = SyntaxNode.new(input, (index-1)...index) if r16 == true
+            r0 = r16
+            r0.extend(SrvRecord4)
+          else
+            i31, s31 = index, []
+            r32 = _nt_host
+            s31 << r32
+            if r32
+              r33 = _nt_space
+              s31 << r33
+              if r33
+                r34 = _nt_ms_age
+                s31 << r34
+                if r34
+                  r35 = _nt_ttl
+                  s31 << r35
+                  if r35
+                    if (match_len = has_terminal?("SRV", false, index))
+                      r36 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                      @index += match_len
+                    else
+                      terminal_parse_failure('"SRV"')
+                      r36 = nil
+                    end
+                    s31 << r36
+                    if r36
+                      r37 = _nt_space
+                      s31 << r37
+                      if r37
+                        r38 = _nt_integer
+                        s31 << r38
+                        if r38
+                          r39 = _nt_space
+                          s31 << r39
+                          if r39
+                            r40 = _nt_integer
+                            s31 << r40
+                            if r40
+                              r41 = _nt_space
+                              s31 << r41
+                              if r41
+                                r42 = _nt_integer
+                                s31 << r42
+                                if r42
+                                  r43 = _nt_space
+                                  s31 << r43
+                                  if r43
+                                    r44 = _nt_host
+                                    s31 << r44
+                                  end
+                                end
+                              end
+                            end
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
               end
-              if r42
-                r42 = SyntaxNode.new(input, (index-1)...index) if r42 == true
-                r0 = r42
+            end
+            if s31.last
+              r31 = instantiate_node(SyntaxNode,input, i31...index, s31)
+              r31.extend(SrvRecord2)
+            else
+              @index = i31
+              r31 = nil
+            end
+            if r31
+              r31 = SyntaxNode.new(input, (index-1)...index) if r31 == true
+              r0 = r31
+              r0.extend(SrvRecord4)
+            else
+              i45, s45 = index, []
+              r46 = _nt_host
+              s45 << r46
+              if r46
+                r47 = _nt_space
+                s45 << r47
+                if r47
+                  r48 = _nt_klass
+                  s45 << r48
+                  if r48
+                    if (match_len = has_terminal?("SRV", false, index))
+                      r49 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                      @index += match_len
+                    else
+                      terminal_parse_failure('"SRV"')
+                      r49 = nil
+                    end
+                    s45 << r49
+                    if r49
+                      r50 = _nt_space
+                      s45 << r50
+                      if r50
+                        r51 = _nt_integer
+                        s45 << r51
+                        if r51
+                          r52 = _nt_space
+                          s45 << r52
+                          if r52
+                            r53 = _nt_integer
+                            s45 << r53
+                            if r53
+                              r54 = _nt_space
+                              s45 << r54
+                              if r54
+                                r55 = _nt_integer
+                                s45 << r55
+                                if r55
+                                  r56 = _nt_space
+                                  s45 << r56
+                                  if r56
+                                    r57 = _nt_host
+                                    s45 << r57
+                                  end
+                                end
+                              end
+                            end
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+              if s45.last
+                r45 = instantiate_node(SyntaxNode,input, i45...index, s45)
+                r45.extend(SrvRecord3)
+              else
+                @index = i45
+                r45 = nil
+              end
+              if r45
+                r45 = SyntaxNode.new(input, (index-1)...index) if r45 == true
+                r0 = r45
                 r0.extend(SrvRecord4)
               else
                 @index = i0
@@ -2423,20 +2511,24 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
-        def klass
+        def ttl
           elements[3]
         end
 
+        def klass
+          elements[4]
+        end
+
         def space2
-          elements[5]
+          elements[6]
         end
 
         def data
-          elements[6]
+          elements[7]
         end
       end
 
@@ -2468,26 +2560,30 @@ module DNS
           r2 = _nt_space
           s0 << r2
           if r2
-            r3 = _nt_ttl
+            r3 = _nt_ms_age
             s0 << r3
             if r3
-              r4 = _nt_klass
+              r4 = _nt_ttl
               s0 << r4
               if r4
-                if (match_len = has_terminal?("SPF", false, index))
-                  r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                  @index += match_len
-                else
-                  terminal_parse_failure('"SPF"')
-                  r5 = nil
-                end
+                r5 = _nt_klass
                 s0 << r5
                 if r5
-                  r6 = _nt_space
+                  if (match_len = has_terminal?("SPF", false, index))
+                    r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                    @index += match_len
+                  else
+                    terminal_parse_failure('"SPF"')
+                    r6 = nil
+                  end
                   s0 << r6
                   if r6
-                    r7 = _nt_txt_data
+                    r7 = _nt_space
                     s0 << r7
+                    if r7
+                      r8 = _nt_txt_data
+                      s0 << r8
+                    end
                   end
                 end
               end
@@ -2517,20 +2613,24 @@ module DNS
           elements[1]
         end
 
-        def ttl
+        def ms_age
           elements[2]
         end
 
-        def klass
+        def ttl
           elements[3]
         end
 
+        def klass
+          elements[4]
+        end
+
         def space2
-          elements[5]
+          elements[6]
         end
 
         def data
-          elements[6]
+          elements[7]
         end
       end
 
@@ -2562,26 +2662,30 @@ module DNS
           r2 = _nt_space
           s0 << r2
           if r2
-            r3 = _nt_ttl
+            r3 = _nt_ms_age
             s0 << r3
             if r3
-              r4 = _nt_klass
+              r4 = _nt_ttl
               s0 << r4
               if r4
-                if (match_len = has_terminal?("TXT", false, index))
-                  r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                  @index += match_len
-                else
-                  terminal_parse_failure('"TXT"')
-                  r5 = nil
-                end
+                r5 = _nt_klass
                 s0 << r5
                 if r5
-                  r6 = _nt_space
+                  if (match_len = has_terminal?("TXT", false, index))
+                    r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                    @index += match_len
+                  else
+                    terminal_parse_failure('"TXT"')
+                    r6 = nil
+                  end
                   s0 << r6
                   if r6
-                    r7 = _nt_ms_txt_data
+                    r7 = _nt_space
                     s0 << r7
+                    if r7
+                      r8 = _nt_ms_txt_data
+                      s0 << r8
+                    end
                   end
                 end
               end

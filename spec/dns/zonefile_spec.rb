@@ -44,7 +44,6 @@ ns            A     10.0.0.2              ; ip address for "ns.example.com"
 *.sub         A     10.0.0.101            ; subdomain wildcard
 with-class   IN  A   10.0.0.3             ; record that includes the class type of IN
 with-ttl  60     A   10.0.0.5             ; with a specified TTL
-with-age [AGE:999992222] 60     A   10.0.0.7             ; with a specified AGE
 ttl-class 60 IN  A   10.0.0.6             ; with TTL and class type
 www           CNAME ns                    ; "www.example.com" is an alias for "ns.example.com"
 wwwtest       CNAME www                   ; "wwwtest.example.com" is another alias for "www.example.com"
@@ -75,6 +74,12 @@ unquoted      TXT   some text data
 multiline     TXT   "A TXT record
 split across multiple lines
 with LF and CRLF line endings"
+
+; Microsoft AD DNS Examples with Aging.
+with-age [AGE:999992222] 60     A   10.0.0.7             ; with a specified AGE
+with-age-aaaa [AGE:999992222] 60     AAAA   10.0.0.8             ; with a specified AGE
+_ldap._tcp.pupy._sites.dc._msdcs [AGE:3636525]	600	SRV	0 100 389	host01.ad
+P229392922               [AGE:3636449]	172800	CNAME	printer01.ad
 
 @             SPF   "v=spf1 a a:other.domain.com ~all"
 
@@ -134,7 +139,7 @@ ZONE
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      zone.rr.size.should be(46)
+      zone.rr.size.should be(49)
     end
 
     it "should build the correct NS records" do
@@ -212,7 +217,7 @@ ZONE
     it "should build the correct CNAME records" do
       zone = DNS::Zonefile.load(@zonefile)
       cname_records = zone.records_of DNS::Zonefile::CNAME
-      cname_records.size.should be(8)
+      cname_records.size.should be(9)
 
       cname_records.detect { |cname|
         cname.host == "www.example.com." && cname.target == "ns.example.com."
@@ -224,6 +229,10 @@ ZONE
 
       cname_records.detect { |cname|
         cname.host == "www2.example.com." && cname.domainname == "ns.example.com." && cname.ttl == 86400
+      }.should_not be_nil
+
+      cname_records.detect { |cname|
+        cname.host == "P229392922.example.com." && cname.domainname == "printer01.ad.example.com." && cname.ttl == 172800
       }.should_not be_nil
 
      eam_records = cname_records.select { |c| c.host =~ /eam\./ }
@@ -264,7 +273,7 @@ ZONE
     it "should build the correct AAAA records" do
       zone = DNS::Zonefile.load(@zonefile)
       aaaa_records = zone.records_of DNS::Zonefile::AAAA
-      aaaa_records.size.should be(3)
+      aaaa_records.size.should be(4)
 
       aaaa_records.detect { |a|
         a.host == "example.com." && a.address == "2001:db8:a::1"
@@ -277,6 +286,11 @@ ZONE
       aaaa_records.detect { |a|
         a.host == "mail.example.com." && a.address == "2001:db8:c::10.0.0.4" && a.ttl == 86400
       }.should_not be_nil
+
+      aaaa_records.detect { |a|
+        a.host == "with-age-aaaa.example.com." && a.address == "10.0.0.8" && a.ttl == 60
+      }.should_not be_nil
+
     end
 
     it "should build the correct NAPTR records" do
@@ -296,10 +310,14 @@ ZONE
     it "should build the correct SRV records" do
       zone = DNS::Zonefile.load(@zonefile)
       srv_records = zone.records_of DNS::Zonefile::SRV
-      srv_records.size.should be(6)
+      srv_records.size.should be(7)
 
       srv_records.detect { |r|
         r.host == "_xmpp-server._tcp.example.com." && r.priority == 5 && r.weight == 0 && r.port == 5269 && r.target == 'xmpp-server.l.google.com.' && r.ttl == 86400
+      }.should_not be_nil
+
+        srv_records.detect { |r|
+        r.host == "_ldap._tcp.pupy._sites.dc._msdcs.example.com." && r.priority == 0 && r.weight == 100 && r.port == 389 && r.target == 'host01.ad.example.com.' && r.ttl == 600
       }.should_not be_nil
 
       eam_records = srv_records.select { |s| s.host =~ /eam\./ }
