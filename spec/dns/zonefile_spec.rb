@@ -44,6 +44,7 @@ ns            A     10.0.0.2              ; ip address for "ns.example.com"
 *.sub         A     10.0.0.101            ; subdomain wildcard
 with-class   IN  A   10.0.0.3             ; record that includes the class type of IN
 with-ttl  60     A   10.0.0.5             ; with a specified TTL
+with-age [AGE:999992222] 60     A   10.0.0.7             ; with a specified AGE
 ttl-class 60 IN  A   10.0.0.6             ; with TTL and class type
 www           CNAME ns                    ; "www.example.com" is an alias for "ns.example.com"
 wwwtest       CNAME www                   ; "wwwtest.example.com" is another alias for "www.example.com"
@@ -65,6 +66,7 @@ _xmpp-server._tcp   SRV   5 0 5269 xmpp-server.l.google.com.  ; SRV record
 
 ; TXT record, with embedded semicolons
 _domainkey    TXT   "v=DKIM1\\;g=*\\;k=rsa\\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"
+with_ms_txt   TXT   ( "Some text" )
 
 @             TXT   "some other \\"message\\" goes here" ; embedded quotes
 long          TXT   "a multi-segment TXT record" "usually used for really long TXT records" "since each segment can only span 255 chars"
@@ -132,7 +134,7 @@ ZONE
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      zone.rr.size.should be(44)
+      zone.rr.size.should be(46)
     end
 
     it "should build the correct NS records" do
@@ -152,7 +154,7 @@ ZONE
     it "should build the correct A records" do
       zone = DNS::Zonefile.load(@zonefile)
       a_records = zone.records_of DNS::Zonefile::A
-      a_records.size.should be(12)
+      a_records.size.should be(13)
 
       a_records.detect { |a|
         a.host == "example.com." && a.address == "10.0.0.1"
@@ -188,6 +190,10 @@ ZONE
 
       a_records.detect { |a|
         a.host == "with-ttl.example.com." && a.address == "10.0.0.5" && a.ttl == 60
+      }.should_not be_nil
+
+      a_records.detect { |a|
+        a.host == "with-age.example.com." && a.address == "10.0.0.7" && a.ttl == 60
       }.should_not be_nil
 
       a_records.detect { |a|
@@ -313,10 +319,14 @@ ZONE
     it "should build the correct TXT records" do
       zone = DNS::Zonefile.load(@zonefile)
       txt_records = zone.records_of DNS::Zonefile::TXT
-      txt_records.size.should be(5)
+      txt_records.size.should be(6)
 
       txt_records.detect { |r|
         r.host == "_domainkey.example.com." && r.data == '"v=DKIM1\;g=*\;k=rsa\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"'
+      }.should_not be_nil
+
+      txt_records.detect { |r|
+        r.host == "with_ms_txt.example.com." && r.data == '"Some text"'
       }.should_not be_nil
 
       txt_records.detect { |r|
@@ -348,7 +358,7 @@ ZONE
 
     it "should build the correct PTR records" do
       zone = DNS::Zonefile.load(@zonefile)
-      ptr_records = zone.records_of DNS::Zonefile::PTR 
+      ptr_records = zone.records_of DNS::Zonefile::PTR
       ptr_records.size.should be(1)
 
       ptr_records.detect { |r|
