@@ -65,6 +65,7 @@ _xmpp-server._tcp   SRV   5 0 5269 xmpp-server.l.google.com.  ; SRV record
 
 ; TXT record, with embedded semicolons
 _domainkey    TXT   "v=DKIM1\\;g=*\\;k=rsa\\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"
+with_ms_txt   TXT   ( "Some text" )
 
 @             TXT   "some other \\"message\\" goes here" ; embedded quotes
 long          TXT   "a multi-segment TXT record" "usually used for really long TXT records" "since each segment can only span 255 chars"
@@ -73,6 +74,12 @@ unquoted      TXT   some text data
 multiline     TXT   "A TXT record
 split across multiple lines
 with LF and CRLF line endings"
+
+; Microsoft AD DNS Examples with Aging.
+with-age [AGE:999992222] 60     A   10.0.0.7             ; with a specified AGE
+with-age-aaaa [AGE:999992222] 60     AAAA   10.0.0.8             ; with a specified AGE
+_ldap._tcp.pupy._sites.dc._msdcs [AGE:3636525]	600	SRV	0 100 389	host01.ad
+P229392922               [AGE:3636449]	172800	CNAME	printer01.ad
 
 @             SPF   "v=spf1 a a:other.domain.com ~all"
 
@@ -132,7 +139,7 @@ ZONE
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      zone.rr.size.should be(44)
+      zone.rr.size.should be(49)
     end
 
     it "should build the correct NS records" do
@@ -152,7 +159,7 @@ ZONE
     it "should build the correct A records" do
       zone = DNS::Zonefile.load(@zonefile)
       a_records = zone.records_of DNS::Zonefile::A
-      a_records.size.should be(12)
+      a_records.size.should be(13)
 
       a_records.detect { |a|
         a.host == "example.com." && a.address == "10.0.0.1"
@@ -191,6 +198,10 @@ ZONE
       }.should_not be_nil
 
       a_records.detect { |a|
+        a.host == "with-age.example.com." && a.address == "10.0.0.7" && a.ttl == 60
+      }.should_not be_nil
+
+      a_records.detect { |a|
         a.host == "ttl-class.example.com." && a.address == "10.0.0.6" && a.ttl == 60
       }.should_not be_nil
 
@@ -206,7 +217,7 @@ ZONE
     it "should build the correct CNAME records" do
       zone = DNS::Zonefile.load(@zonefile)
       cname_records = zone.records_of DNS::Zonefile::CNAME
-      cname_records.size.should be(8)
+      cname_records.size.should be(9)
 
       cname_records.detect { |cname|
         cname.host == "www.example.com." && cname.target == "ns.example.com."
@@ -218,6 +229,10 @@ ZONE
 
       cname_records.detect { |cname|
         cname.host == "www2.example.com." && cname.domainname == "ns.example.com." && cname.ttl == 86400
+      }.should_not be_nil
+
+      cname_records.detect { |cname|
+        cname.host == "P229392922.example.com." && cname.domainname == "printer01.ad.example.com." && cname.ttl == 172800
       }.should_not be_nil
 
      eam_records = cname_records.select { |c| c.host =~ /eam\./ }
@@ -258,7 +273,7 @@ ZONE
     it "should build the correct AAAA records" do
       zone = DNS::Zonefile.load(@zonefile)
       aaaa_records = zone.records_of DNS::Zonefile::AAAA
-      aaaa_records.size.should be(3)
+      aaaa_records.size.should be(4)
 
       aaaa_records.detect { |a|
         a.host == "example.com." && a.address == "2001:db8:a::1"
@@ -271,6 +286,11 @@ ZONE
       aaaa_records.detect { |a|
         a.host == "mail.example.com." && a.address == "2001:db8:c::10.0.0.4" && a.ttl == 86400
       }.should_not be_nil
+
+      aaaa_records.detect { |a|
+        a.host == "with-age-aaaa.example.com." && a.address == "10.0.0.8" && a.ttl == 60
+      }.should_not be_nil
+
     end
 
     it "should build the correct NAPTR records" do
@@ -290,10 +310,14 @@ ZONE
     it "should build the correct SRV records" do
       zone = DNS::Zonefile.load(@zonefile)
       srv_records = zone.records_of DNS::Zonefile::SRV
-      srv_records.size.should be(6)
+      srv_records.size.should be(7)
 
       srv_records.detect { |r|
         r.host == "_xmpp-server._tcp.example.com." && r.priority == 5 && r.weight == 0 && r.port == 5269 && r.target == 'xmpp-server.l.google.com.' && r.ttl == 86400
+      }.should_not be_nil
+
+        srv_records.detect { |r|
+        r.host == "_ldap._tcp.pupy._sites.dc._msdcs.example.com." && r.priority == 0 && r.weight == 100 && r.port == 389 && r.target == 'host01.ad.example.com.' && r.ttl == 600
       }.should_not be_nil
 
       eam_records = srv_records.select { |s| s.host =~ /eam\./ }
@@ -313,10 +337,14 @@ ZONE
     it "should build the correct TXT records" do
       zone = DNS::Zonefile.load(@zonefile)
       txt_records = zone.records_of DNS::Zonefile::TXT
-      txt_records.size.should be(5)
+      txt_records.size.should be(6)
 
       txt_records.detect { |r|
         r.host == "_domainkey.example.com." && r.data == '"v=DKIM1\;g=*\;k=rsa\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"'
+      }.should_not be_nil
+
+      txt_records.detect { |r|
+        r.host == "with_ms_txt.example.com." && r.data == '"Some text"'
       }.should_not be_nil
 
       txt_records.detect { |r|
@@ -348,7 +376,7 @@ ZONE
 
     it "should build the correct PTR records" do
       zone = DNS::Zonefile.load(@zonefile)
-      ptr_records = zone.records_of DNS::Zonefile::PTR 
+      ptr_records = zone.records_of DNS::Zonefile::PTR
       ptr_records.size.should be(1)
 
       ptr_records.detect { |r|
@@ -379,6 +407,28 @@ ZONE
       soa.retry_time.should eql(3600)
       soa.expiry_time.should eql(1209600)
       soa.nxttl.should eql(180)
+    end
+  end
+
+  describe "parsing an SOA with just . for responsible party" do
+    before(:each) do
+      @zonefile =<<-ZONE
+@             IN  SOA  ns.domain.example.com. . (
+              2007120710 ; serial number of this zone file
+              1d         ; slave refresh (1 day)
+              1d         ; slave retry time in case of a problem (1 day)
+              4W         ; slave expiration time (4 weeks)
+              3600       ; minimum caching time in case of failed lookups (1 hour)
+              )
+ZONE
+    end
+
+    it "should parse the SOA record correctly" do
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      soa.klass.should eql('IN')
+      soa.nameserver.should eql('ns.domain.example.com.')
+      soa.responsible_party.should eql('.')
     end
   end
 end

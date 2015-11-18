@@ -67,7 +67,7 @@ grammar Zonefile
       end
 
       def record_type
-        record.elements[4].text_value
+        record.record_type
       end
       
       def ttl
@@ -89,9 +89,13 @@ grammar Zonefile
   end
 
   rule a_record
-    host space ttl klass "A" space ip_address {
+    host space ms_age ttl klass "A" space ip_address {
       def to_s
-        "#{host} #{ttl} #{klass} A #{ip_address}"
+        "#{host} #{ms_age} #{ttl} #{klass} A #{ip_address}"
+      end
+
+      def record_type
+        "A"
       end
     }
   end
@@ -105,9 +109,13 @@ grammar Zonefile
   end
   
   rule aaaa_record
-    host space ttl klass "AAAA" space ip_address:ip6_address {
+    host space ms_age ttl klass "AAAA" space ip_address:ip6_address {
       def to_s
         "#{host} #{ttl} #{klass} AAAA #{ip_address}"
+      end
+
+      def record_type
+        "AAAA"
       end
     }
   end
@@ -122,13 +130,17 @@ grammar Zonefile
 
   rule cname_record
     (
-     host space ttl klass "CNAME" space target:host /
-     host space klass ttl "CNAME" space target:host /
-     host space ttl "CNAME" space target:host /
+     host space ms_age ttl klass "CNAME" space target:host /
+     host space klass ms_age ttl "CNAME" space target:host /
+     host space ms_age ttl "CNAME" space target:host /
      host space klass "CNAME" space target:host 
     ) {
       def to_s
         "#{host} #{ttl} #{klass} CNAME #{target}"
+      end
+
+      def record_type
+        "CNAME"
       end
     }
   end
@@ -138,66 +150,98 @@ grammar Zonefile
       def to_s
         "#{host} #{ttl} #{klass} MX #{priority} #{exchanger}"
       end
+
+      def record_type
+        "MX"
+      end
     }
   end
   
   rule naptr_record
-    host space ttl klass "NAPTR" space data {
+    host space ms_age ttl klass "NAPTR" space data {
       def to_s
         "#{host} #{ttl} #{klass} NAPTR #{data}"
+      end
+
+      def record_type
+        "NAPTR"
       end
     }
   end
 
   rule ns_record
-    host space ttl klass "NS" space nameserver:host {
+    host space ms_age ttl klass "NS" space nameserver:host {
       def to_s
         "#{host} #{ttl} #{klass} NS #{nameserver}"
+      end
+
+      def record_type
+        "NS"
       end
     }
   end
 
   rule ptr_record
-    host space ttl klass "PTR" space target:host {
+    host space ms_age ttl klass "PTR" space target:host {
       def to_s
         "#{host} #{ttl} #{klass} PTR #{target}"
+      end
+
+      def record_type
+        "PTR"
       end
     }
   end
 
   rule soa_record
-    origin space ttl klass "SOA" space ns space rp space data {
+    origin space ms_age ttl klass "SOA" space ns space rp space data {
       def to_s
         "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{space})"
+      end
+
+      def record_type
+        "SOA"
       end
     }
   end
 
   rule srv_record
     (
-     host space ttl klass "SRV" space priority:integer space weight:integer space port:integer space target:host /
-     host space klass ttl "SRV" space priority:integer space weight:integer space port:integer space target:host /
-     host space ttl "SRV" space priority:integer space weight:integer space port:integer space target:host /
+     host space ms_age ttl klass "SRV" space priority:integer space weight:integer space port:integer space target:host /
+     host space klass ms_age ttl "SRV" space priority:integer space weight:integer space port:integer space target:host /
+     host space ms_age ttl "SRV" space priority:integer space weight:integer space port:integer space target:host /
      host space klass "SRV" space priority:integer space weight:integer space port:integer space target:host
     ) {
       def to_s
         "#{host} #{ttl} #{klass} SRV #{priority} #{weight} #{port} #{target}"
       end
+
+      def record_type
+        "SRV"
+      end
     }
   end
   
   rule spf_record
-    host space ttl klass "SPF" space data:txt_data {
+    host space ms_age ttl klass "SPF" space data:txt_data {
       def to_s
         "#{host} #{ttl} #{klass} SPF #{data}"
+      end
+
+      def record_type
+        "SPF"
       end
     }
   end
   
   rule txt_record
-    host space ttl klass "TXT" space data:txt_data {
+    host space ms_age ttl klass "TXT" space data:ms_txt_data {
       def to_s
         "#{host} #{ttl} #{klass} TXT #{data}"
+      end
+
+      def record_type
+        "TXT"
       end
     }
   end
@@ -259,7 +303,7 @@ grammar Zonefile
   end
 
   rule rp
-    (("\\." / [+a-zA-Z0-9\-)])+ ".")+ {
+    (("\\." / [+a-zA-Z0-9\-)])* ".")+ {
       def to_s
         text_value
       end
@@ -361,6 +405,14 @@ grammar Zonefile
       end
     }
   end
+
+  rule ms_age
+    ( "[AGE:" [\d]+ "]" space / '' ) {
+      def to_s
+        text_value
+      end
+    }
+  end
   
   rule ttl
     ((time_interval space) / '') {
@@ -392,6 +444,17 @@ grammar Zonefile
     [^;\n\r]+ {
       def to_s
         text_value.strip
+      end
+    }
+  end
+
+  rule ms_txt_data
+    (
+      "(" space* data:txt_data space* ")" /
+      data:txt_data
+    ) {
+      def to_s
+        data.to_s
       end
     }
   end
