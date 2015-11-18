@@ -3153,12 +3153,7 @@ module DNS
               break
             end
           end
-          if s2.empty?
-            @index = i2
-            r2 = nil
-          else
-            r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
-          end
+          r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
           s1 << r2
           if r2
             if (match_len = has_terminal?(".", false, index))

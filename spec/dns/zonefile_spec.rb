@@ -409,4 +409,26 @@ ZONE
       soa.nxttl.should eql(180)
     end
   end
+
+  describe "parsing an SOA with just . for responsible party" do
+    before(:each) do
+      @zonefile =<<-ZONE
+@             IN  SOA  ns.domain.example.com. . (
+              2007120710 ; serial number of this zone file
+              1d         ; slave refresh (1 day)
+              1d         ; slave retry time in case of a problem (1 day)
+              4W         ; slave expiration time (4 weeks)
+              3600       ; minimum caching time in case of failed lookups (1 hour)
+              )
+ZONE
+    end
+
+    it "should parse the SOA record correctly" do
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      soa.klass.should eql('IN')
+      soa.nameserver.should eql('ns.domain.example.com.')
+      soa.responsible_party.should eql('.')
+    end
+  end
 end
