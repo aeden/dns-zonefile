@@ -321,39 +321,39 @@ module DNS
         end
 
         def serial
-          elements[12]
-        end
-
-        def space_or_break1
           elements[13]
         end
 
-        def refresh
-          elements[14]
-        end
-
-        def space_or_break2
+        def space_or_break1
           elements[15]
         end
 
-        def reretry
+        def refresh
           elements[16]
         end
 
-        def space_or_break3
-          elements[17]
-        end
-
-        def expiry
+        def space_or_break2
           elements[18]
         end
 
-        def space_or_break4
+        def reretry
           elements[19]
         end
 
+        def space_or_break3
+          elements[21]
+        end
+
+        def expiry
+          elements[22]
+        end
+
+        def space_or_break4
+          elements[24]
+        end
+
         def nxttl
-          elements[20]
+          elements[25]
         end
 
       end
@@ -430,7 +430,7 @@ module DNS
                             if r11
                               s13, i13 = [], index
                               loop do
-                                r14 = _nt_space_or_break
+                                r14 = _nt_multiline_comment
                                 if r14
                                   s13 << r14
                                 else
@@ -440,58 +440,136 @@ module DNS
                               r13 = instantiate_node(SyntaxNode,input, i13...index, s13)
                               s0 << r13
                               if r13
-                                r15 = _nt_serial
+                                s15, i15 = [], index
+                                loop do
+                                  r16 = _nt_space_or_break
+                                  if r16
+                                    s15 << r16
+                                  else
+                                    break
+                                  end
+                                end
+                                r15 = instantiate_node(SyntaxNode,input, i15...index, s15)
                                 s0 << r15
                                 if r15
-                                  r16 = _nt_space_or_break
-                                  s0 << r16
-                                  if r16
-                                    r17 = _nt_refresh
-                                    s0 << r17
-                                    if r17
-                                      r18 = _nt_space_or_break
-                                      s0 << r18
-                                      if r18
-                                        r19 = _nt_reretry
-                                        s0 << r19
-                                        if r19
-                                          r20 = _nt_space_or_break
-                                          s0 << r20
-                                          if r20
-                                            r21 = _nt_expiry
-                                            s0 << r21
-                                            if r21
-                                              r22 = _nt_space_or_break
-                                              s0 << r22
-                                              if r22
-                                                r23 = _nt_nxttl
-                                                s0 << r23
-                                                if r23
-                                                  s24, i24 = [], index
-                                                  loop do
-                                                    r25 = _nt_space_or_break
-                                                    if r25
-                                                      s24 << r25
-                                                    else
-                                                      break
-                                                    end
+                                  r17 = _nt_serial
+                                  s0 << r17
+                                  if r17
+                                    s18, i18 = [], index
+                                    loop do
+                                      r19 = _nt_multiline_comment
+                                      if r19
+                                        s18 << r19
+                                      else
+                                        break
+                                      end
+                                    end
+                                    r18 = instantiate_node(SyntaxNode,input, i18...index, s18)
+                                    s0 << r18
+                                    if r18
+                                      r20 = _nt_space_or_break
+                                      s0 << r20
+                                      if r20
+                                        r21 = _nt_refresh
+                                        s0 << r21
+                                        if r21
+                                          s22, i22 = [], index
+                                          loop do
+                                            r23 = _nt_multiline_comment
+                                            if r23
+                                              s22 << r23
+                                            else
+                                              break
+                                            end
+                                          end
+                                          r22 = instantiate_node(SyntaxNode,input, i22...index, s22)
+                                          s0 << r22
+                                          if r22
+                                            r24 = _nt_space_or_break
+                                            s0 << r24
+                                            if r24
+                                              r25 = _nt_reretry
+                                              s0 << r25
+                                              if r25
+                                                s26, i26 = [], index
+                                                loop do
+                                                  r27 = _nt_multiline_comment
+                                                  if r27
+                                                    s26 << r27
+                                                  else
+                                                    break
                                                   end
-                                                  r24 = instantiate_node(SyntaxNode,input, i24...index, s24)
-                                                  s0 << r24
-                                                  if r24
-                                                    if (match_len = has_terminal?(")", false, index))
-                                                      r27 = true
-                                                      @index += match_len
-                                                    else
-                                                      terminal_parse_failure('")"')
-                                                      r27 = nil
+                                                end
+                                                r26 = instantiate_node(SyntaxNode,input, i26...index, s26)
+                                                s0 << r26
+                                                if r26
+                                                  r28 = _nt_space_or_break
+                                                  s0 << r28
+                                                  if r28
+                                                    r29 = _nt_expiry
+                                                    s0 << r29
+                                                    if r29
+                                                      s30, i30 = [], index
+                                                      loop do
+                                                        r31 = _nt_multiline_comment
+                                                        if r31
+                                                          s30 << r31
+                                                        else
+                                                          break
+                                                        end
+                                                      end
+                                                      r30 = instantiate_node(SyntaxNode,input, i30...index, s30)
+                                                      s0 << r30
+                                                      if r30
+                                                        r32 = _nt_space_or_break
+                                                        s0 << r32
+                                                        if r32
+                                                          r33 = _nt_nxttl
+                                                          s0 << r33
+                                                          if r33
+                                                            s34, i34 = [], index
+                                                            loop do
+                                                              r35 = _nt_multiline_comment
+                                                              if r35
+                                                                s34 << r35
+                                                              else
+                                                                break
+                                                              end
+                                                            end
+                                                            r34 = instantiate_node(SyntaxNode,input, i34...index, s34)
+                                                            s0 << r34
+                                                            if r34
+                                                              s36, i36 = [], index
+                                                              loop do
+                                                                r37 = _nt_space_or_break
+                                                                if r37
+                                                                  s36 << r37
+                                                                else
+                                                                  break
+                                                                end
+                                                              end
+                                                              r36 = instantiate_node(SyntaxNode,input, i36...index, s36)
+                                                              s0 << r36
+                                                              if r36
+                                                                if (match_len = has_terminal?(")", false, index))
+                                                                  r39 = true
+                                                                  @index += match_len
+                                                                else
+                                                                  terminal_parse_failure('")"')
+                                                                  r39 = nil
+                                                                end
+                                                                if r39
+                                                                  r38 = r39
+                                                                else
+                                                                  r38 = instantiate_node(SyntaxNode,input, index...index)
+                                                                end
+                                                                s0 << r38
+                                                              end
+                                                            end
+                                                          end
+                                                        end
+                                                      end
                                                     end
-                                                    if r27
-                                                      r26 = r27
-                                                    else
-                                                      r26 = instantiate_node(SyntaxNode,input, index...index)
-                                                    end
-                                                    s0 << r26
                                                   end
                                                 end
                                               end
@@ -2765,6 +2843,70 @@ module DNS
         end
 
         node_cache[:origin][start_index] = r0
+
+        r0
+      end
+
+      module MultilineComment0
+      end
+
+      module MultilineComment1
+        def to_s
+          text_value.strip
+        end
+      end
+
+      def _nt_multiline_comment
+        start_index = index
+        if node_cache[:multiline_comment].has_key?(index)
+          cached = node_cache[:multiline_comment][index]
+          if cached
+            node_cache[:multiline_comment][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+            @index = cached.interval.end
+          end
+          return cached
+        end
+
+        i0, s0 = index, []
+        s1, i1 = [], index
+        loop do
+          r2 = _nt_linebreak
+          if r2
+            s1 << r2
+          else
+            break
+          end
+        end
+        if s1.empty?
+          @index = i1
+          r1 = nil
+        else
+          r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
+        end
+        s0 << r1
+        if r1
+          s3, i3 = [], index
+          loop do
+            r4 = _nt_comment
+            if r4
+              s3 << r4
+            else
+              break
+            end
+          end
+          r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+          s0 << r3
+        end
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(MultilineComment0)
+          r0.extend(MultilineComment1)
+        else
+          @index = i0
+          r0 = nil
+        end
+
+        node_cache[:multiline_comment][start_index] = r0
 
         r0
       end

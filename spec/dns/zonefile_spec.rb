@@ -21,7 +21,10 @@ $TTL 86400; expire in 1 day.
 $OTHER abc
 ; line above has spaces at the end, but no comment
 @             IN  SOA  ns.example.com. hostmaster\\.awesome.example.com. (
+;
               2007120710 ; serial number of this zone file
+              ;two
+              ;comments
               1d         ; slave refresh (1 day)
               1d         ; slave retry time in case of a problem (1 day)
               4W         ; slave expiration time (4 weeks)
