@@ -321,39 +321,39 @@ module DNS
         end
 
         def serial
-          elements[12]
-        end
-
-        def space_or_break1
           elements[13]
         end
 
-        def refresh
-          elements[14]
-        end
-
-        def space_or_break2
+        def space_or_break1
           elements[15]
         end
 
-        def reretry
+        def refresh
           elements[16]
         end
 
-        def space_or_break3
-          elements[17]
-        end
-
-        def expiry
+        def space_or_break2
           elements[18]
         end
 
-        def space_or_break4
+        def reretry
           elements[19]
         end
 
+        def space_or_break3
+          elements[21]
+        end
+
+        def expiry
+          elements[22]
+        end
+
+        def space_or_break4
+          elements[24]
+        end
+
         def nxttl
-          elements[20]
+          elements[25]
         end
 
       end
@@ -430,7 +430,7 @@ module DNS
                             if r11
                               s13, i13 = [], index
                               loop do
-                                r14 = _nt_space_or_break
+                                r14 = _nt_multiline_comment
                                 if r14
                                   s13 << r14
                                 else
@@ -440,58 +440,136 @@ module DNS
                               r13 = instantiate_node(SyntaxNode,input, i13...index, s13)
                               s0 << r13
                               if r13
-                                r15 = _nt_serial
+                                s15, i15 = [], index
+                                loop do
+                                  r16 = _nt_space_or_break
+                                  if r16
+                                    s15 << r16
+                                  else
+                                    break
+                                  end
+                                end
+                                r15 = instantiate_node(SyntaxNode,input, i15...index, s15)
                                 s0 << r15
                                 if r15
-                                  r16 = _nt_space_or_break
-                                  s0 << r16
-                                  if r16
-                                    r17 = _nt_refresh
-                                    s0 << r17
-                                    if r17
-                                      r18 = _nt_space_or_break
-                                      s0 << r18
-                                      if r18
-                                        r19 = _nt_reretry
-                                        s0 << r19
-                                        if r19
-                                          r20 = _nt_space_or_break
-                                          s0 << r20
-                                          if r20
-                                            r21 = _nt_expiry
-                                            s0 << r21
-                                            if r21
-                                              r22 = _nt_space_or_break
-                                              s0 << r22
-                                              if r22
-                                                r23 = _nt_nxttl
-                                                s0 << r23
-                                                if r23
-                                                  s24, i24 = [], index
-                                                  loop do
-                                                    r25 = _nt_space_or_break
-                                                    if r25
-                                                      s24 << r25
-                                                    else
-                                                      break
-                                                    end
+                                  r17 = _nt_serial
+                                  s0 << r17
+                                  if r17
+                                    s18, i18 = [], index
+                                    loop do
+                                      r19 = _nt_multiline_comment
+                                      if r19
+                                        s18 << r19
+                                      else
+                                        break
+                                      end
+                                    end
+                                    r18 = instantiate_node(SyntaxNode,input, i18...index, s18)
+                                    s0 << r18
+                                    if r18
+                                      r20 = _nt_space_or_break
+                                      s0 << r20
+                                      if r20
+                                        r21 = _nt_refresh
+                                        s0 << r21
+                                        if r21
+                                          s22, i22 = [], index
+                                          loop do
+                                            r23 = _nt_multiline_comment
+                                            if r23
+                                              s22 << r23
+                                            else
+                                              break
+                                            end
+                                          end
+                                          r22 = instantiate_node(SyntaxNode,input, i22...index, s22)
+                                          s0 << r22
+                                          if r22
+                                            r24 = _nt_space_or_break
+                                            s0 << r24
+                                            if r24
+                                              r25 = _nt_reretry
+                                              s0 << r25
+                                              if r25
+                                                s26, i26 = [], index
+                                                loop do
+                                                  r27 = _nt_multiline_comment
+                                                  if r27
+                                                    s26 << r27
+                                                  else
+                                                    break
                                                   end
-                                                  r24 = instantiate_node(SyntaxNode,input, i24...index, s24)
-                                                  s0 << r24
-                                                  if r24
-                                                    if (match_len = has_terminal?(")", false, index))
-                                                      r27 = true
-                                                      @index += match_len
-                                                    else
-                                                      terminal_parse_failure('")"')
-                                                      r27 = nil
+                                                end
+                                                r26 = instantiate_node(SyntaxNode,input, i26...index, s26)
+                                                s0 << r26
+                                                if r26
+                                                  r28 = _nt_space_or_break
+                                                  s0 << r28
+                                                  if r28
+                                                    r29 = _nt_expiry
+                                                    s0 << r29
+                                                    if r29
+                                                      s30, i30 = [], index
+                                                      loop do
+                                                        r31 = _nt_multiline_comment
+                                                        if r31
+                                                          s30 << r31
+                                                        else
+                                                          break
+                                                        end
+                                                      end
+                                                      r30 = instantiate_node(SyntaxNode,input, i30...index, s30)
+                                                      s0 << r30
+                                                      if r30
+                                                        r32 = _nt_space_or_break
+                                                        s0 << r32
+                                                        if r32
+                                                          r33 = _nt_nxttl
+                                                          s0 << r33
+                                                          if r33
+                                                            s34, i34 = [], index
+                                                            loop do
+                                                              r35 = _nt_multiline_comment
+                                                              if r35
+                                                                s34 << r35
+                                                              else
+                                                                break
+                                                              end
+                                                            end
+                                                            r34 = instantiate_node(SyntaxNode,input, i34...index, s34)
+                                                            s0 << r34
+                                                            if r34
+                                                              s36, i36 = [], index
+                                                              loop do
+                                                                r37 = _nt_space_or_break
+                                                                if r37
+                                                                  s36 << r37
+                                                                else
+                                                                  break
+                                                                end
+                                                              end
+                                                              r36 = instantiate_node(SyntaxNode,input, i36...index, s36)
+                                                              s0 << r36
+                                                              if r36
+                                                                if (match_len = has_terminal?(")", false, index))
+                                                                  r39 = true
+                                                                  @index += match_len
+                                                                else
+                                                                  terminal_parse_failure('")"')
+                                                                  r39 = nil
+                                                                end
+                                                                if r39
+                                                                  r38 = r39
+                                                                else
+                                                                  r38 = instantiate_node(SyntaxNode,input, index...index)
+                                                                end
+                                                                s0 << r38
+                                                              end
+                                                            end
+                                                          end
+                                                        end
+                                                      end
                                                     end
-                                                    if r27
-                                                      r26 = r27
-                                                    else
-                                                      r26 = instantiate_node(SyntaxNode,input, index...index)
-                                                    end
-                                                    s0 << r26
                                                   end
                                                 end
                                               end
@@ -1097,9 +1175,10 @@ module DNS
           r0 = nil
         else
           if s0.size < 39
-            terminal_failures.pop
+            @terminal_failures.pop
           end
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(Ip6Address0)
           r0.extend(Ip6Address0)
         end
 
@@ -1286,6 +1365,7 @@ module DNS
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
           r0.extend(CnameRecord4)
+          r0.extend(CnameRecord4)
         else
           i10, s10 = index, []
           r11 = _nt_host
@@ -1335,6 +1415,7 @@ module DNS
             r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
             r0 = r10
             r0.extend(CnameRecord4)
+            r0.extend(CnameRecord4)
           else
             i19, s19 = index, []
             r20 = _nt_host
@@ -1380,6 +1461,7 @@ module DNS
               r19 = SyntaxNode.new(input, (index-1)...index) if r19 == true
               r0 = r19
               r0.extend(CnameRecord4)
+              r0.extend(CnameRecord4)
             else
               i27, s27 = index, []
               r28 = _nt_host
@@ -1420,6 +1502,7 @@ module DNS
               if r27
                 r27 = SyntaxNode.new(input, (index-1)...index) if r27 == true
                 r0 = r27
+                r0.extend(CnameRecord4)
                 r0.extend(CnameRecord4)
               else
                 @index = i0
@@ -2282,6 +2365,7 @@ module DNS
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
           r0.extend(SrvRecord4)
+          r0.extend(SrvRecord4)
         else
           i16, s16 = index, []
           r17 = _nt_host
@@ -2355,6 +2439,7 @@ module DNS
             r16 = SyntaxNode.new(input, (index-1)...index) if r16 == true
             r0 = r16
             r0.extend(SrvRecord4)
+            r0.extend(SrvRecord4)
           else
             i31, s31 = index, []
             r32 = _nt_host
@@ -2424,6 +2509,7 @@ module DNS
               r31 = SyntaxNode.new(input, (index-1)...index) if r31 == true
               r0 = r31
               r0.extend(SrvRecord4)
+              r0.extend(SrvRecord4)
             else
               i45, s45 = index, []
               r46 = _nt_host
@@ -2488,6 +2574,7 @@ module DNS
               if r45
                 r45 = SyntaxNode.new(input, (index-1)...index) if r45 == true
                 r0 = r45
+                r0.extend(SrvRecord4)
                 r0.extend(SrvRecord4)
               else
                 @index = i0
@@ -2760,6 +2847,70 @@ module DNS
         r0
       end
 
+      module MultilineComment0
+      end
+
+      module MultilineComment1
+        def to_s
+          text_value.strip
+        end
+      end
+
+      def _nt_multiline_comment
+        start_index = index
+        if node_cache[:multiline_comment].has_key?(index)
+          cached = node_cache[:multiline_comment][index]
+          if cached
+            node_cache[:multiline_comment][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+            @index = cached.interval.end
+          end
+          return cached
+        end
+
+        i0, s0 = index, []
+        s1, i1 = [], index
+        loop do
+          r2 = _nt_linebreak
+          if r2
+            s1 << r2
+          else
+            break
+          end
+        end
+        if s1.empty?
+          @index = i1
+          r1 = nil
+        else
+          r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
+        end
+        s0 << r1
+        if r1
+          s3, i3 = [], index
+          loop do
+            r4 = _nt_comment
+            if r4
+              s3 << r4
+            else
+              break
+            end
+          end
+          r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+          s0 << r3
+        end
+        if s0.last
+          r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(MultilineComment0)
+          r0.extend(MultilineComment1)
+        else
+          @index = i0
+          r0 = nil
+        end
+
+        node_cache[:multiline_comment][start_index] = r0
+
+        r0
+      end
+
       module Space0
         def to_s
           text_value
@@ -2797,6 +2948,7 @@ module DNS
           r0 = nil
         else
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(Space0)
           r0.extend(Space0)
         end
 
@@ -2843,6 +2995,7 @@ module DNS
         else
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(Linebreak0)
+          r0.extend(Linebreak0)
         end
 
         node_cache[:linebreak][start_index] = r0
@@ -2887,6 +3040,7 @@ module DNS
           r0 = nil
         else
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(SpaceOrBreak0)
           r0.extend(SpaceOrBreak0)
         end
 
@@ -2943,6 +3097,7 @@ module DNS
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
           r0.extend(Klass1)
+          r0.extend(Klass1)
         else
           if (match_len = has_terminal?('', false, index))
             r4 = true
@@ -2954,6 +3109,7 @@ module DNS
           if r4
             r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
             r0 = r4
+            r0.extend(Klass1)
             r0.extend(Klass1)
           else
             @index = i0
@@ -3184,6 +3340,7 @@ module DNS
         else
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(Rp1)
+          r0.extend(Rp1)
         end
 
         node_cache[:rp][start_index] = r0
@@ -3398,6 +3555,7 @@ module DNS
         else
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(Integer0)
+          r0.extend(Integer0)
         end
 
         node_cache[:integer][start_index] = r0
@@ -3444,6 +3602,7 @@ module DNS
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
           r0.extend(TimeMultiplier0)
+          r0.extend(TimeMultiplier0)
         else
           if (match_len = has_terminal?('S', false, index))
             r2 = true
@@ -3455,6 +3614,7 @@ module DNS
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
+            r0.extend(TimeMultiplier0)
             r0.extend(TimeMultiplier0)
           else
             if (match_len = has_terminal?('m', false, index))
@@ -3468,6 +3628,7 @@ module DNS
               r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
               r0 = r3
               r0.extend(TimeMultiplier0)
+              r0.extend(TimeMultiplier0)
             else
               if (match_len = has_terminal?('M', false, index))
                 r4 = true
@@ -3479,6 +3640,7 @@ module DNS
               if r4
                 r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
                 r0 = r4
+                r0.extend(TimeMultiplier0)
                 r0.extend(TimeMultiplier0)
               else
                 if (match_len = has_terminal?('h', false, index))
@@ -3492,6 +3654,7 @@ module DNS
                   r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
                   r0 = r5
                   r0.extend(TimeMultiplier0)
+                  r0.extend(TimeMultiplier0)
                 else
                   if (match_len = has_terminal?('H', false, index))
                     r6 = true
@@ -3503,6 +3666,7 @@ module DNS
                   if r6
                     r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
                     r0 = r6
+                    r0.extend(TimeMultiplier0)
                     r0.extend(TimeMultiplier0)
                   else
                     if (match_len = has_terminal?('d', false, index))
@@ -3516,6 +3680,7 @@ module DNS
                       r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
                       r0 = r7
                       r0.extend(TimeMultiplier0)
+                      r0.extend(TimeMultiplier0)
                     else
                       if (match_len = has_terminal?('D', false, index))
                         r8 = true
@@ -3527,6 +3692,7 @@ module DNS
                       if r8
                         r8 = SyntaxNode.new(input, (index-1)...index) if r8 == true
                         r0 = r8
+                        r0.extend(TimeMultiplier0)
                         r0.extend(TimeMultiplier0)
                       else
                         if (match_len = has_terminal?('w', false, index))
@@ -3540,6 +3706,7 @@ module DNS
                           r9 = SyntaxNode.new(input, (index-1)...index) if r9 == true
                           r0 = r9
                           r0.extend(TimeMultiplier0)
+                          r0.extend(TimeMultiplier0)
                         else
                           if (match_len = has_terminal?('W', false, index))
                             r10 = true
@@ -3552,6 +3719,7 @@ module DNS
                             r10 = SyntaxNode.new(input, (index-1)...index) if r10 == true
                             r0 = r10
                             r0.extend(TimeMultiplier0)
+                            r0.extend(TimeMultiplier0)
                           else
                             if (match_len = has_terminal?('', false, index))
                               r11 = true
@@ -3563,6 +3731,7 @@ module DNS
                             if r11
                               r11 = SyntaxNode.new(input, (index-1)...index) if r11 == true
                               r0 = r11
+                              r0.extend(TimeMultiplier0)
                               r0.extend(TimeMultiplier0)
                             else
                               @index = i0
@@ -3837,6 +4006,7 @@ module DNS
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
           r0.extend(MsAge1)
+          r0.extend(MsAge1)
         else
           if (match_len = has_terminal?('', false, index))
             r7 = true
@@ -3848,6 +4018,7 @@ module DNS
           if r7
             r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
             r0 = r7
+            r0.extend(MsAge1)
             r0.extend(MsAge1)
           else
             @index = i0
@@ -3909,6 +4080,7 @@ module DNS
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
           r0.extend(Ttl1)
+          r0.extend(Ttl1)
         else
           if (match_len = has_terminal?('', false, index))
             r4 = true
@@ -3920,6 +4092,7 @@ module DNS
           if r4
             r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
             r0 = r4
+            r0.extend(Ttl1)
             r0.extend(Ttl1)
           else
             @index = i0
@@ -3982,6 +4155,7 @@ module DNS
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
           r0.extend(Host0)
+          r0.extend(Host0)
         else
           if (match_len = has_terminal?("@", false, index))
             r3 = true
@@ -3993,6 +4167,7 @@ module DNS
           if r3
             r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
             r0 = r3
+            r0.extend(Host0)
             r0.extend(Host0)
           else
             if (match_len = has_terminal?(' ', false, index))
@@ -4006,6 +4181,7 @@ module DNS
               r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
               r0 = r4
               r0.extend(Host0)
+              r0.extend(Host0)
             else
               if (match_len = has_terminal?("\t", false, index))
                 r5 = true
@@ -4017,6 +4193,7 @@ module DNS
               if r5
                 r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
                 r0 = r5
+                r0.extend(Host0)
                 r0.extend(Host0)
               else
                 @index = i0
@@ -4068,6 +4245,7 @@ module DNS
           r0 = nil
         else
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(Data0)
           r0.extend(Data0)
         end
 
@@ -4167,6 +4345,7 @@ module DNS
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
           r0.extend(MsTxtData2)
+          r0.extend(MsTxtData2)
         else
           i9, s9 = index, []
           r10 = _nt_txt_data
@@ -4181,6 +4360,7 @@ module DNS
           if r9
             r9 = SyntaxNode.new(input, (index-1)...index) if r9 == true
             r0 = r9
+            r0.extend(MsTxtData2)
             r0.extend(MsTxtData2)
           else
             @index = i0
@@ -4293,11 +4473,13 @@ module DNS
           r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
           r0 = r1
           r0.extend(TxtString0)
+          r0.extend(TxtString0)
         else
           r2 = _nt_unquoted_string
           if r2
             r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
             r0 = r2
+            r0.extend(TxtString0)
             r0.extend(TxtString0)
           else
             @index = i0
@@ -4391,6 +4573,7 @@ module DNS
         if s0.last
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
           r0.extend(QuotedString0)
+          r0.extend(QuotedString1)
         else
           @index = i0
           r0 = nil
@@ -4438,6 +4621,7 @@ module DNS
           r0 = nil
         else
           r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+          r0.extend(UnquotedString0)
           r0.extend(UnquotedString0)
         end
 

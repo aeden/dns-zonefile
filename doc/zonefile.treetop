@@ -43,7 +43,7 @@ grammar Zonefile
   end
 
   rule soa
-    origin space ttl klass "SOA" space ns space rp space "("? space_or_break* serial space_or_break refresh space_or_break reretry space_or_break expiry space_or_break nxttl space_or_break* ")"? {
+    origin space ttl klass "SOA" space ns space rp space "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"? {
       def to_s
         "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{serial} #{refresh} #{reretry} #{expiry} #{nxttl})"
       end
@@ -250,6 +250,14 @@ grammar Zonefile
     host comment* {
       def to_s
         "#{host}"
+      end
+    }
+  end
+
+  rule multiline_comment
+     linebreak+ comment* {
+      def to_s
+        text_value.strip
       end
     }
   end
