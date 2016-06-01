@@ -1,11 +1,12 @@
-require 'dns/zonefile/parser'
-require 'pp'
+require 'dns/zonefile/version'
+require 'treetop'
+Treetop.load 'lib/dns/zonefile'
 
 module DNS
   module Zonefile
     class << self
       def parse(zone_string)
-	parser = DNS::Zonefile::Parser.new
+	parser = ZonefileParser.new
 	if result = parser.parse(zone_string)
 	  result
 	else
