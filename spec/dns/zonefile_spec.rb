@@ -1,15 +1,13 @@
 require 'spec_helper'
 require 'dns/zonefile'
 
-describe "DNS::Zonefile" do
+RSpec.describe "DNS::Zonefile" do
   it "should be versioned" do
-    lambda {
-      DNS::Zonefile.const_get(:VERSION)
-    }.should_not raise_error
+    expect { DNS::Zonefile.const_get(:VERSION) }.to_not raise_error
   end
 
   it "should provide a way of parsing a string" do
-    DNS::Zonefile.should respond_to(:parse)
+    expect(DNS::Zonefile).to respond_to(:parse)
   end
 
   describe "parsing a zonefile string" do
@@ -112,279 +110,279 @@ ZONE
 
     it "should set the origin correctly" do
       zone = DNS::Zonefile.parse(@zonefile)
-      zone.origin.should eql('@')
+      expect(zone.origin).to eq('@')
     end
 
     it "should interpret the origin correctly" do
       zone = DNS::Zonefile.load(@zonefile)
-      zone.soa.origin.should eql('example.com.')
+      expect(zone.soa.origin).to eq('example.com.')
     end
 
     it "should set the zone variables correctly" do
       zone = DNS::Zonefile.parse(@zonefile)
-      zone.variables['TTL'].should eql('86400')
-      zone.variables['ORIGIN'].should eql('example.com.')
+      expect(zone.variables['TTL']).to eq('86400')
+      expect(zone.variables['ORIGIN']).to eq('example.com.')
     end
 
     it "should interpret the SOA correctly" do
       zone = DNS::Zonefile.load(@zonefile)
       soa = zone.soa
-      soa.klass.should eql('IN')
-      soa.ttl.should eql(86400)
-      soa.nameserver.should eql('ns.example.com.')
-      soa.responsible_party.should eql('hostmaster\.awesome.example.com.')
-      soa.serial.should eql(2007120710)
-      soa.refresh_time.should eql(86400)
-      soa.retry_time.should eql(86400)
-      soa.expiry_time.should eql(2419200)
-      soa.nxttl.should eql(3600)
+      expect(soa.klass).to eq('IN')
+      expect(soa.ttl).to eq(86400)
+      expect(soa.nameserver).to eq('ns.example.com.')
+      expect(soa.responsible_party).to eq('hostmaster\.awesome.example.com.')
+      expect(soa.serial).to eq(2007120710)
+      expect(soa.refresh_time).to eq(86400)
+      expect(soa.retry_time).to eq(86400)
+      expect(soa.expiry_time).to eq(2419200)
+      expect(soa.nxttl).to eq(3600)
     end
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      zone.rr.size.should be(49)
+      expect(zone.rr.size).to eq(49)
     end
 
     it "should build the correct NS records" do
       zone = DNS::Zonefile.load(@zonefile)
       ns_records = zone.records_of DNS::Zonefile::NS
-      ns_records.size.should be(2)
+      expect(ns_records.size).to eq(2)
 
-      ns_records.detect { |ns|
+      expect(ns_records.detect { |ns|
         ns.host == "example.com." && ns.nameserver == "ns.example.com."
-      }.should_not be_nil
+      }).to_not be_nil
 
-      ns_records.detect { |ns|
+      expect(ns_records.detect { |ns|
         ns.host == "example.com." && ns.nameserver == "ns.somewhere.com." && ns.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
     end
 
     it "should build the correct A records" do
       zone = DNS::Zonefile.load(@zonefile)
       a_records = zone.records_of DNS::Zonefile::A
-      a_records.size.should be(13)
+      expect(a_records.size).to eq(13)
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "example.com." && a.address == "10.0.0.1"
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "example.com." && a.address == "10.0.0.11"
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "example.com." && a.address == "10.0.0.12"
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "ns.example.com." && a.address == "10.0.0.2" && a.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "ns.example.com." && a.address == "10.0.0.21" && a.ttl == 60
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "*.example.com." && a.address == "10.0.0.100"
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "*.sub.example.com." && a.address == "10.0.0.101"
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "with-class.example.com." && a.address == "10.0.0.3" && a.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "with-ttl.example.com." && a.address == "10.0.0.5" && a.ttl == 60
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "with-age.example.com." && a.address == "10.0.0.7" && a.ttl == 60
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "ttl-class.example.com." && a.address == "10.0.0.6" && a.ttl == 60
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "test.example.com." && a.address == "10.1.0.1" && a.ttl == 3600
-      }.should_not be_nil
+      }).to_not be_nil
 
-      a_records.detect { |a|
+      expect(a_records.detect { |a|
         a.host == "www.test.example.com." && a.address == "10.1.0.2" && a.ttl == 3600
-      }.should_not be_nil
+      }).to_not be_nil
     end
 
     it "should build the correct CNAME records" do
       zone = DNS::Zonefile.load(@zonefile)
       cname_records = zone.records_of DNS::Zonefile::CNAME
-      cname_records.size.should be(9)
+      expect(cname_records.size).to eq(9)
 
-      cname_records.detect { |cname|
+      expect(cname_records.detect { |cname|
         cname.host == "www.example.com." && cname.target == "ns.example.com."
-      }.should_not be_nil
+      }).to_not be_nil
 
-      cname_records.detect { |cname|
+      expect(cname_records.detect { |cname|
         cname.host == "wwwtest.example.com." && cname.domainname == "www.example.com."
-      }.should_not be_nil
+      }).to_not be_nil
 
-      cname_records.detect { |cname|
+      expect(cname_records.detect { |cname|
         cname.host == "www2.example.com." && cname.domainname == "ns.example.com." && cname.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
 
-      cname_records.detect { |cname|
+      expect(cname_records.detect { |cname|
         cname.host == "P229392922.example.com." && cname.domainname == "printer01.ad.example.com." && cname.ttl == 172800
-      }.should_not be_nil
+      }).to_not be_nil
 
      eam_records = cname_records.select { |c| c.host =~ /eam\./ }
 
-     eam_records.should have(5).records
+     expect(eam_records.length).to eq(5)
 
      eam_records.each { |cname|
-       cname.target.should == "www.example.com."
+       expect(cname.target).to eq("www.example.com.")
      }
 
      r = eam_records.group_by { |c| c.ttl }
-     (r[900] || []).should have(3).records
-     (r[86400] || []).should have(2).records
+     expect(r[900].length).to eq(3)
+     expect(r[86400].length).to eq(2)
     end
 
     it "should build the correct MX records" do
       zone = DNS::Zonefile.load(@zonefile)
       mx_records = zone.records_of DNS::Zonefile::MX
-      mx_records.size.should be(4)
+      expect(mx_records.length).to eq(4)
 
-      mx_records.detect { |mx|
+      expect(mx_records.detect { |mx|
         mx.host == "example.com." && mx.priority == 10 && mx.exchanger == 'mail.example.com.'
-      }.should_not be_nil
+      }).to_not be_nil
 
-      mx_records.detect { |mx|
+      expect(mx_records.detect { |mx|
         mx.host == "example.com." && mx.priority == 20 && mx.exchange == 'mail2.example.com.'
-      }.should_not be_nil
+      }).to_not be_nil
 
-      mx_records.detect { |mx|
+      expect(mx_records.detect { |mx|
         mx.host == "example.com." && mx.priority == 50 && mx.domainname == 'mail3.example.com.' && mx.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
 
-      mx_records.detect { |mx|
+      expect(mx_records.detect { |mx|
         mx.host == "test.example.com." && mx.priority == 10 && mx.domainname == 'mail.example.com.' && mx.ttl == 3600
-      }.should_not be_nil
+      }).to_not be_nil
     end
 
     it "should build the correct AAAA records" do
       zone = DNS::Zonefile.load(@zonefile)
       aaaa_records = zone.records_of DNS::Zonefile::AAAA
-      aaaa_records.size.should be(4)
+      expect(aaaa_records.length).to eq(4)
 
-      aaaa_records.detect { |a|
+      expect(aaaa_records.detect { |a|
         a.host == "example.com." && a.address == "2001:db8:a::1"
-      }.should_not be_nil
+      }).to_not be_nil
 
-      aaaa_records.detect { |a|
+      expect(aaaa_records.detect { |a|
         a.host == "ns.example.com." && a.address == "2001:db8:b::1"
-      }.should_not be_nil
+      }).to_not be_nil
 
-      aaaa_records.detect { |a|
+      expect(aaaa_records.detect { |a|
         a.host == "mail.example.com." && a.address == "2001:db8:c::10.0.0.4" && a.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
 
-      aaaa_records.detect { |a|
+      expect(aaaa_records.detect { |a|
         a.host == "with-age-aaaa.example.com." && a.address == "10.0.0.8" && a.ttl == 60
-      }.should_not be_nil
+      }).to_not be_nil
 
     end
 
     it "should build the correct NAPTR records" do
       zone = DNS::Zonefile.load(@zonefile)
       naptr_records = zone.records_of DNS::Zonefile::NAPTR
-      naptr_records.size.should be(2)
+      expect(naptr_records.length).to eq(2)
 
-      naptr_records.detect { |r|
+      expect(naptr_records.detect { |r|
         r.host == "sip.example.com." && r.data == '100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .'
-      }.should_not be_nil
+      }).to_not be_nil
 
-      naptr_records.detect { |r|
+      expect(naptr_records.detect { |r|
         r.host == "sip2.example.com." && r.data == %q{100 10 "" "" "/urn:cid:.+@([^\\.]+\\.)(.*)$/\\2/i" .} && r.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
     end
 
     it "should build the correct SRV records" do
       zone = DNS::Zonefile.load(@zonefile)
       srv_records = zone.records_of DNS::Zonefile::SRV
-      srv_records.size.should be(7)
+      expect(srv_records.length).to eq(7)
 
-      srv_records.detect { |r|
+      expect(srv_records.detect { |r|
         r.host == "_xmpp-server._tcp.example.com." && r.priority == 5 && r.weight == 0 && r.port == 5269 && r.target == 'xmpp-server.l.google.com.' && r.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
 
-        srv_records.detect { |r|
+      expect(srv_records.detect { |r|
         r.host == "_ldap._tcp.pupy._sites.dc._msdcs.example.com." && r.priority == 0 && r.weight == 100 && r.port == 389 && r.target == 'host01.ad.example.com.' && r.ttl == 600
-      }.should_not be_nil
+      }).to_not be_nil
 
       eam_records = srv_records.select { |s| s.host =~ /eam\./ }
-      eam_records.should have(5).records
+      expect(eam_records.length).to eq(5)
       eam_records.each { |srv|
-        srv.target.should == "www.example.com."
-        srv.priority.should == 5
-        srv.port.should == 5269
-        srv.weight.should == 0
+        expect(srv.target).to eq("www.example.com.")
+        expect(srv.priority).to eq(5)
+        expect(srv.port).to eq(5269)
+        expect(srv.weight).to eq(0)
       }
 
       r = eam_records.group_by { |c| c.ttl }
-      (r[900] || []).should have(3).records
-      (r[86400] || []).should have(2).records
+      expect(r[900].length).to eq(3)
+      expect(r[86400].length).to eq(2)
     end
 
     it "should build the correct TXT records" do
       zone = DNS::Zonefile.load(@zonefile)
       txt_records = zone.records_of DNS::Zonefile::TXT
-      txt_records.size.should be(6)
+      expect(txt_records.size).to eq(6)
 
-      txt_records.detect { |r|
+      expect(txt_records.detect { |r|
         r.host == "_domainkey.example.com." && r.data == '"v=DKIM1\;g=*\;k=rsa\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"'
-      }.should_not be_nil
+      }).to_not be_nil
 
-      txt_records.detect { |r|
+      expect(txt_records.detect { |r|
         r.host == "with_ms_txt.example.com." && r.data == '"Some text"'
-      }.should_not be_nil
+      }).to_not be_nil
 
-      txt_records.detect { |r|
+      expect(txt_records.detect { |r|
         r.host == "example.com." && r.data == '"some other \"message\" goes here"' && r.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
 
-      txt_records.detect { |r|
+      expect(txt_records.detect { |r|
         r.host == "long.example.com." && r.data == '"a multi-segment TXT record" "usually used for really long TXT records" "since each segment can only span 255 chars"'
-      }.should_not be_nil
+      }).to_not be_nil
 
-      txt_records.detect { |r|
+      expect(txt_records.detect { |r|
         r.host == "unquoted.example.com." && r.data == 'some text data'
-      }.should_not be_nil
+      }).to_not be_nil
 
-      txt_records.detect { |r|
+      expect(txt_records.detect { |r|
         r.host == "multiline.example.com." && r.data == "\"A TXT record\nsplit across multiple lines\nwith LF and CRLF line endings\""
-      }.should_not be_nil
+      }).to_not be_nil
     end
 
     it "should build the correct SPF records" do
       zone = DNS::Zonefile.load(@zonefile)
       spf_records = zone.records_of DNS::Zonefile::SPF
-      spf_records.size.should be(1)
+      expect(spf_records.length).to eq(1)
 
-      spf_records.detect { |r|
+      expect(spf_records.detect { |r|
         r.host == "example.com." && r.data == '"v=spf1 a a:other.domain.com ~all"' && r.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
     end
 
     it "should build the correct PTR records" do
       zone = DNS::Zonefile.load(@zonefile)
       ptr_records = zone.records_of DNS::Zonefile::PTR
-      ptr_records.size.should be(1)
+      expect(ptr_records.length).to eq(1)
 
-      ptr_records.detect { |r|
+      expect(ptr_records.detect { |r|
         r.host == "45.example.com." && r.target == 'example.com.' && r.ttl == 86400
-      }.should_not be_nil
+      }).to_not be_nil
     end
   end
 
@@ -401,15 +399,15 @@ ZONE
     it "should parse the SOA record correctly" do
       zone = DNS::Zonefile.load(@zonefile)
       soa = zone.soa
-      soa.klass.should eql('IN')
-      soa.ttl.should eql(86400)
-      soa.nameserver.should eql('ns0.example.com.')
-      soa.responsible_party.should eql('hostmaster.example.com.')
-      soa.serial.should eql(2006010558)
-      soa.refresh_time.should eql(43200)
-      soa.retry_time.should eql(3600)
-      soa.expiry_time.should eql(1209600)
-      soa.nxttl.should eql(180)
+      expect(soa.klass).to eql('IN')
+      expect(soa.ttl).to eql(86400)
+      expect(soa.nameserver).to eql('ns0.example.com.')
+      expect(soa.responsible_party).to eql('hostmaster.example.com.')
+      expect(soa.serial).to eql(2006010558)
+      expect(soa.refresh_time).to eql(43200)
+      expect(soa.retry_time).to eql(3600)
+      expect(soa.expiry_time).to eql(1209600)
+      expect(soa.nxttl).to eql(180)
     end
   end
 
@@ -429,9 +427,9 @@ ZONE
     it "should parse the SOA record correctly" do
       zone = DNS::Zonefile.load(@zonefile)
       soa = zone.soa
-      soa.klass.should eql('IN')
-      soa.nameserver.should eql('ns.domain.example.com.')
-      soa.responsible_party.should eql('.')
+      expect(soa.klass).to eql('IN')
+      expect(soa.nameserver).to eql('ns.domain.example.com.')
+      expect(soa.responsible_party).to eql('.')
     end
   end
 end
