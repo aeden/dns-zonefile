@@ -1,31 +1,42 @@
-# -*- encoding: utf-8 -*-
-$:.push File.expand_path("../lib", __FILE__)
-require "dns/zonefile/version"
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'dns/zonefile/version'
 
-Gem::Specification.new do |s|
-  s.name        = "dns-zonefile"
-  s.version     = DNS::Zonefile::VERSION
-  s.authors     = ["Craig R Webster"]
-  s.email       = ["craig@barkingiguana.com"]
-  s.homepage    = ""
-  s.summary     = %q{Work with zonefiles (RFC 1035 section 5 and RFC 1034 section 3.6.1)}
-  s.description = %q{The format of a DNS Zonefile is defined in RFC 1035 section 5 and RFC
+Gem::Specification.new do |spec|
+  spec.name          = "dns-zonefile"
+  spec.version       = DNS::Zonefile::VERSION
+  spec.authors       = ["Craig R Webster"]
+  spec.email         = ["craig@barkingiguana.com"]
+
+  spec.summary     = %q{Work with zonefiles (RFC 1035 section 5 and RFC 1034 section 3.6.1)}
+  spec.description = <<-EOD
+The format of a DNS Zonefile is defined in RFC 1035 section 5 and RFC
 1034 section 3.6.1. To anyone who's using BIND they'll look very
 familiar.
 
 This is an attempt to use Ruby parse them into an object graph which can
 be investigated programatically, manipulated, validated or printed into
-some canonical form.}
+some canonical form.
+  EOD
+  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
 
-  s.rubyforge_project = "dns-zonefile"
+  # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
+  # delete this section to allow pushing this gem to any host.
+  if spec.respond_to?(:metadata)
+    spec.metadata['allowed_push_host'] = "https://rubygems.org"
+  else
+    raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
+  end
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  s.require_paths = ["lib"]
+  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  spec.bindir        = "exe"
+  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.require_paths = ["lib"]
 
-  s.add_development_dependency "rspec"
-  s.add_development_dependency "rake"
-  s.add_runtime_dependency "treetop"
-  s.add_runtime_dependency "polyglot"
+  spec.add_dependency "treetop", '~> 1.6'
+  spec.add_dependency "polyglot", '~> 0.3'
+  spec.add_development_dependency "bundler", "~> 1.11"
+  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rspec", "~> 3.0"
 end
