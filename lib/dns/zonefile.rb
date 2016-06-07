@@ -1,6 +1,6 @@
 require 'dns/zonefile/version'
 require 'treetop'
-Treetop.load 'lib/dns/zonefile'
+Treetop.load File.expand_path('../zonefile', __FILE__)
 
 module DNS
   module Zonefile
