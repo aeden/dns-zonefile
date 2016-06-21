@@ -436,14 +436,7 @@ grammar Zonefile
   rule host
     ( ([*a-zA-Z0-9\-\._]+) / "@" / ' ' / "\t" ) {
       def to_s
-        case text_value
-        when /\.$/
-          text_value
-        when "@", /\s/
-          text_value
-        else
-          text_value + '.@'
-        end
+        text_value
       end
     }
   end
