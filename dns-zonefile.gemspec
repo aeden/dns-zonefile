@@ -19,7 +19,7 @@ This is an attempt to use Ruby parse them into an object graph which can
 be investigated programatically, manipulated, validated or printed into
 some canonical form.
   EOD
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.homepage      = "https://github.com/craigw/dns-zonefile"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.
