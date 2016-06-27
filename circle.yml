@@ -1,0 +1,6 @@
+dependencies:
+  pre:
+    - gem install bundler --version 1.11
+machine:
+  ruby:
+    version: 2.3.0
