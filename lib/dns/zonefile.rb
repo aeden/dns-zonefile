@@ -258,12 +258,10 @@ module DNS
     class SSHFP < Record
       attr_accessor :host, :alg, :fptype, :fp
 
-      inheriting_writer_for_at  :host
-
       def initialize(vars, zonefile_record)
         @vars = vars
         if zonefile_record
-          self.host         = zonefile_record.host.to_s
+          self.host         = qualify_host(zonefile_record.host.to_s, vars)
           @vars[:last_host] = self.host
           self.ttl          = zonefile_record.ttl.to_i
           self.klass        = zonefile_record.klass.to_s
