@@ -53,7 +53,7 @@ grammar Zonefile
   end
 
   rule resource_record
-    record:(a_record / aaaa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / txt_record / soa_record) space* comment? linebreak {
+    record:(a_record / aaaa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / sshfp_record / txt_record / soa_record) space* comment? linebreak {
       def zone
         p = parent
         while p.respond_to?(:parent) && p.parent
@@ -221,7 +221,7 @@ grammar Zonefile
       end
     }
   end
-  
+
   rule spf_record
     host space ms_age ttl klass "SPF" space data:txt_data {
       def to_s
@@ -233,7 +233,19 @@ grammar Zonefile
       end
     }
   end
-  
+
+  rule sshfp_record
+    host space ms_age ttl klass "SSHFP" space alg:integer space fptype:integer space fp:fingerprint {
+      def to_s
+        "#{host} #{ttl} #{klass} SSHFP #{alg} #{fptype} #{fp}"
+      end
+
+      def record_type
+        "SSHFP"
+      end
+    }
+  end
+
   rule txt_record
     host space ms_age ttl klass "TXT" space data:ms_txt_data {
       def to_s
@@ -437,6 +449,14 @@ grammar Zonefile
     ( ([*a-zA-Z0-9\-\._]+) / "@" / ' ' / "\t" ) {
       def to_s
         text_value
+      end
+    }
+  end
+
+  rule fingerprint
+    [a-fA-Z0-9:]+ {
+      def to_s
+        text_value.strip
       end
     }
   end

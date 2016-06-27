@@ -51,6 +51,7 @@ module DNS
 	    when 'PTR'    then @records << PTR.new(@vars, e)
 	    when 'SRV'    then @records << SRV.new(@vars, e)
 	    when 'SPF'    then @records << SPF.new(@vars, e)
+            when 'SSHFP'  then @records << SSHFP.new(@vars, e)
 	    when 'TXT'    then @records << TXT.new(@vars, e)
 	    when 'SOA'    then ;
 	    else
@@ -252,6 +253,25 @@ module DNS
       end
 
       alias :target :domainname
+    end
+
+    class SSHFP < Record
+      attr_accessor :host, :alg, :fptype, :fp
+
+      inheriting_writer_for_at  :host
+
+      def initialize(vars, zonefile_record)
+        @vars = vars
+        if zonefile_record
+          self.host         = zonefile_record.host.to_s
+          @vars[:last_host] = self.host
+          self.ttl          = zonefile_record.ttl.to_i
+          self.klass        = zonefile_record.klass.to_s
+          self.alg          = zonefile_record.alg.to_i
+          self.fptype       = zonefile_record.fptype.to_i
+          self.fp           = zonefile_record.fp.to_s
+        end
+      end
     end
 
     class TXT < Record
