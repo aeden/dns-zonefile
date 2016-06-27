@@ -93,7 +93,7 @@ module DNS
       end
 
       private
-      def qualify_host(host, vars)
+      def qualify_host(host)
         origin = vars['origin']
         host = vars[:last_host] if host =~ /^\s*$/
         host = host.gsub(/@/, origin)
@@ -107,6 +107,7 @@ module DNS
           end
         end
       end
+      attr_accessor :vars
 
     end
 
@@ -116,12 +117,12 @@ module DNS
       def initialize(vars, zonefile_soa=nil)
 	@vars = vars
 	if zonefile_soa
-	  self.origin            = qualify_host(zonefile_soa.origin.to_s, vars)
+	  self.origin            = qualify_host(zonefile_soa.origin.to_s)
 	  @vars[:last_host]      = self.origin
 	  self.ttl               = zonefile_soa.ttl.to_i
 	  self.klass             = zonefile_soa.klass.to_s
-          self.nameserver        = qualify_host(zonefile_soa.ns.to_s, vars)
-	  self.responsible_party = qualify_host(zonefile_soa.rp.to_s, vars)
+          self.nameserver        = qualify_host(zonefile_soa.ns.to_s)
+	  self.responsible_party = qualify_host(zonefile_soa.rp.to_s)
 	  self.serial            = zonefile_soa.serial.to_i
 	  self.refresh_time      = zonefile_soa.refresh.to_i
 	  self.retry_time        = zonefile_soa.reretry.to_i
@@ -137,7 +138,7 @@ module DNS
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
+	  self.host         = qualify_host(zonefile_record.host.to_s)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
@@ -155,11 +156,11 @@ module DNS
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
+	  self.host         = qualify_host(zonefile_record.host.to_s)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
-	  self.domainname   = qualify_host(zonefile_record.target.to_s, vars)
+	  self.domainname   = qualify_host(zonefile_record.target.to_s)
 	end
       end
 
@@ -173,12 +174,12 @@ module DNS
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
+	  self.host         = qualify_host(zonefile_record.host.to_s)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
 	  self.priority     = zonefile_record.priority.to_i
-	  self.domainname   = qualify_host(zonefile_record.exchanger.to_s, vars)
+	  self.domainname   = qualify_host(zonefile_record.exchanger.to_s)
 	end
       end
 
@@ -192,7 +193,7 @@ module DNS
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
+	  self.host         = qualify_host(zonefile_record.host.to_s)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
@@ -207,11 +208,11 @@ module DNS
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
+	  self.host         = qualify_host(zonefile_record.host.to_s)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
-	  self.domainname   = qualify_host(zonefile_record.nameserver.to_s, vars)
+	  self.domainname   = qualify_host(zonefile_record.nameserver.to_s)
 	end
       end
 
@@ -224,11 +225,11 @@ module DNS
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
+	  self.host         = qualify_host(zonefile_record.host.to_s)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
-	  self.domainname   = qualify_host(zonefile_record.target.to_s, vars)
+	  self.domainname   = qualify_host(zonefile_record.target.to_s)
 	end
       end
 
@@ -241,14 +242,14 @@ module DNS
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
+	  self.host         = qualify_host(zonefile_record.host.to_s)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
 	  self.priority     = zonefile_record.priority.to_i
 	  self.weight       = zonefile_record.weight.to_i
 	  self.port         = zonefile_record.port.to_i
-	  self.domainname   = qualify_host(zonefile_record.target.to_s, vars)
+	  self.domainname   = qualify_host(zonefile_record.target.to_s)
 	end
       end
 
@@ -261,7 +262,7 @@ module DNS
       def initialize(vars, zonefile_record)
         @vars = vars
         if zonefile_record
-          self.host         = qualify_host(zonefile_record.host.to_s, vars)
+          self.host         = qualify_host(zonefile_record.host.to_s)
           @vars[:last_host] = self.host
           self.ttl          = zonefile_record.ttl.to_i
           self.klass        = zonefile_record.klass.to_s
@@ -278,7 +279,7 @@ module DNS
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
+	  self.host         = qualify_host(zonefile_record.host.to_s)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
