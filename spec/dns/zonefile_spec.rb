@@ -432,4 +432,29 @@ ZONE
       expect(soa.responsible_party).to eql('.')
     end
   end
+
+  describe "parsing an ORIGIN of ." do
+    before do
+      @zonefile =<<-ZONE
+      ; Hi! I'm an example zonefile.
+; $ORIGIN .
+$TTL 86400; expire in 1 day.
+example.com   IN  SOA  ns.example.com. hostmaster.example.com. (
+              2007120710 ; serial number of this zone file
+              1d         ; refresh (1 day)
+              1d         ; retry time in case of a problem (1 day)
+              4W         ; expiration time (4 weeks)
+              3600       ; minimum caching time in case of failed lookups (1 hour)
+              )
+example.com            A     10.1.0.1
+ZONE
+    end
+
+    it "should parse the zone correctly" do
+      zone = DNS::Zonefile.load(@zonefile)
+      a_record = zone.records_of(DNS::Zonefile::A).first
+      expect(a_record.host).to eq("example.com.")
+    end
+  end
+
 end

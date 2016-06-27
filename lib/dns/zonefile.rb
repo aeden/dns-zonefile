@@ -70,34 +70,6 @@ module DNS
     end
 
     class Record
-      # assign, with handling for '@'
-      def self.writer_for_at(*attribs)
-	attribs.each do |attrib|
-	  c = <<-MTH
-	    def #{attrib}=(val)
-	      @#{attrib} = val.gsub('@', @vars['origin'])
-	    end
-	  MTH
-	  class_eval c, __FILE__, __LINE__
-	end
-      end
-
-      # assign, with handling for '@', with inheritance
-      def self.inheriting_writer_for_at(*attribs)
-	attribs.each do |attrib|
-	  c = <<-MTH
-	    def #{attrib}=(val)
-	      if val.strip.empty?
-		@#{attrib} = @vars[:last_host]
-	      else
-		@#{attrib} = val.gsub('@', @vars['origin'])
-	      end
-	    end
-	  MTH
-	  class_eval c, __FILE__, __LINE__
-	end
-      end
-
       # assign, with handling for global TTL
       def self.writer_for_ttl(*attribs)
 	attribs.each do |attrib|
@@ -119,22 +91,36 @@ module DNS
 	@klass ||= 'IN'
       end
 
+      private
+      def qualify_host(host, vars)
+        origin = vars['origin']
+        host = vars[:last_host] if host =~ /^\s*$/
+        host = host.gsub(/@/, origin)
+        if host =~ /\.$/
+          host
+        else
+          if origin =~ /^\./
+            host + origin
+          else
+            host + "." + origin
+          end
+        end
+      end
+
     end
 
     class SOA < Record
       attr_accessor :origin, :nameserver, :responsible_party, :serial, :refresh_time, :retry_time, :expiry_time, :nxttl
 
-      writer_for_at  :origin, :nameserver, :responsible_party
-
       def initialize(vars, zonefile_soa=nil)
 	@vars = vars
 	if zonefile_soa
-	  self.origin            = zonefile_soa.origin.to_s
+	  self.origin            = qualify_host(zonefile_soa.origin.to_s, vars)
 	  @vars[:last_host]      = self.origin
 	  self.ttl               = zonefile_soa.ttl.to_i
 	  self.klass             = zonefile_soa.klass.to_s
-	  self.nameserver        = zonefile_soa.ns.to_s
-	  self.responsible_party = zonefile_soa.rp.to_s
+          self.nameserver        = qualify_host(zonefile_soa.ns.to_s, vars)
+	  self.responsible_party = qualify_host(zonefile_soa.rp.to_s, vars)
 	  self.serial            = zonefile_soa.serial.to_i
 	  self.refresh_time      = zonefile_soa.refresh.to_i
 	  self.retry_time        = zonefile_soa.reretry.to_i
@@ -147,12 +133,10 @@ module DNS
     class A < Record
       attr_accessor :host, :address
 
-      inheriting_writer_for_at  :host
-
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = zonefile_record.host.to_s
+	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
@@ -167,17 +151,14 @@ module DNS
     class CNAME < Record
       attr_accessor :host, :domainname
 
-      inheriting_writer_for_at  :host
-      writer_for_at :domainname
-
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = zonefile_record.host.to_s
+	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
-	  self.domainname   = zonefile_record.target.to_s
+	  self.domainname   = qualify_host(zonefile_record.target.to_s, vars)
 	end
       end
 
@@ -188,18 +169,15 @@ module DNS
     class MX < Record
       attr_accessor :host, :priority, :domainname
 
-      inheriting_writer_for_at  :host
-      writer_for_at :domainname
-
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = zonefile_record.host.to_s
+	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
 	  self.priority     = zonefile_record.priority.to_i
-	  self.domainname   = zonefile_record.exchanger.to_s
+	  self.domainname   = qualify_host(zonefile_record.exchanger.to_s, vars)
 	end
       end
 
@@ -210,12 +188,10 @@ module DNS
     class NAPTR < Record
       attr_accessor :host, :data
 
-      inheriting_writer_for_at  :host
-
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = zonefile_record.host.to_s
+	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
@@ -227,17 +203,14 @@ module DNS
     class NS < Record
       attr_accessor :host, :domainname
 
-      inheriting_writer_for_at  :host
-      writer_for_at :domainname
-
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = zonefile_record.host.to_s
+	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
-	  self.domainname   = zonefile_record.nameserver.to_s
+	  self.domainname   = qualify_host(zonefile_record.nameserver.to_s, vars)
 	end
       end
 
@@ -247,17 +220,14 @@ module DNS
     class PTR < Record
       attr_accessor :host, :domainname
 
-      inheriting_writer_for_at  :host
-      writer_for_at :domainname
-
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = zonefile_record.host.to_s
+	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
-	  self.domainname   = zonefile_record.target.to_s
+	  self.domainname   = qualify_host(zonefile_record.target.to_s, vars)
 	end
       end
 
@@ -267,20 +237,17 @@ module DNS
     class SRV < Record
       attr_accessor :host, :priority, :weight, :port, :domainname
 
-      inheriting_writer_for_at  :host
-      writer_for_at :domainname
-
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = zonefile_record.host.to_s
+	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
 	  self.priority     = zonefile_record.priority.to_i
 	  self.weight       = zonefile_record.weight.to_i
 	  self.port         = zonefile_record.port.to_i
-	  self.domainname   = zonefile_record.target.to_s
+	  self.domainname   = qualify_host(zonefile_record.target.to_s, vars)
 	end
       end
 
@@ -290,12 +257,10 @@ module DNS
     class TXT < Record
       attr_accessor :host, :data
 
-      inheriting_writer_for_at  :host
-
       def initialize(vars, zonefile_record)
 	@vars = vars
 	if zonefile_record
-	  self.host         = zonefile_record.host.to_s
+	  self.host         = qualify_host(zonefile_record.host.to_s, vars)
 	  @vars[:last_host] = self.host
 	  self.ttl          = zonefile_record.ttl.to_i
 	  self.klass        = zonefile_record.klass.to_s
