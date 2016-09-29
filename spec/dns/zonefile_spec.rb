@@ -73,7 +73,7 @@ with_ms_txt   TXT   ( "Some text" )
 @             TXT   "some other \\"message\\" goes here" ; embedded quotes
 long          TXT   "a multi-segment TXT record" "usually used for really long TXT records" "since each segment can only span 255 chars"
 unquoted      TXT   some text data
-with-eq       TXT   MX=example
+with-eq       TXT   MS=example
 
 multiline     TXT   "A TXT record
 split across multiple lines
@@ -374,7 +374,7 @@ ZONE
       }).to_not be_nil
 
       expect(txt_records.detect { |r|
-        r.host == "with-eq.example.com." && r.data == 'MX=example'
+        r.host == "with-eq.example.com." && r.data == 'MS=example'
       }).to_not be_nil
 
       expect(txt_records.detect { |r|
