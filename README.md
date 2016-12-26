@@ -47,6 +47,7 @@ handled in this mode.
     # get all MX records
     puts zone.records_of(DNS::Zonefile::MX)
 
+Open the examples in the `./examples` directory to see more examples.
 
 ## Authors
 
