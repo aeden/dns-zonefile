@@ -11,20 +11,13 @@ some canonical form.
 
 ## Getting setup
 
-Well, you'll need the treetop and polyglot gems installed. They do all
-the hard work. Thanks!
+Add `gem dns-zonefile` to your Gemfile
 
-    sudo gem install treetop polyglot
+or
 
-Now you'll need to generate the Treetop parser from the Zonefile grammar
-that I've hacked together.
-
-    rake generate_grammar
+`gem install dns-zonefile`
 
 Okay, you're ready to move onto the examples now.
-
-The above steps should not be necessary if you install the gem via rubygems.
-
 
 ## Examples
 
@@ -69,6 +62,6 @@ Anthony Eden <https://dnsimple.com/>
 
 ## Contributing
 
-See the TODO. Send pull requests on GitHub to contribute.
+See the TODO. Read CONTRIBUTING.md for more details on how to contribute to this project.
 
 [![Build Status](https://secure.travis-ci.org/craigw/dns-zonefile.png)](http://travis-ci.org/craigw/dns-zonefile)
