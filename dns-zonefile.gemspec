@@ -6,8 +6,8 @@ require 'dns/zonefile/version'
 Gem::Specification.new do |spec|
   spec.name          = "dns-zonefile"
   spec.version       = DNS::Zonefile::VERSION
-  spec.authors       = ["Craig R Webster"]
-  spec.email         = ["craig@barkingiguana.com"]
+  spec.authors       = ["Craig R Webster", "Anthony Eden"]
+  spec.email         = ["craig@barkingiguana.com", "anthonyeden@gmail.com"]
 
   spec.summary     = %q{Work with zonefiles (RFC 1035 section 5 and RFC 1034 section 3.6.1)}
   spec.description = <<-EOD

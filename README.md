@@ -57,16 +57,18 @@ handled in this mode.
 
 ## Authors
 
-Original code and concept:
+### Original code and concept:
+
 Craig R Webster <http://barkingiguana.com/>
 
-Additions:
+### Additions:
+
 t.e.morgan <http://zerigo.com/>
+Anthony Eden <https://dnsimple.com/>
 
 
 ## Contributing
 
-See the TODO. Send me patches or pull request either by email or on
-GitHub.
+See the TODO. Send pull requests on GitHub to contribute.
 
 [![Build Status](https://secure.travis-ci.org/craigw/dns-zonefile.png)](http://travis-ci.org/craigw/dns-zonefile)
