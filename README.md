@@ -57,8 +57,8 @@ Craig R Webster <http://barkingiguana.com/>
 
 ### Additions:
 
-t.e.morgan <http://zerigo.com/>
-Anthony Eden <https://dnsimple.com/>
+- t.e.morgan <http://zerigo.com/>
+- Anthony Eden <https://dnsimple.com/>
 
 
 ## Contributing
