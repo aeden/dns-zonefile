@@ -505,7 +505,7 @@ grammar Zonefile
   end
 
   rule unquoted_string
-    [a-zA-Z0-9=]+ {
+    [a-zA-Z0-9=_]+ {
       def to_s
         text_value
       end
