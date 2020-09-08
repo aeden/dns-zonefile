@@ -53,7 +53,7 @@ grammar Zonefile
   end
 
   rule resource_record
-    record:(a_record / aaaa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / sshfp_record / txt_record / soa_record) space* comment? linebreak {
+    record:(a_record / aaaa_record / caa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / sshfp_record / txt_record / soa_record) space* comment? linebreak {
       def zone
         p = parent
         while p.respond_to?(:parent) && p.parent
@@ -124,6 +124,20 @@ grammar Zonefile
     [\da-fA-F:.] 2..39 {
       def to_s
         text_value.downcase
+      end
+    }
+  end
+
+  rule caa_record
+    (
+      host space ms_age ttl klass "CAA" space flags:integer space tag:unquoted_string space value:quoted_string
+    ) {
+      def to_s
+        "#{host} #{ttl} #{klass} CAA #{flags} #{tag} #{value}"
+      end
+
+      def record_type
+        "CAA"
       end
     }
   end
