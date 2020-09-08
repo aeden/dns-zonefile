@@ -81,6 +81,8 @@ with LF and CRLF line endings"
 
 with-underscore TXT abc_123
 
+@             CAA   0 issue "letsencrypt.org"
+
 ; Microsoft AD DNS Examples with Aging.
 with-age [AGE:999992222] 60     A   10.0.0.7             ; with a specified AGE
 with-age-aaaa [AGE:999992222] 60     AAAA   10.0.0.8             ; with a specified AGE
@@ -145,7 +147,7 @@ ZONE
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(52)
+      expect(zone.rr.size).to eq(53)
     end
 
     it "should build the correct NS records" do
@@ -218,6 +220,17 @@ ZONE
       expect(a_records.detect { |a|
         a.host == "www.test.example.com." && a.address == "10.1.0.2" && a.ttl == 3600
       }).to_not be_nil
+    end
+
+    it "should build the correct CAA records" do
+      zone = DNS::Zonefile.load(@zonefile)
+      caa_records = zone.records_of DNS::Zonefile::CAA
+      expect(caa_records.size).to eq(1)
+
+      expect(caa_records.detect { |caa|
+        caa.host == "example.com." && caa.flags == 0 && caa.tag == "issue" && caa.value == "\"letsencrypt.org\""
+      }).to_not be_nil
+
     end
 
     it "should build the correct CNAME records" do

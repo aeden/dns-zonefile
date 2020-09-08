@@ -44,6 +44,7 @@ module DNS
 	    case e.record_type
 	    when 'A'      then @records << A.new(@vars, e)
 	    when 'AAAA'   then @records << AAAA.new(@vars, e)
+            when 'CAA'    then @records << CAA.new(@vars, e)
 	    when 'CNAME'  then @records << CNAME.new(@vars, e)
 	    when 'MX'     then @records << MX.new(@vars, e)
 	    when 'NAPTR'  then @records << NAPTR.new(@vars, e)
@@ -148,6 +149,23 @@ module DNS
     end
 
     class AAAA < A
+    end
+
+    class CAA < Record
+      attr_accessor :host, :flags, :tag, :value
+
+      def initialize(vars, zonefile_record)
+        @vars = vars
+        if zonefile_record
+          self.host = qualify_host(zonefile_record.host.to_s)
+          @vars[:last_host] = self.host
+          self.ttl          = zonefile_record.ttl.to_i
+	  self.klass        = zonefile_record.klass.to_s
+          self.flags        = zonefile_record.flags.to_i
+          self.tag          = zonefile_record.tag.to_s
+          self.value        = zonefile_record.value.to_s
+        end
+      end
     end
 
     class CNAME < Record
