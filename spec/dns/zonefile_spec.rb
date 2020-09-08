@@ -82,6 +82,8 @@ with LF and CRLF line endings"
 with-underscore TXT abc_123
 
 @             CAA   0 issue "letsencrypt.org"
+issuewild     CAA   0 issuewild "comodoca.com"
+iodef         CAA   0 iodef "mailto:example@example.com"
 
 ; Microsoft AD DNS Examples with Aging.
 with-age [AGE:999992222] 60     A   10.0.0.7             ; with a specified AGE
@@ -147,7 +149,7 @@ ZONE
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(53)
+      expect(zone.rr.size).to eq(55)
     end
 
     it "should build the correct NS records" do
@@ -225,12 +227,19 @@ ZONE
     it "should build the correct CAA records" do
       zone = DNS::Zonefile.load(@zonefile)
       caa_records = zone.records_of DNS::Zonefile::CAA
-      expect(caa_records.size).to eq(1)
+      expect(caa_records.size).to eq(3)
 
       expect(caa_records.detect { |caa|
         caa.host == "example.com." && caa.flags == 0 && caa.tag == "issue" && caa.value == "\"letsencrypt.org\""
       }).to_not be_nil
 
+      expect(caa_records.detect { |caa|
+        caa.host == "issuewild.example.com." && caa.flags == 0 && caa.tag == "issuewild" && caa.value == "\"comodoca.com\""
+      }).to_not be_nil
+
+      expect(caa_records.detect { |caa|
+        caa.host == "iodef.example.com." && caa.flags == 0 && caa.tag == "iodef" && caa.value == "\"mailto:example@example.com\""
+      }).to_not be_nil
     end
 
     it "should build the correct CNAME records" do
