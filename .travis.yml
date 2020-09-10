@@ -1,4 +1,11 @@
 language: ruby
 
+before_install:
+  - yes | gem update --system --force
+  - gem install bundler
+
 rvm:
   - 2.3
+  - 2.4
+  - 2.5
+  - 2.6
