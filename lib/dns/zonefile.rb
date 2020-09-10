@@ -75,12 +75,9 @@ module DNS
       # assign, with handling for global TTL
       def self.writer_for_ttl(*attribs)
         attribs.each do |attrib|
-          c = <<-MTH
-            def #{attrib}=(val)
-              @#{attrib} = val || @vars['ttl']
-            end
-          MTH
-          class_eval c, __FILE__, __LINE__
+          define_method "#{attrib}=" do |val|
+            instance_variable_set("@#{attrib}", val || @vars["ttl"])
+          end
         end
       end
 
