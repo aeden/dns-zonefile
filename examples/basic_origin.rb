@@ -1,11 +1,11 @@
 # First make sure you have installed the `dns-zonefile` gem.
-# 
+#
 # Run this script with `ruby basic.rb`
 
-require 'dns/zonefile'
+require "dns/zonefile"
 
 zonefile = "example.com.zonefile"
-zone = DNS::Zonefile.load(File.read(zonefile), 'example.com.')
+zone = DNS::Zonefile.load(File.read(zonefile), "example.com.")
 
 puts zone.soa.origin
 puts zone.soa.nameserver
