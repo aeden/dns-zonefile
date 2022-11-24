@@ -468,6 +468,53 @@ RSpec.describe "DNS::Zonefile" do
     end
   end
 
+  describe "parsing SOA with and without TTL and class" do
+    it "should parse the SOA record correctly without TTL and class" do
+      @zonefile = <<~ZONE
+        example.com.	SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+        example.com.	SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+      ZONE
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(nil)
+    end
+    it "should parse the SOA record correctly with TTL and class" do
+      @zonefile = <<~ZONE
+        example.com.	3600 IN SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+        example.com.	3600 IN SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+      ZONE
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(3600)
+    end
+    it "should parse the SOA record correctly with class and TTL" do
+      @zonefile = <<~ZONE
+        example.com.	IN 3600 SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+        example.com.	IN 3600 SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+      ZONE
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(3600)
+    end
+    it "should parse the SOA record correctly with class" do
+      @zonefile = "example.com.	IN SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180"
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(nil)
+    end
+    it "should parse the SOA record correctly with TTL" do
+      @zonefile = "example.com.	3600 SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180"
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(3600)
+    end
+  end
+
   describe "parsing an SOA without parens" do
     before(:each) do
       @zonefile = <<~ZONE

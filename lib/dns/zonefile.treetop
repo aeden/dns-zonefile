@@ -43,7 +43,10 @@ grammar Zonefile
   end
 
   rule soa
-    origin space ttl klass "SOA" space ns space rp space "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"? {
+    (
+     origin space ttl klass "SOA" space ns space rp space "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"? /
+     origin space klass ttl "SOA" space ns space rp space "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"?
+    ) {
       def to_s
         "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{serial} #{refresh} #{reretry} #{expiry} #{nxttl})"
       end
@@ -235,7 +238,10 @@ grammar Zonefile
   end
 
   rule soa_record
-    origin space ms_age ttl klass "SOA" space ns space rp space data {
+    (
+     origin space ms_age ttl klass "SOA" space ns space rp space data /
+     origin space ms_age klass ttl "SOA" space ns space rp space data
+    ) {
       def to_s
         "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{space})"
       end
