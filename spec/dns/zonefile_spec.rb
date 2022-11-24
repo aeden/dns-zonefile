@@ -36,6 +36,11 @@ RSpec.describe "DNS::Zonefile" do
         ; Let's start the resource records.
         example.com.  NS    ns                    ; ns.example.com is the nameserver for example.com
         example.com.  NS    ns.somewhere.com.     ; ns.somewhere.com is a backup nameserver for example.com
+        example.com. IN     NS ns.example.net.    ; NS with class
+        example.com. 60     NS ns.example.net.    ; NS with TTL
+        example.com. 60 IN  NS ns.example.net.    ; NS with class and TTL
+        example.com. IN 60  NS ns.example.net.    ; NS with TTL and class
+
         example.com.  A     10.0.0.1              ; ip address for "example.com". next line has spaces after the IP, but no actual comment.
         @             A     10.0.0.11
                       A     10.0.0.12             ; tertiary ip for "example.com"
@@ -46,6 +51,8 @@ RSpec.describe "DNS::Zonefile" do
         with-class   IN  A   10.0.0.3             ; record that includes the class type of IN
         with-ttl  60     A   10.0.0.5             ; with a specified TTL
         ttl-class 60 IN  A   10.0.0.6             ; with TTL and class type
+        class-ttl IN 60 A 10.0.0.7                ; with class type and TTL
+
         www           CNAME ns                    ; "www.example.com" is an alias for "ns.example.com"
         wwwtest       CNAME www                   ; "wwwtest.example.com" is another alias for "www.example.com"
         www2          CNAME ns.example.com.       ; yet another alias, with FQDN target
@@ -54,17 +61,33 @@ RSpec.describe "DNS::Zonefile" do
         example.com.  MX    10 mail.example.com.  ; mail.example.com is the mailserver for example.com
         @             MX    20 mail2.example.com. ; Similar to above line, but using "@" to say "use $ORIGIN"
         @             MX    50 mail3              ; Similar to above line, but using a host within this domain
+        with-class  IN    MX  10 mail.example.com.; MX with class
+        with-ttl    60    MX  10 mail.example.com.; MX with TTL
+        ttl-class   60 IN MX  10 mail.example.com ; MX with TTL and class type
+        class-ttl   IN 60 MX  10 mail.example.com ; MX with class type and TTL
         
         @             AAAA  2001:db8:a::1         ; IPv6, lowercase
         ns            AAAA  2001:DB8:B::1         ; IPv6, uppercase
         mail          AAAA  2001:db8:c::10.0.0.4  ; IPv6, with trailing IPv4-type address
+        with-class  IN    AAAA 2001:db8:d::1      ; IPv6, with class
+        with-ttl    60    AAAA 2001:db8:d::2      ; IPv6, with TTL
+        ttl-class   60 IN AAAA 2001:db8:d::3      ; IPv6, with TTL and class type
+        class-ttl   IN 60 AAAA 2001:db8:d::4      ; IPv6, with class type and TTL
         
         sip           NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; NAPTR record
         sip2          NAPTR 100 10 "" "" "/urn:cid:.+@([^\\.]+\\.)(.*)$/\\2/i" .     ; another one
+        with-class IN   NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; with class
+        with-ttl 60     NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; with ttl
+        ttl-class 60 IN NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; with ttl and class
+        class-ttl IN 60 NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; with class and ttl
         
         _xmpp-server._tcp   SRV   5 0 5269 xmpp-server.l.google.com.  ; SRV record
         
-        sshfp         SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record
+        sshfp SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record
+        with-ttl 60 SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record with class
+        with-class IN SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record with ttl
+        ttl-class 60 IN SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record with ttl and class
+        class-ttl IN 60 SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record with class and ttl
         
         ; TXT record, with embedded semicolons
         _domainkey    TXT   "v=DKIM1\\;g=*\\;k=rsa\\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"
@@ -80,10 +103,23 @@ RSpec.describe "DNS::Zonefile" do
         with LF and CRLF line endings"
         
         with-underscore TXT abc_123
+        with-dot  TXT a.b
+        with-dash TXT a-b
+        with-at TXT a@b
+        with-colon TXT a:b
+
+        with-ttl 60 TXT "example"
+        with-class IN TXT "example"
+        ttl-class 60 IN TXT "example"
+        class-ttl IN 60 TXT "example"
         
         @             CAA   0 issue "letsencrypt.org"
         issuewild     CAA   0 issuewild "comodoca.com"
         iodef         CAA   0 iodef "mailto:example@example.com"
+        with-class IN   CAA 0 issue "letsencrypt.org"
+        with-ttl  60    CAA 0 issue "letsencrypt.org"
+        ttl-class 60 IN CAA 0 issue "letsencrypt.org"
+        class-ttl IN 60 CAA 0 issue "letsencrypt.org"
         
         ; Microsoft AD DNS Examples with Aging.
         with-age [AGE:999992222] 60     A   10.0.0.7             ; with a specified AGE
@@ -91,10 +127,17 @@ RSpec.describe "DNS::Zonefile" do
         _ldap._tcp.pupy._sites.dc._msdcs [AGE:3636525]	600	SRV	0 100 389	host01.ad
         P229392922               [AGE:3636449]	172800	CNAME	printer01.ad
         
-        @             SPF   "v=spf1 a a:other.domain.com ~all"
+        @ SPF   "v=spf1 a a:other.domain.com ~all" ; SPF (deprecated)
+        with-class    IN  SPF   "v=spf1 a a:other.domain.com ~all" ; SPF with class
+        with-ttl  60      SPF   "v=spf1 a a:other.domain.com ~all" ; SPF with ttl
+        ttl-class 60  IN  SPF   "v=spf1 a a:other.domain.com ~all" ; SPF with ttl and class
+        class-ttl IN  60  SPF   "v=spf1 a a:other.domain.com ~all" ; SPF with class and ttl
         
-        45        IN   PTR   @
-        
+        44 PTR @
+        45 IN    PTR   @
+        46 60    PTR @
+        47 60 IN PTR @
+        48 IN 60 PTR @
         
         eam 900 IN SRV 5 0 5269 www
         eam IN 900 SRV 5 0 5269 www
@@ -149,13 +192,13 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(55)
+      expect(zone.rr.size).to eq(96)
     end
 
     it "should build the correct NS records" do
       zone = DNS::Zonefile.load(@zonefile)
       ns_records = zone.records_of DNS::Zonefile::NS
-      expect(ns_records.size).to eq(2)
+      expect(ns_records.size).to eq(6)
 
       expect(ns_records.detect { |ns|
         ns.host == "example.com." && ns.nameserver == "ns.example.com."
@@ -169,7 +212,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct A records" do
       zone = DNS::Zonefile.load(@zonefile)
       a_records = zone.records_of DNS::Zonefile::A
-      expect(a_records.size).to eq(13)
+      expect(a_records.size).to eq(14)
 
       expect(a_records.detect { |a|
         a.host == "example.com." && a.address == "10.0.0.1"
@@ -227,7 +270,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct CAA records" do
       zone = DNS::Zonefile.load(@zonefile)
       caa_records = zone.records_of DNS::Zonefile::CAA
-      expect(caa_records.size).to eq(3)
+      expect(caa_records.size).to eq(7)
 
       expect(caa_records.detect { |caa|
         caa.host == "example.com." && caa.flags == 0 && caa.tag == "issue" && caa.value == "\"letsencrypt.org\""
@@ -279,7 +322,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct MX records" do
       zone = DNS::Zonefile.load(@zonefile)
       mx_records = zone.records_of DNS::Zonefile::MX
-      expect(mx_records.length).to eq(4)
+      expect(mx_records.length).to eq(8)
 
       expect(mx_records.detect { |mx|
         mx.host == "example.com." && mx.priority == 10 && mx.exchanger == "mail.example.com."
@@ -301,7 +344,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct AAAA records" do
       zone = DNS::Zonefile.load(@zonefile)
       aaaa_records = zone.records_of DNS::Zonefile::AAAA
-      expect(aaaa_records.length).to eq(4)
+      expect(aaaa_records.length).to eq(8)
 
       expect(aaaa_records.detect { |a|
         a.host == "example.com." && a.address == "2001:db8:a::1"
@@ -323,7 +366,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct NAPTR records" do
       zone = DNS::Zonefile.load(@zonefile)
       naptr_records = zone.records_of DNS::Zonefile::NAPTR
-      expect(naptr_records.length).to eq(2)
+      expect(naptr_records.length).to eq(6)
 
       expect(naptr_records.detect { |r|
         r.host == "sip.example.com." && r.data == '100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .'
@@ -364,7 +407,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct SSHFP records" do
       zone = DNS::Zonefile.load(@zonefile)
       sshfp_records = zone.records_of DNS::Zonefile::SSHFP
-      expect(sshfp_records.size).to eq(1)
+      expect(sshfp_records.size).to eq(5)
 
       expect(sshfp_records.detect { |r|
         r.host == "sshfp.example.com." && r.alg == 4 && r.fptype = 2 && r.fp == "9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35"
@@ -374,7 +417,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct TXT records" do
       zone = DNS::Zonefile.load(@zonefile)
       txt_records = zone.records_of DNS::Zonefile::TXT
-      expect(txt_records.size).to eq(8)
+      expect(txt_records.size).to eq(16)
 
       expect(txt_records.detect { |r|
         r.host == "_domainkey.example.com." && r.data == '"v=DKIM1\;g=*\;k=rsa\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"'
@@ -408,7 +451,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct SPF records" do
       zone = DNS::Zonefile.load(@zonefile)
       spf_records = zone.records_of DNS::Zonefile::SPF
-      expect(spf_records.length).to eq(1)
+      expect(spf_records.length).to eq(5)
 
       expect(spf_records.detect { |r|
         r.host == "example.com." && r.data == '"v=spf1 a a:other.domain.com ~all"' && r.ttl == 86400
@@ -418,11 +461,61 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct PTR records" do
       zone = DNS::Zonefile.load(@zonefile)
       ptr_records = zone.records_of DNS::Zonefile::PTR
-      expect(ptr_records.length).to eq(1)
+      expect(ptr_records.length).to eq(5)
 
       expect(ptr_records.detect { |r|
+        r.host == "44.example.com." && r.target == "example.com." && r.ttl == 86400
         r.host == "45.example.com." && r.target == "example.com." && r.ttl == 86400
+        r.host == "46.example.com." && r.target == "example.com." && r.ttl == 60
+        r.host == "47.example.com." && r.target == "example.com." && r.ttl == 60
       }).to_not be_nil
+    end
+  end
+
+  describe "parsing SOA with and without TTL and class" do
+    it "should parse the SOA record correctly without TTL and class" do
+      @zonefile = <<~ZONE
+        example.com.	SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+        example.com.	SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+      ZONE
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(nil)
+    end
+    it "should parse the SOA record correctly with TTL and class" do
+      @zonefile = <<~ZONE
+        example.com.	3600 IN SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+        example.com.	3600 IN SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+      ZONE
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(3600)
+    end
+    it "should parse the SOA record correctly with class and TTL" do
+      @zonefile = <<~ZONE
+        example.com.	IN 3600 SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+        example.com.	IN 3600 SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180
+      ZONE
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(3600)
+    end
+    it "should parse the SOA record correctly with class" do
+      @zonefile = "example.com.	IN SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180"
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(nil)
+    end
+    it "should parse the SOA record correctly with TTL" do
+      @zonefile = "example.com.	3600 SOA ns0.example.com. hostmaster.example.com. 2006010558 43200 3600 1209600 180"
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(3600)
     end
   end
 

@@ -43,7 +43,10 @@ grammar Zonefile
   end
 
   rule soa
-    origin space ttl klass "SOA" space ns space rp space "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"? {
+    (
+     origin space ttl klass "SOA" space ns space rp space "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"? /
+     origin space klass ttl "SOA" space ns space rp space "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"?
+    ) {
       def to_s
         "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{serial} #{refresh} #{reretry} #{expiry} #{nxttl})"
       end
@@ -89,7 +92,10 @@ grammar Zonefile
   end
 
   rule a_record
-    host space ms_age ttl klass "A" space ip_address {
+    (
+     host space ms_age ttl klass "A" space ip_address /
+     host space ms_age klass ttl "A" space ip_address
+    ) {
       def to_s
         "#{host} #{ms_age} #{ttl} #{klass} A #{ip_address}"
       end
@@ -109,7 +115,10 @@ grammar Zonefile
   end
   
   rule aaaa_record
-    host space ms_age ttl klass "AAAA" space ip_address:ip6_address {
+    (
+     host space ms_age ttl klass "AAAA" space ip_address:ip6_address /
+     host space ms_age klass ttl "AAAA" space ip_address:ip6_address
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} AAAA #{ip_address}"
       end
@@ -130,7 +139,8 @@ grammar Zonefile
 
   rule caa_record
     (
-      host space ms_age ttl klass "CAA" space flags:integer space tag:unquoted_string space value:caa_value
+      host space ms_age ttl klass "CAA" space flags:integer space tag:unquoted_string space value:caa_value /
+      host space ms_age klass ttl "CAA" space flags:integer space tag:unquoted_string space value:caa_value
     ) {
       def to_s
         "#{host} #{ttl} #{klass} CAA #{flags} #{tag} #{value}"
@@ -168,7 +178,10 @@ grammar Zonefile
   end
 
   rule mx_record
-    host space ttl klass "MX" space priority:integer space exchanger:host {
+    (
+     host space ttl klass "MX" space priority:integer space exchanger:host /
+     host space klass ttl "MX" space priority:integer space exchanger:host
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} MX #{priority} #{exchanger}"
       end
@@ -180,7 +193,10 @@ grammar Zonefile
   end
   
   rule naptr_record
-    host space ms_age ttl klass "NAPTR" space data {
+    (
+     host space ms_age ttl klass "NAPTR" space data /
+     host space ms_age klass ttl "NAPTR" space data
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} NAPTR #{data}"
       end
@@ -192,7 +208,10 @@ grammar Zonefile
   end
 
   rule ns_record
-    host space ms_age ttl klass "NS" space nameserver:host {
+    (
+     host space ms_age ttl klass "NS" space nameserver:host /
+     host space ms_age klass ttl "NS" space nameserver:host
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} NS #{nameserver}"
       end
@@ -204,7 +223,10 @@ grammar Zonefile
   end
 
   rule ptr_record
-    host space ms_age ttl klass "PTR" space target:host {
+    (
+     host space ms_age ttl klass "PTR" space target:host /
+     host space ms_age klass ttl "PTR" space target:host
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} PTR #{target}"
       end
@@ -216,7 +238,10 @@ grammar Zonefile
   end
 
   rule soa_record
-    origin space ms_age ttl klass "SOA" space ns space rp space data {
+    (
+     origin space ms_age ttl klass "SOA" space ns space rp space data /
+     origin space ms_age klass ttl "SOA" space ns space rp space data
+    ) {
       def to_s
         "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{space})"
       end
@@ -245,7 +270,10 @@ grammar Zonefile
   end
 
   rule spf_record
-    host space ms_age ttl klass "SPF" space data:txt_data {
+    (
+     host space ms_age ttl klass "SPF" space data:txt_data /
+     host space ms_age klass ttl "SPF" space data:txt_data 
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} SPF #{data}"
       end
@@ -257,7 +285,10 @@ grammar Zonefile
   end
 
   rule sshfp_record
-    host space ms_age ttl klass "SSHFP" space alg:integer space fptype:integer space fp:fingerprint {
+    (
+     host space ms_age ttl klass "SSHFP" space alg:integer space fptype:integer space fp:fingerprint / 
+     host space ms_age klass ttl "SSHFP" space alg:integer space fptype:integer space fp:fingerprint 
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} SSHFP #{alg} #{fptype} #{fp}"
       end
@@ -269,7 +300,10 @@ grammar Zonefile
   end
 
   rule txt_record
-    host space ms_age ttl klass "TXT" space data:ms_txt_data {
+    (
+     host space ms_age ttl klass "TXT" space data:ms_txt_data /
+     host space ms_age klass ttl "TXT" space data:ms_txt_data
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} TXT #{data}"
       end
@@ -527,7 +561,7 @@ grammar Zonefile
   end
 
   rule unquoted_string
-    [a-zA-Z0-9=_]+ {
+    '[a-zA-Z0-9=_\.\-\@\:]+'r {
       def to_s
         text_value
       end
