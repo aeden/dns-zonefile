@@ -205,7 +205,10 @@ grammar Zonefile
   end
 
   rule ns_record
-    host space ms_age ttl klass "NS" space nameserver:host {
+    (
+     host space ms_age ttl klass "NS" space nameserver:host /
+     host space ms_age klass ttl "NS" space nameserver:host
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} NS #{nameserver}"
       end

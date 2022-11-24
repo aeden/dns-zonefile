@@ -36,6 +36,10 @@ RSpec.describe "DNS::Zonefile" do
         ; Let's start the resource records.
         example.com.  NS    ns                    ; ns.example.com is the nameserver for example.com
         example.com.  NS    ns.somewhere.com.     ; ns.somewhere.com is a backup nameserver for example.com
+        example.com. IN     NS ns.example.net.    ; NS with class
+        example.com. 60     NS ns.example.net.    ; NS with TTL
+        example.com. 60 IN  NS ns.example.net.    ; NS with class and TTL
+        example.com. IN 60  NS ns.example.net.    ; NS with TTL and class
 
         example.com.  A     10.0.0.1              ; ip address for "example.com". next line has spaces after the IP, but no actual comment.
         @             A     10.0.0.11
@@ -168,13 +172,13 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(72)
+      expect(zone.rr.size).to eq(76)
     end
 
     it "should build the correct NS records" do
       zone = DNS::Zonefile.load(@zonefile)
       ns_records = zone.records_of DNS::Zonefile::NS
-      expect(ns_records.size).to eq(2)
+      expect(ns_records.size).to eq(6)
 
       expect(ns_records.detect { |ns|
         ns.host == "example.com." && ns.nameserver == "ns.example.com."
