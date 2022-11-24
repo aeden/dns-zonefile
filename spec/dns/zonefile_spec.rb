@@ -57,6 +57,10 @@ RSpec.describe "DNS::Zonefile" do
         example.com.  MX    10 mail.example.com.  ; mail.example.com is the mailserver for example.com
         @             MX    20 mail2.example.com. ; Similar to above line, but using "@" to say "use $ORIGIN"
         @             MX    50 mail3              ; Similar to above line, but using a host within this domain
+        with-class  IN    MX  10 mail.example.com.; MX with class
+        with-ttl    60    MX  10 mail.example.com.; MX with TTL
+        ttl-class   60 IN MX  10 mail.example.com ; MX with TTL and class type
+        class-ttl   IN 60 MX  10 mail.example.com ; MX with class type and TTL
         
         @             AAAA  2001:db8:a::1         ; IPv6, lowercase
         ns            AAAA  2001:DB8:B::1         ; IPv6, uppercase
@@ -160,7 +164,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(64)
+      expect(zone.rr.size).to eq(68)
     end
 
     it "should build the correct NS records" do
@@ -290,7 +294,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct MX records" do
       zone = DNS::Zonefile.load(@zonefile)
       mx_records = zone.records_of DNS::Zonefile::MX
-      expect(mx_records.length).to eq(4)
+      expect(mx_records.length).to eq(8)
 
       expect(mx_records.detect { |mx|
         mx.host == "example.com." && mx.priority == 10 && mx.exchanger == "mail.example.com."

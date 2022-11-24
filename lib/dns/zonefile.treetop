@@ -175,7 +175,10 @@ grammar Zonefile
   end
 
   rule mx_record
-    host space ttl klass "MX" space priority:integer space exchanger:host {
+    (
+     host space ttl klass "MX" space priority:integer space exchanger:host /
+     host space klass ttl "MX" space priority:integer space exchanger:host
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} MX #{priority} #{exchanger}"
       end
