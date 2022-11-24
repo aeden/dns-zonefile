@@ -103,6 +103,7 @@ RSpec.describe "DNS::Zonefile" do
         with LF and CRLF line endings"
         
         with-underscore TXT abc_123
+        with-dot  TXT a.b
 
         with-ttl 60 TXT "example"
         with-class IN TXT "example"
@@ -188,7 +189,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(92)
+      expect(zone.rr.size).to eq(93)
     end
 
     it "should build the correct NS records" do
@@ -413,7 +414,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct TXT records" do
       zone = DNS::Zonefile.load(@zonefile)
       txt_records = zone.records_of DNS::Zonefile::TXT
-      expect(txt_records.size).to eq(12)
+      expect(txt_records.size).to eq(13)
 
       expect(txt_records.detect { |r|
         r.host == "_domainkey.example.com." && r.data == '"v=DKIM1\;g=*\;k=rsa\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"'
