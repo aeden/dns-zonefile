@@ -116,8 +116,11 @@ RSpec.describe "DNS::Zonefile" do
         
         @             SPF   "v=spf1 a a:other.domain.com ~all"
         
-        45        IN   PTR   @
-        
+        44 PTR @
+        45 IN    PTR   @
+        46 60    PTR @
+        47 60 IN PTR @
+        48 IN 60 PTR @
         
         eam 900 IN SRV 5 0 5269 www
         eam IN 900 SRV 5 0 5269 www
@@ -172,7 +175,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(76)
+      expect(zone.rr.size).to eq(80)
     end
 
     it "should build the correct NS records" do
@@ -441,10 +444,13 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct PTR records" do
       zone = DNS::Zonefile.load(@zonefile)
       ptr_records = zone.records_of DNS::Zonefile::PTR
-      expect(ptr_records.length).to eq(1)
+      expect(ptr_records.length).to eq(5)
 
       expect(ptr_records.detect { |r|
+        r.host == "44.example.com." && r.target == "example.com." && r.ttl == 86400
         r.host == "45.example.com." && r.target == "example.com." && r.ttl == 86400
+        r.host == "46.example.com." && r.target == "example.com." && r.ttl == 60
+        r.host == "47.example.com." && r.target == "example.com." && r.ttl == 60
       }).to_not be_nil
     end
   end

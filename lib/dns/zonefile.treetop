@@ -220,7 +220,10 @@ grammar Zonefile
   end
 
   rule ptr_record
-    host space ms_age ttl klass "PTR" space target:host {
+    (
+     host space ms_age ttl klass "PTR" space target:host /
+     host space ms_age klass ttl "PTR" space target:host
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} PTR #{target}"
       end
