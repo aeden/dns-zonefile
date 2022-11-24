@@ -294,7 +294,10 @@ grammar Zonefile
   end
 
   rule txt_record
-    host space ms_age ttl klass "TXT" space data:ms_txt_data {
+    (
+     host space ms_age ttl klass "TXT" space data:ms_txt_data /
+     host space ms_age klass ttl "TXT" space data:ms_txt_data
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} TXT #{data}"
       end
