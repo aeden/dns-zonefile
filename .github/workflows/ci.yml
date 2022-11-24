@@ -16,12 +16,16 @@ concurrency:
 
 jobs:
   test:
-    name: Test
-    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, ubuntu-latest]
+        ruby: ['2.7', '3.0', '3.1', head, jruby, truffleruby]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0' # Not needed with a .ruby-version file
+          ruby-version: ${{ matrix.ruby }} 
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - run: bundle exec rake
