@@ -190,7 +190,10 @@ grammar Zonefile
   end
   
   rule naptr_record
-    host space ms_age ttl klass "NAPTR" space data {
+    (
+     host space ms_age ttl klass "NAPTR" space data /
+     host space ms_age klass ttl "NAPTR" space data
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} NAPTR #{data}"
       end

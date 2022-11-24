@@ -72,6 +72,10 @@ RSpec.describe "DNS::Zonefile" do
         
         sip           NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; NAPTR record
         sip2          NAPTR 100 10 "" "" "/urn:cid:.+@([^\\.]+\\.)(.*)$/\\2/i" .     ; another one
+        with-class IN   NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; with class
+        with-ttl 60     NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; with ttl
+        ttl-class 60 IN NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; with ttl and class
+        class-ttl IN 60 NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; with class and ttl
         
         _xmpp-server._tcp   SRV   5 0 5269 xmpp-server.l.google.com.  ; SRV record
         
@@ -164,7 +168,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(68)
+      expect(zone.rr.size).to eq(72)
     end
 
     it "should build the correct NS records" do
@@ -338,7 +342,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct NAPTR records" do
       zone = DNS::Zonefile.load(@zonefile)
       naptr_records = zone.records_of DNS::Zonefile::NAPTR
-      expect(naptr_records.length).to eq(2)
+      expect(naptr_records.length).to eq(6)
 
       expect(naptr_records.detect { |r|
         r.host == "sip.example.com." && r.data == '100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .'
