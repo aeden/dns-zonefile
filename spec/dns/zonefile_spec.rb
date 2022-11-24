@@ -83,7 +83,11 @@ RSpec.describe "DNS::Zonefile" do
         
         _xmpp-server._tcp   SRV   5 0 5269 xmpp-server.l.google.com.  ; SRV record
         
-        sshfp         SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record
+        sshfp SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record
+        with-ttl 60 SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record with class
+        with-class IN SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record with ttl
+        ttl-class 60 IN SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record with ttl and class
+        class-ttl IN 60 SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record with class and ttl
         
         ; TXT record, with embedded semicolons
         _domainkey    TXT   "v=DKIM1\\;g=*\\;k=rsa\\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"
@@ -179,7 +183,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(84)
+      expect(zone.rr.size).to eq(88)
     end
 
     it "should build the correct NS records" do
@@ -394,7 +398,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct SSHFP records" do
       zone = DNS::Zonefile.load(@zonefile)
       sshfp_records = zone.records_of DNS::Zonefile::SSHFP
-      expect(sshfp_records.size).to eq(1)
+      expect(sshfp_records.size).to eq(5)
 
       expect(sshfp_records.detect { |r|
         r.host == "sshfp.example.com." && r.alg == 4 && r.fptype = 2 && r.fp == "9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35"

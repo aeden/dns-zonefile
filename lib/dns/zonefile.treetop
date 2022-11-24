@@ -279,7 +279,10 @@ grammar Zonefile
   end
 
   rule sshfp_record
-    host space ms_age ttl klass "SSHFP" space alg:integer space fptype:integer space fp:fingerprint {
+    (
+     host space ms_age ttl klass "SSHFP" space alg:integer space fptype:integer space fp:fingerprint / 
+     host space ms_age klass ttl "SSHFP" space alg:integer space fptype:integer space fp:fingerprint 
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} SSHFP #{alg} #{fptype} #{fp}"
       end
