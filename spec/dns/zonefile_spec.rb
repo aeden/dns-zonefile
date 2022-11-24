@@ -46,6 +46,7 @@ RSpec.describe "DNS::Zonefile" do
         with-class   IN  A   10.0.0.3             ; record that includes the class type of IN
         with-ttl  60     A   10.0.0.5             ; with a specified TTL
         ttl-class 60 IN  A   10.0.0.6             ; with TTL and class type
+        class-ttl IN 60 A 10.0.0.7                ; with class type and TTL
         www           CNAME ns                    ; "www.example.com" is an alias for "ns.example.com"
         wwwtest       CNAME www                   ; "wwwtest.example.com" is another alias for "www.example.com"
         www2          CNAME ns.example.com.       ; yet another alias, with FQDN target
@@ -149,7 +150,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(55)
+      expect(zone.rr.size).to eq(56)
     end
 
     it "should build the correct NS records" do
@@ -169,7 +170,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct A records" do
       zone = DNS::Zonefile.load(@zonefile)
       a_records = zone.records_of DNS::Zonefile::A
-      expect(a_records.size).to eq(13)
+      expect(a_records.size).to eq(14)
 
       expect(a_records.detect { |a|
         a.host == "example.com." && a.address == "10.0.0.1"

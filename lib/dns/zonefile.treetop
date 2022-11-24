@@ -89,7 +89,10 @@ grammar Zonefile
   end
 
   rule a_record
-    host space ms_age ttl klass "A" space ip_address {
+    (
+     host space ms_age ttl klass "A" space ip_address /
+     host space ms_age klass ttl "A" space ip_address
+    ) {
       def to_s
         "#{host} #{ms_age} #{ttl} #{klass} A #{ip_address}"
       end
