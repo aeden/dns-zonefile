@@ -36,6 +36,7 @@ RSpec.describe "DNS::Zonefile" do
         ; Let's start the resource records.
         example.com.  NS    ns                    ; ns.example.com is the nameserver for example.com
         example.com.  NS    ns.somewhere.com.     ; ns.somewhere.com is a backup nameserver for example.com
+
         example.com.  A     10.0.0.1              ; ip address for "example.com". next line has spaces after the IP, but no actual comment.
         @             A     10.0.0.11
                       A     10.0.0.12             ; tertiary ip for "example.com"
@@ -47,6 +48,7 @@ RSpec.describe "DNS::Zonefile" do
         with-ttl  60     A   10.0.0.5             ; with a specified TTL
         ttl-class 60 IN  A   10.0.0.6             ; with TTL and class type
         class-ttl IN 60 A 10.0.0.7                ; with class type and TTL
+
         www           CNAME ns                    ; "www.example.com" is an alias for "ns.example.com"
         wwwtest       CNAME www                   ; "wwwtest.example.com" is another alias for "www.example.com"
         www2          CNAME ns.example.com.       ; yet another alias, with FQDN target
@@ -59,6 +61,10 @@ RSpec.describe "DNS::Zonefile" do
         @             AAAA  2001:db8:a::1         ; IPv6, lowercase
         ns            AAAA  2001:DB8:B::1         ; IPv6, uppercase
         mail          AAAA  2001:db8:c::10.0.0.4  ; IPv6, with trailing IPv4-type address
+        with-class  IN    AAAA 2001:db8:d::1      ; IPv6, with class
+        with-ttl    60    AAAA 2001:db8:d::2      ; IPv6, with TTL
+        ttl-class   60 IN AAAA 2001:db8:d::3      ; IPv6, with TTL and class type
+        class-ttl   IN 60 AAAA 2001:db8:d::4      ; IPv6, with class type and TTL
         
         sip           NAPTR 100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .   ; NAPTR record
         sip2          NAPTR 100 10 "" "" "/urn:cid:.+@([^\\.]+\\.)(.*)$/\\2/i" .     ; another one
@@ -150,7 +156,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(56)
+      expect(zone.rr.size).to eq(60)
     end
 
     it "should build the correct NS records" do
@@ -302,7 +308,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct AAAA records" do
       zone = DNS::Zonefile.load(@zonefile)
       aaaa_records = zone.records_of DNS::Zonefile::AAAA
-      expect(aaaa_records.length).to eq(4)
+      expect(aaaa_records.length).to eq(8)
 
       expect(aaaa_records.detect { |a|
         a.host == "example.com." && a.address == "2001:db8:a::1"
