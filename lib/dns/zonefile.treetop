@@ -136,7 +136,8 @@ grammar Zonefile
 
   rule caa_record
     (
-      host space ms_age ttl klass "CAA" space flags:integer space tag:unquoted_string space value:caa_value
+      host space ms_age ttl klass "CAA" space flags:integer space tag:unquoted_string space value:caa_value /
+      host space ms_age klass ttl "CAA" space flags:integer space tag:unquoted_string space value:caa_value
     ) {
       def to_s
         "#{host} #{ttl} #{klass} CAA #{flags} #{tag} #{value}"

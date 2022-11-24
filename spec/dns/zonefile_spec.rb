@@ -91,6 +91,10 @@ RSpec.describe "DNS::Zonefile" do
         @             CAA   0 issue "letsencrypt.org"
         issuewild     CAA   0 issuewild "comodoca.com"
         iodef         CAA   0 iodef "mailto:example@example.com"
+        with-class IN   CAA 0 issue "letsencrypt.org"
+        with-ttl  60    CAA 0 issue "letsencrypt.org"
+        ttl-class 60 IN CAA 0 issue "letsencrypt.org"
+        class-ttl IN 60 CAA 0 issue "letsencrypt.org"
         
         ; Microsoft AD DNS Examples with Aging.
         with-age [AGE:999992222] 60     A   10.0.0.7             ; with a specified AGE
@@ -156,7 +160,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(60)
+      expect(zone.rr.size).to eq(64)
     end
 
     it "should build the correct NS records" do
@@ -234,7 +238,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct CAA records" do
       zone = DNS::Zonefile.load(@zonefile)
       caa_records = zone.records_of DNS::Zonefile::CAA
-      expect(caa_records.size).to eq(3)
+      expect(caa_records.size).to eq(7)
 
       expect(caa_records.detect { |caa|
         caa.host == "example.com." && caa.flags == 0 && caa.tag == "issue" && caa.value == "\"letsencrypt.org\""
