@@ -114,7 +114,11 @@ RSpec.describe "DNS::Zonefile" do
         _ldap._tcp.pupy._sites.dc._msdcs [AGE:3636525]	600	SRV	0 100 389	host01.ad
         P229392922               [AGE:3636449]	172800	CNAME	printer01.ad
         
-        @             SPF   "v=spf1 a a:other.domain.com ~all"
+        @ SPF   "v=spf1 a a:other.domain.com ~all" ; SPF (deprecated)
+        with-class    IN  SPF   "v=spf1 a a:other.domain.com ~all" ; SPF with class
+        with-ttl  60      SPF   "v=spf1 a a:other.domain.com ~all" ; SPF with ttl
+        ttl-class 60  IN  SPF   "v=spf1 a a:other.domain.com ~all" ; SPF with ttl and class
+        class-ttl IN  60  SPF   "v=spf1 a a:other.domain.com ~all" ; SPF with class and ttl
         
         44 PTR @
         45 IN    PTR   @
@@ -175,7 +179,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(80)
+      expect(zone.rr.size).to eq(84)
     end
 
     it "should build the correct NS records" do
@@ -434,7 +438,7 @@ RSpec.describe "DNS::Zonefile" do
     it "should build the correct SPF records" do
       zone = DNS::Zonefile.load(@zonefile)
       spf_records = zone.records_of DNS::Zonefile::SPF
-      expect(spf_records.length).to eq(1)
+      expect(spf_records.length).to eq(5)
 
       expect(spf_records.detect { |r|
         r.host == "example.com." && r.data == '"v=spf1 a a:other.domain.com ~all"' && r.ttl == 86400

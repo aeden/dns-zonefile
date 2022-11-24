@@ -264,7 +264,10 @@ grammar Zonefile
   end
 
   rule spf_record
-    host space ms_age ttl klass "SPF" space data:txt_data {
+    (
+     host space ms_age ttl klass "SPF" space data:txt_data /
+     host space ms_age klass ttl "SPF" space data:txt_data 
+    ) {
       def to_s
         "#{host} #{ttl} #{klass} SPF #{data}"
       end
