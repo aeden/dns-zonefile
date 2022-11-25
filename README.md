@@ -68,5 +68,3 @@ Craig R Webster <http://barkingiguana.com/>
 ## Contributing
 
 See the TODO. Read CONTRIBUTING.md for more details on how to contribute to this project.
-
-[![Build Status](https://secure.travis-ci.org/craigw/dns-zonefile.svg)](http://travis-ci.org/craigw/dns-zonefile)
