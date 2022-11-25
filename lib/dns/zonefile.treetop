@@ -44,8 +44,8 @@ grammar Zonefile
 
   rule soa
     (
-     origin space ttl klass "SOA" space ns space rp space "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"? /
-     origin space klass ttl "SOA" space ns space rp space "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"?
+     origin space ttl klass "SOA" space ns space "("? multiline_comment* space_or_break* rp multiline_comment* space_or_break* "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"? /
+     origin space klass ttl "SOA" space ns space "("? multiline_comment* space_or_break* rp multiline_comment* space_or_break* "("?  multiline_comment* space_or_break* serial multiline_comment* space_or_break refresh multiline_comment* space_or_break reretry multiline_comment* space_or_break expiry multiline_comment* space_or_break nxttl multiline_comment* space_or_break* ")"?
     ) {
       def to_s
         "#{origin} #{ttl} #{klass} SOA #{ns} #{rp} (#{serial} #{refresh} #{reretry} #{expiry} #{nxttl})"
@@ -379,6 +379,14 @@ grammar Zonefile
   end
 
   rule rp
+    rp_value comment* {
+      def to_s
+       "#{rp_value}"
+      end
+    }
+  end
+
+  rule rp_value
     ("." / (("\\." / [a-zA-Z0-9\-)])+ "."?)+) {
       def to_s
         text_value

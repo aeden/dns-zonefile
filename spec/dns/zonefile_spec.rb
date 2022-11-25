@@ -552,6 +552,52 @@ RSpec.describe "DNS::Zonefile" do
     end
   end
 
+  describe "parsing an SOA with responsible party in the parens" do
+    before(:each) do
+      @zonefile = <<~ZONE
+        @             IN  SOA  ns.domain.example.com. (
+                      john.example.com 
+                      2007120710 ; serial number of this zone file
+                      1d         ; slave refresh (1 day)
+                      1d         ; slave retry time in case of a problem (1 day)
+                      4W         ; slave expiration time (4 weeks)
+                      3600       ; minimum caching time in case of failed lookups (1 hour)
+                      )
+      ZONE
+    end
+
+    it "should parse the SOA record correctly" do
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.nameserver).to eql("ns.domain.example.com.")
+      expect(soa.responsible_party).to eql("john.example.com.")
+    end
+  end
+
+  describe "parsing an SOA with responsible party and a comment in the parens" do
+    before(:each) do
+      @zonefile = <<~ZONE
+        @             IN  SOA  ns.domain.example.com. (
+                      john.example.com ; comment
+                      2007120710 ; serial number of this zone file
+                      1d         ; slave refresh (1 day)
+                      1d         ; slave retry time in case of a problem (1 day)
+                      4W         ; slave expiration time (4 weeks)
+                      3600       ; minimum caching time in case of failed lookups (1 hour)
+                      )
+      ZONE
+    end
+
+    it "should parse the SOA record correctly" do
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.nameserver).to eql("ns.domain.example.com.")
+      expect(soa.responsible_party).to eql("john.example.com.")
+    end
+  end
+
   describe "parsing an SOA with just . for responsible party" do
     before(:each) do
       @zonefile = <<~ZONE
