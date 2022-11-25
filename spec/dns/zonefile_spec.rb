@@ -517,6 +517,14 @@ RSpec.describe "DNS::Zonefile" do
       expect(soa.klass).to eql("IN")
       expect(soa.ttl).to eql(3600)
     end
+
+    it "should parse the SOA record with RP missing trailing dot" do
+      @zonefile = "example.com.	3600 SOA ns0.example.com. hostmaster.example.com 2006010558 43200 3600 1209600 180"
+      zone = DNS::Zonefile.load(@zonefile)
+      soa = zone.soa
+      expect(soa.klass).to eql("IN")
+      expect(soa.ttl).to eql(3600)
+    end
   end
 
   describe "parsing an SOA without parens" do
