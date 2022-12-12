@@ -5,7 +5,7 @@
 Clone the repository and move into it:
 
 ```
-$ git clone git@github.com:craigw/dns-zonefile.git
+$ git clone git@github.com:aeden/dns-zonefile.git
 $ cd dns-zonefile
 ```
 

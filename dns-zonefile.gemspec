@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
     be investigated programatically, manipulated, validated or printed into
     some canonical form.
   EOD
-  spec.homepage = "https://github.com/craigw/dns-zonefile"
+  spec.homepage = "https://github.com/aeden/dns-zonefile"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.
