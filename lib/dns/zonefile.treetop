@@ -56,7 +56,7 @@ grammar Zonefile
   end
 
   rule resource_record
-    record:(a_record / aaaa_record / caa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / sshfp_record / txt_record / soa_record) space* comment? linebreak {
+    record:(a_record / aaaa_record / caa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / sshfp_record / txt_record / soa_record) space* comment:comment? linebreak {
       def zone
         p = parent
         while p.respond_to?(:parent) && p.parent
@@ -72,9 +72,14 @@ grammar Zonefile
       def record_type
         record.record_type
       end
-      
+
       def ttl
         record.ttl || zone.variables['TTL'].to_i
+      end
+
+      def comment
+        return if super.empty?
+        super
       end
 
       def method_missing(method_name, *args)
@@ -365,8 +370,10 @@ grammar Zonefile
   rule comment
     space* ";" [^\n\r]* {
       def to_s
-        text_value.strip
+        text_value[2..].to_s.strip
       end
+
+      def parse_type ; :comment ; end
     }
   end
 
