@@ -90,6 +90,8 @@ module DNS
         @klass ||= "IN"
       end
 
+      attr_accessor :comment
+
       private
 
       def qualify_host(host)
@@ -139,6 +141,7 @@ module DNS
           self.ttl = zonefile_record.ttl.to_i
           self.klass = zonefile_record.klass.to_s
           self.address = zonefile_record.ip_address.to_s
+          self.comment = zonefile_record.comment&.to_s
         end
       end
     end
@@ -159,6 +162,7 @@ module DNS
           self.flags = zonefile_record.flags.to_i
           self.tag = zonefile_record.tag.to_s
           self.value = zonefile_record.value.to_s
+          self.comment = zonefile_record.comment&.to_s
         end
       end
     end
@@ -174,6 +178,7 @@ module DNS
           self.ttl = zonefile_record.ttl.to_i
           self.klass = zonefile_record.klass.to_s
           self.domainname = qualify_host(zonefile_record.target.to_s)
+          self.comment = zonefile_record.comment&.to_s
         end
       end
 
@@ -193,6 +198,7 @@ module DNS
           self.klass = zonefile_record.klass.to_s
           self.priority = zonefile_record.priority.to_i
           self.domainname = qualify_host(zonefile_record.exchanger.to_s)
+          self.comment = zonefile_record.comment&.to_s
         end
       end
 
@@ -211,6 +217,7 @@ module DNS
           self.ttl = zonefile_record.ttl.to_i
           self.klass = zonefile_record.klass.to_s
           self.data = zonefile_record.data.to_s
+          self.comment = zonefile_record.comment&.to_s
         end
       end
     end
@@ -226,6 +233,7 @@ module DNS
           self.ttl = zonefile_record.ttl.to_i
           self.klass = zonefile_record.klass.to_s
           self.domainname = qualify_host(zonefile_record.nameserver.to_s)
+          self.comment = zonefile_record.comment&.to_s
         end
       end
 
@@ -243,6 +251,7 @@ module DNS
           self.ttl = zonefile_record.ttl.to_i
           self.klass = zonefile_record.klass.to_s
           self.domainname = qualify_host(zonefile_record.target.to_s)
+          self.comment = zonefile_record.comment&.to_s
         end
       end
 
@@ -263,6 +272,7 @@ module DNS
           self.weight = zonefile_record.weight.to_i
           self.port = zonefile_record.port.to_i
           self.domainname = qualify_host(zonefile_record.target.to_s)
+          self.comment = zonefile_record.comment&.to_s
         end
       end
 
@@ -282,6 +292,7 @@ module DNS
           self.alg = zonefile_record.alg.to_i
           self.fptype = zonefile_record.fptype.to_i
           self.fp = zonefile_record.fp.to_s
+          self.comment = zonefile_record.comment&.to_s
         end
       end
     end
@@ -297,6 +308,7 @@ module DNS
           self.ttl = zonefile_record.ttl.to_i
           self.klass = zonefile_record.klass.to_s
           self.data = zonefile_record.data.to_s
+          self.comment = zonefile_record.comment&.to_s
         end
       end
     end

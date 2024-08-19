@@ -193,7 +193,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(97)
+      expect(zone.rr.size).to eq(103)
     end
 
     it "should build the correct NS records" do
@@ -202,11 +202,11 @@ RSpec.describe "DNS::Zonefile" do
       expect(ns_records.size).to eq(6)
 
       expect(ns_records.detect { |ns|
-        ns.host == "example.com." && ns.nameserver == "ns.example.com."
+        ns.host == "example.com." && ns.nameserver == "ns.example.com." && ns.comment == 'ns.example.com is the nameserver for example.com'
       }).to_not be_nil
 
       expect(ns_records.detect { |ns|
-        ns.host == "example.com." && ns.nameserver == "ns.somewhere.com." && ns.ttl == 86400
+        ns.host == "example.com." && ns.nameserver == "ns.somewhere.com." && ns.ttl == 86400 && ns.comment == 'ns.somewhere.com is a backup nameserver for example.com'
       }).to_not be_nil
     end
 
@@ -216,55 +216,55 @@ RSpec.describe "DNS::Zonefile" do
       expect(a_records.size).to eq(14)
 
       expect(a_records.detect { |a|
-        a.host == "example.com." && a.address == "10.0.0.1"
+        a.host == "example.com." && a.address == "10.0.0.1" && a.comment == 'ip address for "example.com". next line has spaces after the IP, but no actual comment.'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "example.com." && a.address == "10.0.0.11"
+        a.host == "example.com." && a.address == "10.0.0.11" && a.comment.nil?
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "example.com." && a.address == "10.0.0.12"
+        a.host == "example.com." && a.address == "10.0.0.12" && a.comment == 'tertiary ip for "example.com"'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "ns.example.com." && a.address == "10.0.0.2" && a.ttl == 86400
+        a.host == "ns.example.com." && a.address == "10.0.0.2" && a.ttl == 86400 && a.comment == 'ip address for "ns.example.com"'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "ns.example.com." && a.address == "10.0.0.21" && a.ttl == 60
+        a.host == "ns.example.com." && a.address == "10.0.0.21" && a.ttl == 60 && a.comment == 'secondary ip for "ns.example.com" with TTL'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "*.example.com." && a.address == "10.0.0.100"
+        a.host == "*.example.com." && a.address == "10.0.0.100" && a.comment == 'wildcard'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "*.sub.example.com." && a.address == "10.0.0.101"
+        a.host == "*.sub.example.com." && a.address == "10.0.0.101" && a.comment == 'subdomain wildcard'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "with-class.example.com." && a.address == "10.0.0.3" && a.ttl == 86400
+        a.host == "with-class.example.com." && a.address == "10.0.0.3" && a.ttl == 86400 && a.comment == 'record that includes the class type of IN'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "with-ttl.example.com." && a.address == "10.0.0.5" && a.ttl == 60
+        a.host == "with-ttl.example.com." && a.address == "10.0.0.5" && a.ttl == 60 && a.comment == 'with a specified TTL'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "with-age.example.com." && a.address == "10.0.0.7" && a.ttl == 60
+        a.host == "with-age.example.com." && a.address == "10.0.0.7" && a.ttl == 60 && a.comment == 'with a specified AGE'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "ttl-class.example.com." && a.address == "10.0.0.6" && a.ttl == 60
+        a.host == "ttl-class.example.com." && a.address == "10.0.0.6" && a.ttl == 60 && a.comment == 'with TTL and class type'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "test.example.com." && a.address == "10.1.0.1" && a.ttl == 3600
+        a.host == "test.example.com." && a.address == "10.1.0.1" && a.ttl == 3600 && a.comment == 'Test with alternate origin'
       }).to_not be_nil
 
       expect(a_records.detect { |a|
-        a.host == "www.test.example.com." && a.address == "10.1.0.2" && a.ttl == 3600
+        a.host == "www.test.example.com." && a.address == "10.1.0.2" && a.ttl == 3600 && a.comment == 'www.test.example.com.'
       }).to_not be_nil
     end
 
@@ -274,15 +274,15 @@ RSpec.describe "DNS::Zonefile" do
       expect(caa_records.size).to eq(7)
 
       expect(caa_records.detect { |caa|
-        caa.host == "example.com." && caa.flags == 0 && caa.tag == "issue" && caa.value == "\"letsencrypt.org\""
+        caa.host == "example.com." && caa.flags == 0 && caa.tag == "issue" && caa.value == "\"letsencrypt.org\"" && caa.comment.nil?
       }).to_not be_nil
 
       expect(caa_records.detect { |caa|
-        caa.host == "issuewild.example.com." && caa.flags == 0 && caa.tag == "issuewild" && caa.value == "\"comodoca.com\""
+        caa.host == "issuewild.example.com." && caa.flags == 0 && caa.tag == "issuewild" && caa.value == "\"comodoca.com\"" && caa.comment.nil?
       }).to_not be_nil
 
       expect(caa_records.detect { |caa|
-        caa.host == "iodef.example.com." && caa.flags == 0 && caa.tag == "iodef" && caa.value == "\"mailto:example@example.com\""
+        caa.host == "iodef.example.com." && caa.flags == 0 && caa.tag == "iodef" && caa.value == "\"mailto:example@example.com\"" && caa.comment.nil?
       }).to_not be_nil
     end
 
@@ -292,19 +292,19 @@ RSpec.describe "DNS::Zonefile" do
       expect(cname_records.size).to eq(9)
 
       expect(cname_records.detect { |cname|
-        cname.host == "www.example.com." && cname.target == "ns.example.com."
+        cname.host == "www.example.com." && cname.target == "ns.example.com." && cname.comment == '"www.example.com" is an alias for "ns.example.com"'
       }).to_not be_nil
 
       expect(cname_records.detect { |cname|
-        cname.host == "wwwtest.example.com." && cname.domainname == "www.example.com."
+        cname.host == "wwwtest.example.com." && cname.domainname == "www.example.com." && cname.comment == '"wwwtest.example.com" is another alias for "www.example.com"'
       }).to_not be_nil
 
       expect(cname_records.detect { |cname|
-        cname.host == "www2.example.com." && cname.domainname == "ns.example.com." && cname.ttl == 86400
+        cname.host == "www2.example.com." && cname.domainname == "ns.example.com." && cname.ttl == 86400 && cname.comment == 'yet another alias, with FQDN target'
       }).to_not be_nil
 
       expect(cname_records.detect { |cname|
-        cname.host == "P229392922.example.com." && cname.domainname == "printer01.ad.example.com." && cname.ttl == 172800
+        cname.host == "P229392922.example.com." && cname.domainname == "printer01.ad.example.com." && cname.ttl == 172800 && cname.comment.nil?
       }).to_not be_nil
 
       eam_records = cname_records.select { |c| c.host =~ /eam\./ }
@@ -326,19 +326,19 @@ RSpec.describe "DNS::Zonefile" do
       expect(mx_records.length).to eq(8)
 
       expect(mx_records.detect { |mx|
-        mx.host == "example.com." && mx.priority == 10 && mx.exchanger == "mail.example.com."
+        mx.host == "example.com." && mx.priority == 10 && mx.exchanger == "mail.example.com." && mx.comment == 'mail.example.com is the mailserver for example.com'
       }).to_not be_nil
 
       expect(mx_records.detect { |mx|
-        mx.host == "example.com." && mx.priority == 20 && mx.exchange == "mail2.example.com."
+        mx.host == "example.com." && mx.priority == 20 && mx.exchange == "mail2.example.com." && mx.comment == 'Similar to above line, but using "@" to say "use $ORIGIN"'
       }).to_not be_nil
 
       expect(mx_records.detect { |mx|
-        mx.host == "example.com." && mx.priority == 50 && mx.domainname == "mail3.example.com." && mx.ttl == 86400
+        mx.host == "example.com." && mx.priority == 50 && mx.domainname == "mail3.example.com." && mx.ttl == 86400 && mx.comment == 'Similar to above line, but using a host within this domain'
       }).to_not be_nil
 
       expect(mx_records.detect { |mx|
-        mx.host == "test.example.com." && mx.priority == 10 && mx.domainname == "mail.example.com." && mx.ttl == 3600
+        mx.host == "test.example.com." && mx.priority == 10 && mx.domainname == "mail.example.com." && mx.ttl == 3600 && mx.comment.nil?
       }).to_not be_nil
     end
 
@@ -348,19 +348,19 @@ RSpec.describe "DNS::Zonefile" do
       expect(aaaa_records.length).to eq(8)
 
       expect(aaaa_records.detect { |a|
-        a.host == "example.com." && a.address == "2001:db8:a::1"
+        a.host == "example.com." && a.address == "2001:db8:a::1" && a.comment == 'IPv6, lowercase'
       }).to_not be_nil
 
       expect(aaaa_records.detect { |a|
-        a.host == "ns.example.com." && a.address == "2001:db8:b::1"
+        a.host == "ns.example.com." && a.address == "2001:db8:b::1" && a.comment == 'IPv6, uppercase'
       }).to_not be_nil
 
       expect(aaaa_records.detect { |a|
-        a.host == "mail.example.com." && a.address == "2001:db8:c::10.0.0.4" && a.ttl == 86400
+        a.host == "mail.example.com." && a.address == "2001:db8:c::10.0.0.4" && a.ttl == 86400 && a.comment == 'IPv6, with trailing IPv4-type address'
       }).to_not be_nil
 
       expect(aaaa_records.detect { |a|
-        a.host == "with-age-aaaa.example.com." && a.address == "10.0.0.8" && a.ttl == 60
+        a.host == "with-age-aaaa.example.com." && a.address == "10.0.0.8" && a.ttl == 60 && a.comment == 'with a specified AGE'
       }).to_not be_nil
     end
 
@@ -370,11 +370,11 @@ RSpec.describe "DNS::Zonefile" do
       expect(naptr_records.length).to eq(6)
 
       expect(naptr_records.detect { |r|
-        r.host == "sip.example.com." && r.data == '100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .'
+        r.host == "sip.example.com." && r.data == '100 10 "U" "E2U+sip" "!^.*$!sip:cs@example.com!i" .' && r.comment == 'NAPTR record'
       }).to_not be_nil
 
       expect(naptr_records.detect { |r|
-        r.host == "sip2.example.com." && r.data == '100 10 "" "" "/urn:cid:.+@([^\\.]+\\.)(.*)$/\\2/i" .' && r.ttl == 86400
+        r.host == "sip2.example.com." && r.data == '100 10 "" "" "/urn:cid:.+@([^\\.]+\\.)(.*)$/\\2/i" .' && r.ttl == 86400 && r.comment == 'another one'
       }).to_not be_nil
     end
 
@@ -384,11 +384,11 @@ RSpec.describe "DNS::Zonefile" do
       expect(srv_records.length).to eq(7)
 
       expect(srv_records.detect { |r|
-        r.host == "_xmpp-server._tcp.example.com." && r.priority == 5 && r.weight == 0 && r.port == 5269 && r.target == "xmpp-server.l.google.com." && r.ttl == 86400
+        r.host == "_xmpp-server._tcp.example.com." && r.priority == 5 && r.weight == 0 && r.port == 5269 && r.target == "xmpp-server.l.google.com." && r.ttl == 86400 && r.comment == 'SRV record'
       }).to_not be_nil
 
       expect(srv_records.detect { |r|
-        r.host == "_ldap._tcp.pupy._sites.dc._msdcs.example.com." && r.priority == 0 && r.weight == 100 && r.port == 389 && r.target == "host01.ad.example.com." && r.ttl == 600
+        r.host == "_ldap._tcp.pupy._sites.dc._msdcs.example.com." && r.priority == 0 && r.weight == 100 && r.port == 389 && r.target == "host01.ad.example.com." && r.ttl == 600 && r.comment.nil?
       }).to_not be_nil
 
       eam_records = srv_records.select { |s| s.host =~ /eam\./ }
@@ -421,31 +421,31 @@ RSpec.describe "DNS::Zonefile" do
       expect(txt_records.size).to eq(17)
 
       expect(txt_records.detect { |r|
-        r.host == "_domainkey.example.com." && r.data == '"v=DKIM1\;g=*\;k=rsa\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"'
+        r.host == "_domainkey.example.com." && r.data == '"v=DKIM1\;g=*\;k=rsa\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"' && r.comment.nil?
       }).to_not be_nil
 
       expect(txt_records.detect { |r|
-        r.host == "with_ms_txt.example.com." && r.data == '"Some text"'
+        r.host == "with_ms_txt.example.com." && r.data == '"Some text"' && r.comment.nil?
       }).to_not be_nil
 
       expect(txt_records.detect { |r|
-        r.host == "example.com." && r.data == '"some other \"message\" goes here"' && r.ttl == 86400
+        r.host == "example.com." && r.data == '"some other \"message\" goes here"' && r.ttl == 86400 && r.comment == 'embedded quotes'
       }).to_not be_nil
 
       expect(txt_records.detect { |r|
-        r.host == "long.example.com." && r.data == '"a multi-segment TXT record" "usually used for really long TXT records" "since each segment can only span 255 chars"'
+        r.host == "long.example.com." && r.data == '"a multi-segment TXT record" "usually used for really long TXT records" "since each segment can only span 255 chars"' && r.comment.nil?
       }).to_not be_nil
 
       expect(txt_records.detect { |r|
-        r.host == "unquoted.example.com." && r.data == "some text data"
+        r.host == "unquoted.example.com." && r.data == "some text data" && r.comment.nil?
       }).to_not be_nil
 
       expect(txt_records.detect { |r|
-        r.host == "with-eq.example.com." && r.data == "MS=example"
+        r.host == "with-eq.example.com." && r.data == "MS=example" && r.comment.nil?
       }).to_not be_nil
 
       expect(txt_records.detect { |r|
-        r.host == "multiline.example.com." && r.data == "\"A TXT record\nsplit across multiple lines\nwith LF and CRLF line endings\""
+        r.host == "multiline.example.com." && r.data == "\"A TXT record\nsplit across multiple lines\nwith LF and CRLF line endings\"" && r.comment.nil?
       }).to_not be_nil
     end
 
@@ -455,7 +455,7 @@ RSpec.describe "DNS::Zonefile" do
       expect(spf_records.length).to eq(5)
 
       expect(spf_records.detect { |r|
-        r.host == "example.com." && r.data == '"v=spf1 a a:other.domain.com ~all"' && r.ttl == 86400
+        r.host == "example.com." && r.data == '"v=spf1 a a:other.domain.com ~all"' && r.ttl == 86400 && r.comment == 'SPF (deprecated)'
       }).to_not be_nil
     end
 
@@ -465,10 +465,10 @@ RSpec.describe "DNS::Zonefile" do
       expect(ptr_records.length).to eq(5)
 
       expect(ptr_records.detect { |r|
-        r.host == "44.example.com." && r.target == "example.com." && r.ttl == 86400
-        r.host == "45.example.com." && r.target == "example.com." && r.ttl == 86400
-        r.host == "46.example.com." && r.target == "example.com." && r.ttl == 60
-        r.host == "47.example.com." && r.target == "example.com." && r.ttl == 60
+        r.host == "44.example.com." && r.target == "example.com." && r.ttl == 86400 && r.comment.nil?
+        r.host == "45.example.com." && r.target == "example.com." && r.ttl == 86400 && r.comment.nil?
+        r.host == "46.example.com." && r.target == "example.com." && r.ttl == 60 && r.comment.nil?
+        r.host == "47.example.com." && r.target == "example.com." && r.ttl == 60 && r.comment.nil?
       }).to_not be_nil
     end
   end
