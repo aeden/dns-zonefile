@@ -19,8 +19,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-latest]
-        ruby: ['2.7', '3.0', '3.1', head, jruby, truffleruby]
+        os: [ubuntu-latest]
+        ruby: ['2.7', '3.0', '3.1', jruby, truffleruby]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
