@@ -52,6 +52,7 @@ module DNS
             when "SRV" then @records << SRV.new(@vars, e)
             when "SPF" then @records << SPF.new(@vars, e)
             when "SSHFP" then @records << SSHFP.new(@vars, e)
+            when "TLSA" then @records << TLSA.new(@vars, e)
             when "TXT" then @records << TXT.new(@vars, e)
             when "SOA" then
               # No-op
@@ -282,6 +283,24 @@ module DNS
           self.alg = zonefile_record.alg.to_i
           self.fptype = zonefile_record.fptype.to_i
           self.fp = zonefile_record.fp.to_s
+        end
+      end
+    end
+
+    class TLSA < Record
+      attr_accessor :host, :usage, :selector, :matching_type, :certificate_data
+
+      def initialize(vars, zonefile_record)
+        @vars = vars
+        if zonefile_record
+          self.host = qualify_host(zonefile_record.host.to_s)
+          @vars[:last_host] = host
+          self.ttl = zonefile_record.ttl.to_i
+          self.klass = zonefile_record.klass.to_s
+          self.usage = zonefile_record.usage.to_i
+          self.selector = zonefile_record.selector.to_i
+          self.matching_type = zonefile_record.matching_type.to_i
+          self.certificate_data = zonefile_record.certificate_data.to_s
         end
       end
     end

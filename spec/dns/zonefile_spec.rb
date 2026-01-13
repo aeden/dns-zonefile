@@ -89,6 +89,13 @@ RSpec.describe "DNS::Zonefile" do
         ttl-class 60 IN SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record with ttl and class
         class-ttl IN 60 SSHFP 4 2 9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35 ; SSHFP record with class and ttl
         
+        _443._tcp TLSA 3 1 1 2bb183af273adee2e6c7c6c4c3b9a5d8a5a5c5c5c5c5c5c5c5c5c5c5c5c5c5c5 ; TLSA record
+        with-ttl 60 TLSA 3 1 1 2bb183af273adee2e6c7c6c4c3b9a5d8a5a5c5c5c5c5c5c5c5c5c5c5c5c5c5c5 ; TLSA record with ttl
+        with-class IN TLSA 3 1 1 2bb183af273adee2e6c7c6c4c3b9a5d8a5a5c5c5c5c5c5c5c5c5c5c5c5c5c5c5 ; TLSA record with class
+        ttl-class 60 IN TLSA 3 1 1 2bb183af273adee2e6c7c6c4c3b9a5d8a5a5c5c5c5c5c5c5c5c5c5c5c5c5c5c5 ; TLSA record with ttl and class
+        class-ttl IN 60 TLSA 3 1 1 2bb183af273adee2e6c7c6c4c3b9a5d8a5a5c5c5c5c5c5c5c5c5c5c5c5c5c5c5 ; TLSA record with class and ttl
+        tlsa-spaces TLSA 3 1 1 2bb1 83af 273a dee2 e6c7 c6c4 c3b9 a5d8 ; TLSA record with spaces in certificate data
+        
         ; TXT record, with embedded semicolons
         _domainkey    TXT   "v=DKIM1\\;g=*\\;k=rsa\\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"
         with_ms_txt   TXT   ( "Some text" )
@@ -193,7 +200,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(97)
+      expect(zone.rr.size).to eq(103)
     end
 
     it "should build the correct NS records" do
@@ -412,6 +419,24 @@ RSpec.describe "DNS::Zonefile" do
 
       expect(sshfp_records.detect { |r|
         r.host == "sshfp.example.com." && r.alg == 4 && r.fptype = 2 && r.fp == "9e:1a:5e:27:16:4d:2a:13:90:2c:64:41:bd:25:fd:35"
+      }).to_not be_nil
+    end
+
+    it "should build the correct TLSA records" do
+      zone = DNS::Zonefile.load(@zonefile)
+      tlsa_records = zone.records_of DNS::Zonefile::TLSA
+      expect(tlsa_records.size).to eq(6)
+
+      expect(tlsa_records.detect { |r|
+        r.host == "_443._tcp.example.com." && r.usage == 3 && r.selector == 1 && r.matching_type == 1 && r.certificate_data == "2bb183af273adee2e6c7c6c4c3b9a5d8a5a5c5c5c5c5c5c5c5c5c5c5c5c5c5c5"
+      }).to_not be_nil
+
+      expect(tlsa_records.detect { |r|
+        r.host == "with-ttl.example.com." && r.usage == 3 && r.selector == 1 && r.matching_type == 1 && r.ttl == 60
+      }).to_not be_nil
+
+      expect(tlsa_records.detect { |r|
+        r.host == "tlsa-spaces.example.com." && r.usage == 3 && r.selector == 1 && r.matching_type == 1 && r.certificate_data == "2bb1 83af 273a dee2 e6c7 c6c4 c3b9 a5d8"
       }).to_not be_nil
     end
 
