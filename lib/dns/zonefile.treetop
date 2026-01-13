@@ -56,7 +56,7 @@ grammar Zonefile
   end
 
   rule resource_record
-    record:(a_record / aaaa_record / caa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / sshfp_record / txt_record / soa_record) space* comment? linebreak {
+    record:(a_record / aaaa_record / caa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / sshfp_record / tlsa_record / txt_record / soa_record) space* comment? linebreak {
       def zone
         p = parent
         while p.respond_to?(:parent) && p.parent
@@ -295,6 +295,29 @@ grammar Zonefile
 
       def record_type
         "SSHFP"
+      end
+    }
+  end
+
+  rule tlsa_record
+    (
+     host space ms_age ttl klass "TLSA" space usage:integer space selector:integer space matching_type:integer space certificate_data:tlsa_certificate_data /
+     host space ms_age klass ttl "TLSA" space usage:integer space selector:integer space matching_type:integer space certificate_data:tlsa_certificate_data
+    ) {
+      def to_s
+        "#{host} #{ttl} #{klass} TLSA #{usage} #{selector} #{matching_type} #{certificate_data}"
+      end
+
+      def record_type
+        "TLSA"
+      end
+    }
+  end
+
+  rule tlsa_certificate_data
+    [a-fA-F0-9 ]+ {
+      def to_s
+        text_value.strip
       end
     }
   end
