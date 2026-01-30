@@ -56,7 +56,7 @@ grammar Zonefile
   end
 
   rule resource_record
-    record:(a_record / aaaa_record / caa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / sshfp_record / tlsa_record / txt_record / soa_record) space* comment? linebreak {
+    record:(a_record / aaaa_record / caa_record / cname_record / mx_record / naptr_record / ns_record / ptr_record / srv_record / spf_record / sshfp_record / svcb_record / https_record / tlsa_record / txt_record / soa_record) space* comment? linebreak {
       def zone
         p = parent
         while p.respond_to?(:parent) && p.parent
@@ -295,6 +295,66 @@ grammar Zonefile
 
       def record_type
         "SSHFP"
+      end
+    }
+  end
+
+  rule svcb_record
+    (
+     host space ms_age ttl klass "SVCB" space priority:integer space target:svcb_target space svcparam_data:svcb_svcparams /
+     host space ms_age klass ttl "SVCB" space priority:integer space target:svcb_target space svcparam_data:svcb_svcparams /
+     host space ms_age ttl klass "SVCB" space priority:integer space target:svcb_target /
+     host space ms_age klass ttl "SVCB" space priority:integer space target:svcb_target
+    ) {
+      def to_s
+        base = "#{host} #{ttl} #{klass} SVCB #{priority} #{target}"
+        respond_to?(:svcparam_data) && svcparam_data ? "#{base} #{svcparam_data}" : base
+      end
+
+      def record_type
+        "SVCB"
+      end
+
+      def svcparams
+        (respond_to?(:svcparam_data) && svcparam_data) ? svcparam_data.to_s.strip : ""
+      end
+    }
+  end
+
+  rule https_record
+    (
+     host space ms_age ttl klass "HTTPS" space priority:integer space target:svcb_target space svcparam_data:svcb_svcparams /
+     host space ms_age klass ttl "HTTPS" space priority:integer space target:svcb_target space svcparam_data:svcb_svcparams /
+     host space ms_age ttl klass "HTTPS" space priority:integer space target:svcb_target /
+     host space ms_age klass ttl "HTTPS" space priority:integer space target:svcb_target
+    ) {
+      def to_s
+        base = "#{host} #{ttl} #{klass} HTTPS #{priority} #{target}"
+        respond_to?(:svcparam_data) && svcparam_data ? "#{base} #{svcparam_data}" : base
+      end
+
+      def record_type
+        "HTTPS"
+      end
+
+      def svcparams
+        (respond_to?(:svcparam_data) && svcparam_data) ? svcparam_data.to_s.strip : ""
+      end
+    }
+  end
+
+  rule svcb_target
+    ("." / host) {
+      def to_s
+        text_value
+      end
+    }
+  end
+
+  rule svcb_svcparams
+    [^;\n\r]+ {
+      def to_s
+        text_value.strip
       end
     }
   end
