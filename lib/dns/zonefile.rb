@@ -52,6 +52,8 @@ module DNS
             when "SRV" then @records << SRV.new(@vars, e)
             when "SPF" then @records << SPF.new(@vars, e)
             when "SSHFP" then @records << SSHFP.new(@vars, e)
+            when "SVCB" then @records << SVCB.new(@vars, e)
+            when "HTTPS" then @records << HTTPS.new(@vars, e)
             when "TLSA" then @records << TLSA.new(@vars, e)
             when "TXT" then @records << TXT.new(@vars, e)
             when "SOA" then
@@ -285,6 +287,42 @@ module DNS
           self.fp = zonefile_record.fp.to_s
         end
       end
+    end
+
+    class SVCB < Record
+      attr_accessor :host, :priority, :target_name
+      attr_reader :svcparams
+
+      def initialize(vars, zonefile_record)
+        @vars = vars
+        if zonefile_record
+          self.host = qualify_host(zonefile_record.host.to_s)
+          @vars[:last_host] = host
+          self.ttl = zonefile_record.ttl.to_i
+          self.klass = zonefile_record.klass.to_s
+          self.priority = zonefile_record.priority.to_i
+          self.target_name = zonefile_record.target.to_s == "." ? "." : qualify_host(zonefile_record.target.to_s)
+          @svcparams = parse_svcparams(zonefile_record.svcparams.to_s)
+        else
+          @svcparams = {}
+        end
+      end
+
+      # Parses SvcParams string (e.g. "alpn=h2,h3 ipv4hint=192.0.2.1") into a Hash of name => value.
+      # Handles quoted values (e.g. ech="base64...").
+      def parse_svcparams(str)
+        return {} if str.to_s.strip.empty?
+
+        # Key is word chars + hyphen; value is either "quoted" (with \ " and \ \ escapes) or unquoted (no spaces)
+        str.strip.scan(/([\w-]+)=(?:"((?:[^"\\]|\\.)*)"|([^\s]*))|([\w-]+)(?=\s|$)/).each_with_object({}) do |(key_with_val, quoted, unquoted, key_only), params|
+          key = key_with_val || key_only
+          value = quoted ? quoted.gsub(/\\"/, '"').gsub(/\\\\/, '\\') : (unquoted || "")
+          params[key] = value
+        end
+      end
+    end
+
+    class HTTPS < SVCB
     end
 
     class TLSA < Record

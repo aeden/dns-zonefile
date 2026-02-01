@@ -96,6 +96,16 @@ RSpec.describe "DNS::Zonefile" do
         class-ttl IN 60 TLSA 3 1 1 2bb183af273adee2e6c7c6c4c3b9a5d8a5a5c5c5c5c5c5c5c5c5c5c5c5c5c5c5 ; TLSA record with class and ttl
         tlsa-spaces TLSA 3 1 1 2bb1 83af 273a dee2 e6c7 c6c4 c3b9 a5d8 ; TLSA record with spaces in certificate data
         
+        _443._wss     SVCB 1 . alpn=h2,h3
+        svcb-ttl 60   SVCB 1 . alpn=h2,h3
+        svcb-class IN SVCB 1 . alpn=h2,h3
+        svcb-alias    SVCB 0 target.example.com.
+        svcb-flag     SVCB 1 . alpn=h2 no-default-alpn
+        svcb-quoted   SVCB 1 . alpn=h2 ech="dGVzdA==" ; comment after svcparams
+        example.com.  3600 IN HTTPS 1 . alpn=h2,h3 ipv4hint=192.0.2.1
+        https-ttl 60  HTTPS 1 . alpn=h2,h3
+        https-alias   HTTPS 0 cdn.example.com.
+        
         ; TXT record, with embedded semicolons
         _domainkey    TXT   "v=DKIM1\\;g=*\\;k=rsa\\; p=4tkw1bbkfa0ahfjgnbewr2ttkvahvfmfizowl9s4g0h28io76ndow25snl9iumpcv0jwxr2k"
         with_ms_txt   TXT   ( "Some text" )
@@ -200,7 +210,7 @@ RSpec.describe "DNS::Zonefile" do
 
     it "should build the correct number of resource records" do
       zone = DNS::Zonefile.parse(@zonefile)
-      expect(zone.rr.size).to eq(103)
+      expect(zone.rr.size).to eq(112)
     end
 
     it "should build the correct NS records" do
@@ -437,6 +447,58 @@ RSpec.describe "DNS::Zonefile" do
 
       expect(tlsa_records.detect { |r|
         r.host == "tlsa-spaces.example.com." && r.usage == 3 && r.selector == 1 && r.matching_type == 1 && r.certificate_data == "2bb1 83af 273a dee2 e6c7 c6c4 c3b9 a5d8"
+      }).to_not be_nil
+    end
+
+    it "should build the correct SVCB records" do
+      zone = DNS::Zonefile.load(@zonefile)
+      svcb_records = zone.records_of DNS::Zonefile::SVCB
+      expect(svcb_records.size).to eq(6)
+
+      expect(svcb_records.detect { |r|
+        r.host == "_443._wss.example.com." && r.priority == 1 && r.target_name == "." && r.svcparams == { "alpn" => "h2,h3" }
+      }).to_not be_nil
+
+      expect(svcb_records.detect { |r|
+        r.host == "svcb-ttl.example.com." && r.priority == 1 && r.target_name == "." && r.svcparams == { "alpn" => "h2,h3" } && r.ttl == 60
+      }).to_not be_nil
+
+      expect(svcb_records.detect { |r|
+        r.host == "svcb-class.example.com." && r.priority == 1 && r.target_name == "." && r.svcparams == { "alpn" => "h2,h3" }
+      }).to_not be_nil
+
+      # AliasMode (priority 0) with target
+      expect(svcb_records.detect { |r|
+        r.host == "svcb-alias.example.com." && r.priority == 0 && r.target_name == "target.example.com." && r.svcparams == {}
+      }).to_not be_nil
+
+      # Flag-style param (no value)
+      expect(svcb_records.detect { |r|
+        r.host == "svcb-flag.example.com." && r.priority == 1 && r.svcparams == { "alpn" => "h2", "no-default-alpn" => "" }
+      }).to_not be_nil
+
+      # Quoted param with comment after
+      expect(svcb_records.detect { |r|
+        r.host == "svcb-quoted.example.com." && r.priority == 1 && r.svcparams == { "alpn" => "h2", "ech" => "dGVzdA==" }
+      }).to_not be_nil
+    end
+
+    it "should build the correct HTTPS records" do
+      zone = DNS::Zonefile.load(@zonefile)
+      https_records = zone.records_of DNS::Zonefile::HTTPS
+      expect(https_records.size).to eq(3)
+
+      expect(https_records.detect { |r|
+        r.host == "example.com." && r.priority == 1 && r.target_name == "." && r.svcparams == { "alpn" => "h2,h3", "ipv4hint" => "192.0.2.1" } && r.ttl == 3600
+      }).to_not be_nil
+
+      expect(https_records.detect { |r|
+        r.host == "https-ttl.example.com." && r.priority == 1 && r.target_name == "." && r.svcparams == { "alpn" => "h2,h3" } && r.ttl == 60
+      }).to_not be_nil
+
+      # AliasMode (priority 0)
+      expect(https_records.detect { |r|
+        r.host == "https-alias.example.com." && r.priority == 0 && r.target_name == "cdn.example.com." && r.svcparams == {}
       }).to_not be_nil
     end
 
